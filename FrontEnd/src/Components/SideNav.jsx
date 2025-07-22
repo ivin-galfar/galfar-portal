@@ -1,9 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import useUserInfo from "../CustomHooks/useUserInfo";
 
-const SideNav = ({ isOpen, setIsMenuOpen }) => {
+const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
+  const userInfo = useUserInfo();
   return (
     <div
+      ref={ref}
       className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-800 shadow transition-transform transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
@@ -34,24 +37,18 @@ const SideNav = ({ isOpen, setIsMenuOpen }) => {
         >
           Users
         </a>
-        <a
-          href="#"
+        <Link
+          to="/receipts"
           className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         >
-          Products
-        </a>
-        <span
-          href="#"
+          Receipts
+        </Link>
+        <Link
+          to="/login"
           className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         >
-          <Link to="/login">Sign In</Link>
-        </span>
-        <a
-          href="#"
-          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-        >
-          Sign Up
-        </a>
+          {userInfo ? "Sign out" : "Sign In"}
+        </Link>
       </nav>
     </div>
   );

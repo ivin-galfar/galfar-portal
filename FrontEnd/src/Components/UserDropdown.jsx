@@ -16,7 +16,6 @@ const UserDropdown = () => {
   const isAdmin = userInfo?.isAdmin;
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
-  const toggleFavourites = () => setShowFavourites((prev) => !prev);
 
   const handleLogout = () => {
     setShowConfirm(true);
@@ -27,16 +26,16 @@ const UserDropdown = () => {
     navigate("/login");
   };
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setIsOpen(false);
-  //       setShowFavourites(false);
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setShowFavourites(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -55,20 +54,9 @@ const UserDropdown = () => {
               {userEmail}
             </p>
           </div>
-          <button
-            onClick={toggleFavourites}
-            className="flex justify-between items-center w-full px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
-          >
-            <span>Favourites</span>
-            <FaChevronDown
-              className={`transition-transform duration-200 ${
-                showFavourites ? "rotate-180" : ""
-              }`}
-            />
-          </button>
           <span className={`${!isAdmin ? "hidden" : ""}`}>
             <button className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-red-50 transition cursor-pointer">
-              <Link to="/admin">Admin Dashboard </Link>
+              <Link to="/admin"> Dashboard </Link>
             </button>
           </span>
           <div className="border-t border-gray-100" />

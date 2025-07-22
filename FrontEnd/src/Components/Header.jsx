@@ -3,13 +3,24 @@ import useUserInfo from "../CustomHooks/useUserInfo";
 import galfarlogo from "../assets/Images/logo-new.png";
 import { FiMenu } from "react-icons/fi";
 import SideNav from "./SideNav";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserDropdown from "./UserDropdown";
 
 const Header = () => {
   const userInfo = useUserInfo();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (canvasRef.current && !canvasRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div>
@@ -23,13 +34,15 @@ const Header = () => {
               >
                 <FiMenu className="h-6 w-6" />
               </button>
-              <Link to="/">
-                <img
-                  src={galfarlogo}
-                  alt="Galfar Logo"
-                  className="h-10 w-auto m-50"
-                />
-              </Link>
+              <div className="flex justify-center items-center p-6">
+                <Link to="/">
+                  <img
+                    src={galfarlogo}
+                    alt="Galfar Logo"
+                    className="h-10 w-auto"
+                  />
+                </Link>
+              </div>
             </div>
             <div className="ml-auto mr-45">
               <nav className="flex space-x-8 ">
@@ -58,7 +71,11 @@ const Header = () => {
         </div>
       </header>
 
-      <SideNav isOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <SideNav
+        isOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+        ref={canvasRef}
+      />
     </div>
   );
 };
