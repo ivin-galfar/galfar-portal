@@ -4,7 +4,7 @@ import { AppContext } from "./Context";
 
 const TableHeader = ({ isAdmin }) => {
   const [formData, setFormData] = useState({
-    hiringName: "John Doe",
+    hiringName: "",
     dateValue: new Date(),
     projectValue: "",
     locationValue: "",
@@ -18,7 +18,6 @@ const TableHeader = ({ isAdmin }) => {
   const { sharedTableData, setSharedTableData } = useContext(AppContext);
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
-  console.log(sharedTableData);
 
   useEffect(() => {
     if (userInfo?.isAdmin) {

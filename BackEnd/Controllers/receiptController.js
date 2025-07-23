@@ -4,6 +4,20 @@ const feedReceipt = async (req, res) => {
   try {
     const { formData, tableData } = req.body;
 
+    // 🔍 Validate formData for any empty, null, or undefined values
+    for (const [key, value] of Object.entries(formData)) {
+      if (
+        value === "" ||
+        value === null ||
+        value === undefined ||
+        (typeof value === "string" && value.trim() === "")
+      ) {
+        return res.status(400).json({
+          message: `Validation Error: "${key}" cannot be empty.`,
+        });
+      }
+    }
+
     const mrexists = await Receipt.findOne({
       "formData.equipMrNoValue": formData.equipMrNoValue,
     });

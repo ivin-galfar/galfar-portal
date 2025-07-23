@@ -13,20 +13,20 @@ const rawData = [
 ];
 
 const descriptionRows = [
-  { sl: "1", particulars: "UNIT PRICES", qty: "10" },
-  { sl: "1", particulars: "MOBILIZATION CHARGE", qty: "10" },
-  { sl: "1", particulars: "DEMOBILIZATION Charge", qty: "10" },
-  { sl: "1", particulars: "Zone II CHarges", qty: "10" },
-  { sl: "1", particulars: "CICPA/AL DHAFRA CHARGES", qty: "10" },
-  { sl: "1", particulars: "OTHER (TOLL CHARGES0", qty: "10" },
-  { sl: "1", particulars: "ACCESSORIES (IF ANY)", qty: "10" },
-  { sl: "1", particulars: "TPI CHARGES (IF ANY)", qty: "10" },
-  { sl: "1", particulars: "INSURANCE (IF ANY)", qty: "10" },
-  { sl: "1", particulars: "TOTAL PRICE", qty: "10" },
-  { sl: "1", particulars: "VAT @5%", qty: "10" },
-  { sl: "1", particulars: "AVAILABLLITY", qty: "10" },
-  { sl: "1", particulars: "NOTE", qty: "10" },
-  { sl: "1", particulars: "RATING", qty: "10" },
+  { sl: "1", particulars: "UNIT PRICES", qty: "1" },
+  { sl: "1", particulars: "MOBILIZATION CHARGE", qty: "1" },
+  { sl: "1", particulars: "DEMOBILIZATION Charge", qty: "1" },
+  { sl: "1", particulars: "Zone II CHarges", qty: "1" },
+  { sl: "1", particulars: "CICPA/AL DHAFRA CHARGES", qty: "1" },
+  { sl: "1", particulars: "OTHER (TOLL CHARGES0", qty: "1" },
+  { sl: "1", particulars: "ACCESSORIES (IF ANY)", qty: "1" },
+  { sl: "1", particulars: "TPI CHARGES (IF ANY)", qty: "1" },
+  { sl: "1", particulars: "INSURANCE (IF ANY)", qty: "1" },
+  { sl: "1", particulars: "TOTAL PRICE", qty: "1" },
+  { sl: "1", particulars: "VAT @5%", qty: "1" },
+  { sl: "1", particulars: "AVAILABLLITY", qty: "1" },
+  { sl: "1", particulars: "NOTE", qty: "1" },
+  { sl: "1", particulars: "RATING", qty: "1" },
 ];
 
 // Create rows with stable IDs for React key and React Table row id
