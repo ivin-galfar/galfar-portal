@@ -6,10 +6,12 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import { AppContext } from "./Context";
+import useUserInfo from "../CustomHooks/useUserInfo";
 
 const rawData = [
-  { id: 1, name: "Ivin", company: "Techzpark LLC" },
-  { id: 2, name: "Mary", company: "DevHouse Ltd" },
+  { id: 1, company: "Techzpark LLC" },
+  { id: 2, company: "DevHouse Ltd" },
+  { id: 3, company: "Devtech Ltd" },
 ];
 
 const descriptionRows = [
@@ -51,6 +53,8 @@ const columnHelper = createColumnHelper();
 export default function VerticalTable() {
   const [tableData, setTableData] = useState(createData());
   const { setSharedTableData } = useContext(AppContext);
+  const userInfo = useUserInfo();
+
   useEffect(() => {
     setSharedTableData((prev) => ({
       ...prev,
@@ -89,7 +93,12 @@ export default function VerticalTable() {
                 onChange={(e) =>
                   handleInputChange(rowIndex, `vendor_${index}`, e.target.value)
                 }
-                className="w-full px-2 py-1 border rounded"
+                className={`w-full px-2 py-1 ${
+                  !userInfo?.isAdmin
+                    ? " cursor-not-allowed"
+                    : "border rounded bg-gray-100"
+                }`}
+                readOnly={!userInfo?.isAdmin}
               />
             );
           },

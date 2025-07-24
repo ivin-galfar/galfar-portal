@@ -1,6 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { AppContext } from "./Context";
+import axios from "axios";
+import { REACT_SERVER_URL } from "../../config/ENV";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
@@ -8,12 +10,35 @@ const TableHeader = ({ isAdmin }) => {
   const formData = sharedTableData.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
+  const [mrno, setMrno] = useState("");
 
   useEffect(() => {
     if (userInfo?.isAdmin) {
       setEditing(true);
     }
   }, [userInfo]);
+
+  useEffect(() => {
+    const fetchMR = async () => {
+      try {
+        const config = {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        };
+        const response = await axios.get(
+          `${REACT_SERVER_URL}/receipts`,
+          config
+        );
+        const mrValues = response.data
+          .map((receipt) => receipt.formData?.equipMrNoValue)
+          .filter(Boolean);
+        setMrno(mrValues);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMR();
+  }, []);
 
   useEffect(() => {
     if (editing) {
@@ -67,26 +92,45 @@ const TableHeader = ({ isAdmin }) => {
         </div>
       </div>
 
-      {isAdmin ? (
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-sm font-medium">HIRING - </span>
-          <input
-            type="text"
-            value={formData?.hiringName}
-            ref={inputRef}
-            onChange={handleChange("hiringName")}
-            className="border-b border-gray-500 outline-none text-sm font-semibold text-center px-1"
-          />
+      <div className="flex items-center w-full">
+        <div className="flex items-center text-sm font-medium w-1/3">
+          <label htmlFor="mrNo" className="text-gray-700 mr-2">
+            Choose MR No.
+          </label>
+          <select
+            id="mrNo"
+            className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            value={formData?.equipMrNoValue}
+            onChange={handleChange("equipMrNoValue")}
+          >
+            <option value="">Select an option</option>
+            <option>{mrno}</option>
+          </select>
         </div>
-      ) : (
-        <p className="text-sm font-medium">
-          HIRING -{" "}
-          <span className="font-semibold"> {formData?.hiringName}</span>
-        </p>
-      )}
 
+        <div className="flex items-center justify-center text-sm font-medium w-1/3">
+          {isAdmin ? (
+            <>
+              <span className="mr-2">HIRING -</span>
+              <input
+                type="text"
+                value={formData?.hiringName}
+                ref={inputRef}
+                onChange={handleChange("hiringName")}
+                className="border-b border-gray-500 outline-none text-sm font-semibold text-center px-2 py-1"
+              />
+            </>
+          ) : (
+            <p className="text-sm font-medium">
+              HIRING -{" "}
+              <span className="font-semibold">{formData?.hiringName}</span>
+            </p>
+          )}
+        </div>
+
+        <div className="w-1/3" />
+      </div>
       <div className="flex justify-between mt-4 px-4">
-        {/* Left column */}
         <div className="flex flex-col space-y-1 text-left w-1/3">
           <p>
             <span className="font-semibold">PROJECT:</span>{" "}
@@ -116,7 +160,6 @@ const TableHeader = ({ isAdmin }) => {
           </p>
         </div>
 
-        {/* Center column */}
         <div className="flex flex-col space-y-1 text-center w-1/3">
           <p>
             <span className="font-semibold">EQUIP MR NO:</span>{" "}
@@ -146,7 +189,6 @@ const TableHeader = ({ isAdmin }) => {
           </p>
         </div>
 
-        {/* Right column */}
         <div className="flex flex-col space-y-1 text-right w-1/3">
           <p>
             <span className="font-semibold m-15">REQUIRED DATE:</span>{" "}

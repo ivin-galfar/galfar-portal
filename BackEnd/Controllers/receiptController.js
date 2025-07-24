@@ -62,4 +62,11 @@ const feedReceipt = async (req, res) => {
   }
 };
 
-module.exports = { feedReceipt };
+const fetchReceipts = async (req, res) => {
+  const query = Receipt.find({});
+  const Receipts = await query.exec();
+  const totalReceipts = await Receipt.countDocuments({});
+
+  res.json(Receipts, fetchReceipts);
+};
+module.exports = { feedReceipt, fetchReceipts };
