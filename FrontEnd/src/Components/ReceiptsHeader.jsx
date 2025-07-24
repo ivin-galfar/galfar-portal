@@ -3,19 +3,9 @@ import useUserInfo from "../CustomHooks/useUserInfo";
 import { AppContext } from "./Context";
 
 const TableHeader = ({ isAdmin }) => {
-  const [formData, setFormData] = useState({
-    hiringName: "",
-    dateValue: new Date(),
-    projectValue: "",
-    locationValue: "",
-    equipMrNoValue: "",
-    emRegNoValue: "",
-    requiredDateValue: "",
-    requirementDurationValue: "",
-  });
-
   const inputRef = useRef(null);
-  const { sharedTableData, setSharedTableData } = useContext(AppContext);
+  const { setSharedTableData, sharedTableData } = useContext(AppContext);
+  const formData = sharedTableData.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
 
@@ -30,18 +20,15 @@ const TableHeader = ({ isAdmin }) => {
       inputRef.current?.focus();
     }
   }, [editing]);
-  useEffect(() => {
-    setSharedTableData((prev) => ({
-      ...prev,
-      formData,
-    }));
-  }, [formData, setSharedTableData]);
 
   const handleChange = (field) => (e) => {
     const value = e.target.value;
-    setFormData((prev) => ({
+    setSharedTableData((prev) => ({
       ...prev,
-      [field]: value,
+      formData: {
+        ...prev.formData,
+        [field]: value,
+      },
     }));
   };
 
@@ -63,16 +50,16 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="date"
-                value={formData.dateValue}
+                value={formData?.dateValue}
                 onChange={handleChange("dateValue")}
                 className="w-full max-w-xs border border-gray-300 rounded-xl px-4 py-2 shadow-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               />
             ) : (
               <span>
                 <p>
-                  {new Date(formData.dateValue).getDate()}.
-                  {new Date(formData.dateValue).getMonth() + 1}.
-                  {new Date(formData.dateValue).getFullYear()}
+                  {new Date(formData?.dateValue).getDate()}.
+                  {new Date(formData?.dateValue).getMonth() + 1}.
+                  {new Date(formData?.dateValue).getFullYear()}
                 </p>
               </span>
             )}
@@ -85,7 +72,7 @@ const TableHeader = ({ isAdmin }) => {
           <span className="text-sm font-medium">HIRING - </span>
           <input
             type="text"
-            value={formData.hiringName}
+            value={formData?.hiringName}
             ref={inputRef}
             onChange={handleChange("hiringName")}
             className="border-b border-gray-500 outline-none text-sm font-semibold text-center px-1"
@@ -93,7 +80,8 @@ const TableHeader = ({ isAdmin }) => {
         </div>
       ) : (
         <p className="text-sm font-medium">
-          HIRING - <span className="font-semibold"> {formData.hiringName}</span>
+          HIRING -{" "}
+          <span className="font-semibold"> {formData?.hiringName}</span>
         </p>
       )}
 
@@ -105,12 +93,12 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData.projectValue}
+                value={formData?.projectValue}
                 onChange={handleChange("projectValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData.projectValue
+              formData?.projectValue
             )}
           </p>
           <p>
@@ -118,12 +106,12 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData.locationValue}
+                value={formData?.locationValue}
                 onChange={handleChange("locationValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData.locationValue
+              formData?.locationValue
             )}
           </p>
         </div>
@@ -135,12 +123,12 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData.equipMrNoValue}
+                value={formData?.equipMrNoValue}
                 onChange={handleChange("equipMrNoValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData.equipMrNoValue
+              formData?.equipMrNoValue
             )}
           </p>
           <p>
@@ -148,12 +136,12 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData.emRegNoValue}
+                value={formData?.emRegNoValue}
                 onChange={handleChange("emRegNoValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData.emRegNoValue
+              formData?.emRegNoValue
             )}
           </p>
         </div>
@@ -165,12 +153,12 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="date"
-                value={formData.requiredDateValue}
+                value={formData?.requiredDateValue}
                 onChange={handleChange("requiredDateValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData.requiredDateValue
+              formData?.requiredDateValue
             )}
           </p>
           <p>
@@ -178,12 +166,12 @@ const TableHeader = ({ isAdmin }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData.requirementDurationValue}
+                value={formData?.requirementDurationValue}
                 onChange={handleChange("requirementDurationValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData.requirementDurationValue
+              formData?.requirementDurationValue
             )}
           </p>
         </div>

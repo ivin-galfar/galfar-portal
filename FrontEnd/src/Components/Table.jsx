@@ -50,13 +50,13 @@ const columnHelper = createColumnHelper();
 
 export default function VerticalTable() {
   const [tableData, setTableData] = useState(createData());
-  const { sharedTableData, setSharedTableData } = useContext(AppContext);
+  const { setSharedTableData } = useContext(AppContext);
   useEffect(() => {
     setSharedTableData((prev) => ({
       ...prev,
       tableData,
     }));
-  }, [tableData, setSharedTableData]);
+  }, [tableData]);
 
   const columns = useMemo(
     () => [

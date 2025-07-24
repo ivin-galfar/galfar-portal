@@ -24,7 +24,7 @@ const Receipts = () => {
         `${REACT_SERVER_URL}/receipts`,
         {
           formData: sharedTableData.formData,
-          tableData: sharedTableData.tableData,
+          tableData: sharedTableData["tableData"],
         },
         config
       );
@@ -40,7 +40,6 @@ const Receipts = () => {
           requirementDurationValue: "",
           dateValue: new Date(),
         },
-        tableData: {},
       });
 
       setErrormessage("");
@@ -58,20 +57,9 @@ const Receipts = () => {
   };
 
   const handleReset = () => {
-    setSharedTableData({
-      formData: {
-        equipMrNoValue: "",
-        emRegNoValue: "",
-        hiringName: "",
-        locationValue: "",
-        projectValue: "",
-        requiredDateValue: "",
-        requirementDurationValue: "",
-        dateValue: new Date(),
-      },
-      tableData: [],
-    });
+    window.location.reload();
   };
+
   return (
     <div className="p-10">
       <h1 className="font-bold mb-4">

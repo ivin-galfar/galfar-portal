@@ -27,8 +27,29 @@ const feedReceipt = async (req, res) => {
         .status(400)
         .json({ message: "Receipt with this equipment number already exists" });
     }
+    const transformedTableData = tableData?.map(
+      ({ id, sl, particulars, qty, ...rest }) => {
+        const vendors = {};
+        Object.entries(rest).forEach(([key, value]) => {
+          if (key.startsWith("vendor_")) {
+            vendors[key] = value ?? "";
+          }
+        });
 
-    const newReceipt = await Receipt.create({ formData, tableData });
+        return {
+          id,
+          sl,
+          particulars,
+          qty,
+          vendors,
+        };
+      }
+    );
+
+    const newReceipt = await Receipt.create({
+      formData,
+      tableData: transformedTableData,
+    });
 
     return res
       .status(201)
