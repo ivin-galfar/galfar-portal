@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import TableHeader from "./ReceiptsHeader";
 import MyTable from "./Table";
@@ -11,6 +11,7 @@ const Receipts = () => {
   const userInfo = useUserInfo();
   const [showToast, setShowToast] = useState(false);
   const [errormessage, setErrormessage] = useState("");
+  const [mrno, setMrno] = useState([]);
 
   const { sharedTableData, setSharedTableData } = useContext(AppContext);
 
@@ -59,11 +60,44 @@ const Receipts = () => {
   const handleReset = () => {
     window.location.reload();
   };
+  useEffect(() => {
+    const fetchMR = async () => {
+      try {
+        const config = {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        };
+        const response = await axios.get(
+          `${REACT_SERVER_URL}/receipts`,
+          config
+        );
+        const receipts = response.data;
+        const mrValues = receipts
+          .map((receipt) => receipt.formData?.equipMrNoValue)
+          .filter(Boolean);
+        setMrno(mrValues);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMR();
+  }, []);
+
+  //  const latestReceipt = receipts[receipts.length - 1] || {};
+
+  //         const { formData, tableData } = latestReceipt;
+  //         console.log(latestReceipt);
+
+  //         setSharedTableData((prev) => ({
+  //           ...prev,
+  //           formData: { ...prev.formData, ...(formData || {}) },
+  //           tableData: tableData || [],
+  //         }));
 
   return (
     <div className="p-10">
       <h1 className="font-bold mb-4">
-        <TableHeader isAdmin={userInfo?.isAdmin} />
+        <TableHeader isAdmin={userInfo?.isAdmin} mrValues={mrno} />
       </h1>
       <MyTable />
       <div className="pt-3 flex justify-end gap-3.5">

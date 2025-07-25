@@ -4,41 +4,18 @@ import { AppContext } from "./Context";
 import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 
-const TableHeader = ({ isAdmin }) => {
+const TableHeader = ({ isAdmin, mrValues }) => {
   const inputRef = useRef(null);
   const { setSharedTableData, sharedTableData } = useContext(AppContext);
-  const formData = sharedTableData.formData;
+  const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
-  const [mrno, setMrno] = useState("");
 
   useEffect(() => {
     if (userInfo?.isAdmin) {
       setEditing(true);
     }
   }, [userInfo]);
-
-  useEffect(() => {
-    const fetchMR = async () => {
-      try {
-        const config = {
-          "Content-type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        };
-        const response = await axios.get(
-          `${REACT_SERVER_URL}/receipts`,
-          config
-        );
-        const mrValues = response.data
-          .map((receipt) => receipt.formData?.equipMrNoValue)
-          .filter(Boolean);
-        setMrno(mrValues);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchMR();
-  }, []);
 
   useEffect(() => {
     if (editing) {
@@ -104,7 +81,11 @@ const TableHeader = ({ isAdmin }) => {
             onChange={handleChange("equipMrNoValue")}
           >
             <option value="">Select an option</option>
-            <option>{mrno}</option>
+            {mrValues.map((value, index) => (
+              <option key={index} value={value}>
+                {value}
+              </option>
+            ))}
           </select>
         </div>
 

@@ -67,6 +67,22 @@ const fetchReceipts = async (req, res) => {
   const Receipts = await query.exec();
   const totalReceipts = await Receipt.countDocuments({});
 
-  res.json(Receipts, fetchReceipts);
+  res.json({ receipts: Receipts, total: totalReceipts });
 };
-module.exports = { feedReceipt, fetchReceipts };
+
+const fetchReceipt = async (req, res) => {
+  try {
+    const { mrno } = req.params;
+    const receipt = await Receipt.findOne({ "formData.equipMrNoValue": mrno });
+
+    if (!receipt) {
+      return res.status(404).json({ error: "Receipt not found" });
+    }
+
+    res.json(receipt);
+  } catch (error) {
+    console.error("Error fetching receipt:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+module.exports = { feedReceipt, fetchReceipts, fetchReceipt };
