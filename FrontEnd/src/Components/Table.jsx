@@ -31,87 +31,114 @@ const descriptionRows = [
   { sl: "1", particulars: "RATING", qty: "1" },
 ];
 
-// Create rows with stable IDs for React key and React Table row id
 const createData = () =>
   descriptionRows.map((descRow, idx) => {
     const row = {
-      id: `row_${idx}`, // unique id important for React & table stability
+      id: `row_${idx}`,
       sl: descRow.sl,
       particulars: descRow.particulars,
       qty: descRow.qty,
+      vendors: {},
     };
-
-    rawData.forEach((vendor, vIdx) => {
-      row[`vendor_${vIdx}`] = ""; // empty string initially for all vendor prices
+    rawData.forEach((_, vIdx) => {
+      row.vendors[`vendor_${vIdx}`] = "";
     });
-
     return row;
   });
 
 const columnHelper = createColumnHelper();
 
 export default function VerticalTable() {
-  const [tableData, setTableData] = useState(createData());
-  const { setSharedTableData } = useContext(AppContext);
+  const { sharedTableData, setSharedTableData, cleartable } =
+    useContext(AppContext);
+  const [tableData, setTableData] = useState(() =>
+    sharedTableData?.tableData?.length
+      ? sharedTableData.tableData
+      : createData()
+  );
+
   const userInfo = useUserInfo();
 
   useEffect(() => {
-    setSharedTableData((prev) => ({
-      ...prev,
-      tableData,
-    }));
-  }, [tableData]);
+    setSharedTableData((prev) => ({ ...prev, tableData }));
+  }, [tableData, setSharedTableData]);
 
-  const columns = useMemo(
-    () => [
+  useEffect(() => {
+    if (sharedTableData?.tableData?.length) {
+      setTableData(sharedTableData.tableData);
+    }
+  }, [sharedTableData.tableData]);
+
+  useEffect(() => {
+    if (cleartable) {
+      const clearedTableData = tableData.map((row) => ({
+        ...row,
+        vendors: Object.fromEntries(
+          Object.keys(row.vendors).map((key) => [key, ""])
+        ),
+      }));
+      setTableData(clearedTableData);
+    }
+  }, [cleartable, tableData]);
+
+  const columns = useMemo(() => {
+    const descriptionColumns = [
+      columnHelper.accessor("sl", {
+        header: "Sl. No.",
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("particulars", {
+        header: "Particulars",
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("qty", {
+        header: "Qty",
+        cell: (info) => info.getValue(),
+      }),
+    ];
+
+    const vendorColumns = rawData.map((vendor, index) => ({
+      id: `vendor_${index}`,
+      header: () => null,
+      accessorFn: (row) => row.vendors?.[`vendor_${index}`] || "",
+      cell: ({ row, getValue }) => (
+        <input
+          type="text"
+          value={getValue() || ""}
+          onChange={(e) =>
+            handleInputChange(row.index, `vendor_${index}`, e.target.value)
+          }
+          className={`w-full px-2 py-1 ${
+            !userInfo?.isAdmin
+              ? "cursor-not-allowed"
+              : "border rounded bg-gray-100"
+          }`}
+          readOnly={!userInfo?.isAdmin}
+        />
+      ),
+    }));
+
+    return [
       {
         header: "Description",
-        columns: [
-          columnHelper.accessor("sl", {
-            header: "Sl. No.",
-            cell: (info) => info.getValue(),
-          }),
-          columnHelper.accessor("particulars", {
-            header: "Particulars",
-            cell: (info) => info.getValue(),
-          }),
-          columnHelper.accessor("qty", {
-            header: "Qty",
-            cell: (info) => info.getValue(),
-          }),
-        ],
+        columns: descriptionColumns,
       },
-      ...rawData.map((vendor, index) =>
-        columnHelper.accessor(`vendor_${index}`, {
-          header: () => null,
-          cell: (info) => {
-            const rowIndex = info.row.index;
-            return (
-              <input
-                type="text"
-                value={info.getValue() || ""}
-                onChange={(e) =>
-                  handleInputChange(rowIndex, `vendor_${index}`, e.target.value)
-                }
-                className={`w-full px-2 py-1 ${
-                  !userInfo?.isAdmin
-                    ? " cursor-not-allowed"
-                    : "border rounded bg-gray-100"
-                }`}
-                readOnly={!userInfo?.isAdmin}
-              />
-            );
-          },
-        })
-      ),
-    ],
-    [rawData]
-  );
+      ...vendorColumns,
+    ];
+  }, [userInfo?.isAdmin]);
 
-  const handleInputChange = (rowIndex, key, value) => {
-    setTableData((prev) =>
-      prev.map((row, i) => (i === rowIndex ? { ...row, [key]: value } : row))
-    );
+  const handleInputChange = (rowIndex, vendorKey, newValue) => {
+    setTableData((prevData) => {
+      const updated = [...prevData];
+      updated[rowIndex] = {
+        ...updated[rowIndex],
+        vendors: {
+          ...updated[rowIndex].vendors,
+          [vendorKey]: newValue,
+        },
+      };
+      return updated;
+    });
   };
 
   const table = useReactTable({
@@ -122,7 +149,7 @@ export default function VerticalTable() {
 
   return (
     <div className="overflow-x-auto w-full">
-      <table className="table border-collapse border border-gray-300  w-4xl text-sm">
+      <table className="table border-collapse border border-gray-300 w-4xl text-sm">
         <thead className="text-center bg-gray-100">
           <tr>
             <th colSpan={3} className="border px-4 py-2 align-bottom w-64">

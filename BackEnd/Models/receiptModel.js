@@ -11,7 +11,7 @@ const formDataSchema = mongoose.Schema({
     required: true,
   },
   emRegNoValue: { type: String },
-  requiredDateValue: { type: Date },
+  requiredDateValue: { type: String },
   requirementDurationValue: { type: String },
 });
 

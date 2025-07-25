@@ -37,7 +37,7 @@ const Receipts = () => {
           hiringName: "",
           locationValue: "",
           projectValue: "",
-          requiredDateValue: "",
+          requiredDateValue: new Date(),
           requirementDurationValue: "",
           dateValue: new Date(),
         },
@@ -71,7 +71,7 @@ const Receipts = () => {
           `${REACT_SERVER_URL}/receipts`,
           config
         );
-        const receipts = response.data;
+        const receipts = response.data.receipts;
         const mrValues = receipts
           .map((receipt) => receipt.formData?.equipMrNoValue)
           .filter(Boolean);
@@ -82,17 +82,6 @@ const Receipts = () => {
     };
     fetchMR();
   }, []);
-
-  //  const latestReceipt = receipts[receipts.length - 1] || {};
-
-  //         const { formData, tableData } = latestReceipt;
-  //         console.log(latestReceipt);
-
-  //         setSharedTableData((prev) => ({
-  //           ...prev,
-  //           formData: { ...prev.formData, ...(formData || {}) },
-  //           tableData: tableData || [],
-  //         }));
 
   return (
     <div className="p-10">

@@ -19,7 +19,7 @@ const AppContextProvider = ({ children }) => {
     },
     tableData: initialTableData,
   });
-
+  const [cleartable, setCleartable] = useState(false);
   return (
     <AppContext.Provider
       value={{
@@ -27,6 +27,8 @@ const AppContextProvider = ({ children }) => {
         newuser,
         sharedTableData,
         setSharedTableData,
+        setCleartable,
+        cleartable,
       }}
     >
       {children}

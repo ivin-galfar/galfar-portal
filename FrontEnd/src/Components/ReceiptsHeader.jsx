@@ -6,7 +6,8 @@ import { REACT_SERVER_URL } from "../../config/ENV";
 
 const TableHeader = ({ isAdmin, mrValues }) => {
   const inputRef = useRef(null);
-  const { setSharedTableData, sharedTableData } = useContext(AppContext);
+  const { setSharedTableData, sharedTableData, setCleartable } =
+    useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
@@ -34,6 +35,38 @@ const TableHeader = ({ isAdmin, mrValues }) => {
     }));
   };
 
+  const fetchReceipt = async (id) => {
+    if (id) {
+      try {
+        const config = {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        };
+        const response = await axios.get(
+          `${REACT_SERVER_URL}/receipts/${id}`,
+          config
+        );
+        const receipt = response.data;
+        setSharedTableData((prev) => ({
+          ...prev,
+          formData: {
+            ...prev.formData,
+            ...(receipt.formData || {}),
+          },
+          tableData: receipt.tableData || [], // This should now work
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      setCleartable(true);
+      setSharedTableData({
+        formData: {},
+        tableData: [],
+      });
+    }
+  };
+
   return (
     <div className="text-center mb-6 space-y-2">
       <h2 className="text-2xl font-semibold uppercase">
@@ -52,7 +85,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="date"
-                value={formData?.dateValue}
+                value={formData?.dateValue ?? ""}
                 onChange={handleChange("dateValue")}
                 className="w-full max-w-xs border border-gray-300 rounded-xl px-4 py-2 shadow-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               />
@@ -78,7 +111,10 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             id="mrNo"
             className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             value={formData?.equipMrNoValue}
-            onChange={handleChange("equipMrNoValue")}
+            onChange={(e) => {
+              handleChange("equipMrNoValue")(e);
+              fetchReceipt(e.target.value); // fetch/reset based on selection
+            }}
           >
             <option value="">Select an option</option>
             {mrValues.map((value, index) => (
@@ -95,7 +131,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
               <span className="mr-2">HIRING -</span>
               <input
                 type="text"
-                value={formData?.hiringName}
+                value={formData?.hiringName ?? ""}
                 ref={inputRef}
                 onChange={handleChange("hiringName")}
                 className="border-b border-gray-500 outline-none text-sm font-semibold text-center px-2 py-1"
@@ -104,7 +140,9 @@ const TableHeader = ({ isAdmin, mrValues }) => {
           ) : (
             <p className="text-sm font-medium">
               HIRING -{" "}
-              <span className="font-semibold">{formData?.hiringName}</span>
+              <span className="font-semibold">
+                {formData?.hiringName ?? ""}
+              </span>
             </p>
           )}
         </div>
@@ -118,7 +156,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData?.projectValue}
+                value={formData?.projectValue ?? ""}
                 onChange={handleChange("projectValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
@@ -131,7 +169,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData?.locationValue}
+                value={formData?.locationValue ?? ""}
                 onChange={handleChange("locationValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
@@ -147,7 +185,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData?.equipMrNoValue}
+                value={formData?.equipMrNoValue ?? ""}
                 onChange={handleChange("equipMrNoValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
@@ -160,7 +198,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData?.emRegNoValue}
+                value={formData?.emRegNoValue ?? ""}
                 onChange={handleChange("emRegNoValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
@@ -176,7 +214,13 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="date"
-                value={formData?.requiredDateValue}
+                value={
+                  formData?.requiredDateValue
+                    ? new Date(formData.requiredDateValue)
+                        .toISOString()
+                        .split("T")[0]
+                    : ""
+                }
                 onChange={handleChange("requiredDateValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
@@ -189,12 +233,12 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             {isAdmin ? (
               <input
                 type="text"
-                value={formData?.requirementDurationValue}
+                value={formData?.requirementDurationValue ?? ""}
                 onChange={handleChange("requirementDurationValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm"
               />
             ) : (
-              formData?.requirementDurationValue
+              (formData?.requirementDurationValue ?? "")
             )}
           </p>
         </div>
