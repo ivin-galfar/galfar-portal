@@ -4,9 +4,9 @@ import { AppContext } from "./Context";
 import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 
-const TableHeader = ({ isAdmin, mrValues }) => {
+const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
-  const { setSharedTableData, sharedTableData, setCleartable } =
+  const { setSharedTableData, sharedTableData, setCleartable, mrno, setMrno } =
     useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -36,7 +36,7 @@ const TableHeader = ({ isAdmin, mrValues }) => {
   };
 
   const fetchReceipt = async (id) => {
-    if (id) {
+    if (id && id != "default") {
       try {
         const config = {
           "Content-type": "application/json",
@@ -69,9 +69,36 @@ const TableHeader = ({ isAdmin, mrValues }) => {
 
   return (
     <div className="text-center mb-6 space-y-2">
-      <h2 className="text-2xl font-semibold uppercase">
-        GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
-      </h2>
+      <div className="flex justify-between">
+        <button
+          onClick={() => {
+            setCleartable(true);
+            setSharedTableData({ formData: {}, tableData: [] });
+            setMrno([]);
+          }}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition duration-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          New Receipt
+        </button>
+
+        <h2 className="text-2xl font-semibold uppercase  flex-1">
+          GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
+        </h2>
+      </div>
       <div className="flex justify-between items-center w-full relative">
         <div className="w-1/3" />
 
@@ -113,11 +140,16 @@ const TableHeader = ({ isAdmin, mrValues }) => {
             value={formData?.equipMrNoValue}
             onChange={(e) => {
               handleChange("equipMrNoValue")(e);
-              fetchReceipt(e.target.value); // fetch/reset based on selection
+              if (e.target.value !== "default") {
+                fetchReceipt(e.target.value);
+              } else {
+                setCleartable(true);
+                setSharedTableData({ formData: {}, tableData: [] });
+              }
             }}
           >
-            <option value="">Select an option</option>
-            {mrValues.map((value, index) => (
+            <option value="default">Select an option</option>
+            {mrno.map((value, index) => (
               <option key={index} value={value}>
                 {value}
               </option>

@@ -11,9 +11,14 @@ const Receipts = () => {
   const userInfo = useUserInfo();
   const [showToast, setShowToast] = useState(false);
   const [errormessage, setErrormessage] = useState("");
-  const [mrno, setMrno] = useState([]);
 
-  const { sharedTableData, setSharedTableData } = useContext(AppContext);
+  const {
+    sharedTableData,
+    setSharedTableData,
+    setMrno,
+    sortVendors,
+    setSortVendors,
+  } = useContext(AppContext);
 
   const handleSubmit = async () => {
     try {
@@ -81,28 +86,46 @@ const Receipts = () => {
       }
     };
     fetchMR();
-  }, []);
+  }, [sharedTableData]);
 
   return (
     <div className="p-10">
       <h1 className="font-bold mb-4">
-        <TableHeader isAdmin={userInfo?.isAdmin} mrValues={mrno} />
+        <TableHeader isAdmin={userInfo?.isAdmin} />
       </h1>
       <MyTable />
-      <div className="pt-3 flex justify-end gap-3.5">
-        <button
-          className="bg-blue-500 text-white rounded-2xl px-4 py-2 cursor-pointer"
-          onClick={handleReset}
-        >
-          Reset
-        </button>
-        <button
-          className="bg-blue-500 text-white rounded-2xl px-2 py-2 cursor-pointer"
-          onClick={handleSubmit}
-        >
-          click me
-        </button>
+      <div className="flex justify-between items-center gap-3.5 pt-3 flex-wrap">
+        <div className="flex gap-3.5">
+          <button
+            onClick={() => setSortVendors(true)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+          >
+            Recalculate
+          </button>
+          <button
+            onClick={() => setSortVendors(false)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+          >
+            Reset Calculation
+          </button>
+        </div>
+
+        <div className="flex gap-3.5">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+          >
+            Reset
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+          >
+            Create
+          </button>
+        </div>
       </div>
+
       {showToast && errormessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
           {errormessage}

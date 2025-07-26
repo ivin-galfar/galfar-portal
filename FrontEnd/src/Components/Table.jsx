@@ -26,7 +26,7 @@ const descriptionRows = [
   { sl: "1", particulars: "INSURANCE (IF ANY)", qty: "1" },
   { sl: "1", particulars: "TOTAL PRICE", qty: "1" },
   { sl: "1", particulars: "VAT @5%", qty: "1" },
-  { sl: "1", particulars: "AVAILABLLITY", qty: "1" },
+  { sl: "1", particulars: "AVAILABILITY", qty: "1" },
   { sl: "1", particulars: "NOTE", qty: "1" },
   { sl: "1", particulars: "RATING", qty: "1" },
 ];
@@ -49,8 +49,14 @@ const createData = () =>
 const columnHelper = createColumnHelper();
 
 export default function VerticalTable() {
-  const { sharedTableData, setSharedTableData, cleartable } =
-    useContext(AppContext);
+  const {
+    sharedTableData,
+    setSharedTableData,
+    cleartable,
+    setCleartable,
+    sortVendors,
+    setSortVendors,
+  } = useContext(AppContext);
   const [tableData, setTableData] = useState(() =>
     sharedTableData?.tableData?.length
       ? sharedTableData.tableData
@@ -78,8 +84,33 @@ export default function VerticalTable() {
         ),
       }));
       setTableData(clearedTableData);
+      setCleartable(false);
     }
   }, [cleartable, tableData]);
+
+  const vendorInfoWithTotal = useMemo(() => {
+    const vendors = rawData.map((vendor, vIdx) => ({
+      ...vendor,
+      total: tableData.reduce((sum, row) => {
+        const value = parseFloat(row.vendors?.[`vendor_${vIdx}`] || 0);
+        return sum + (isNaN(value) ? 0 : value);
+      }, 0),
+      index: vIdx,
+    }));
+    if (sortVendors) {
+      return vendors.slice().sort((a, b) => a.total - b.total);
+    } else {
+      return vendors;
+    }
+  }, [tableData, sortVendors]);
+  console.log(sortVendors);
+
+  const vendorTotals = vendorInfoWithTotal.map((vendor) => {
+    return tableData.reduce((sum, row) => {
+      const value = parseFloat(row.vendors?.[`vendor_${vendor.index}`] || 0);
+      return sum + (isNaN(value) ? 0 : value);
+    }, 0);
+  });
 
   const columns = useMemo(() => {
     const descriptionColumns = [
@@ -97,26 +128,56 @@ export default function VerticalTable() {
       }),
     ];
 
-    const vendorColumns = rawData.map((vendor, index) => ({
-      id: `vendor_${index}`,
-      header: () => null,
-      accessorFn: (row) => row.vendors?.[`vendor_${index}`] || "",
-      cell: ({ row, getValue }) => (
-        <input
-          type="text"
-          value={getValue() || ""}
-          onChange={(e) =>
-            handleInputChange(row.index, `vendor_${index}`, e.target.value)
+    const vendorColumns = vendorInfoWithTotal.map((vendor, index) => {
+      const vendorKey = `vendor_${vendor.index}`;
+      return {
+        id: vendorKey,
+        header: () => null,
+        accessorFn: (row) => row.vendors?.[vendorKey] || "",
+        cell: ({ row, getValue }) => {
+          const value = getValue() || "";
+          const isAvailability =
+            row.original.particulars.trim().toUpperCase() === "AVAILABILITY";
+          const isReadOnly = !userInfo?.isAdmin;
+          if (isAvailability) {
+            return (
+              <select
+                value={value}
+                onChange={(e) =>
+                  handleInputChange(row.index, vendorKey, e.target.value)
+                }
+                disabled={isReadOnly}
+                className={`w-full px-2 py-1 ${
+                  isReadOnly
+                    ? "cursor-not-allowed bg-gray-200"
+                    : "border rounded bg-gray-100"
+                }`}
+              >
+                <option value="">--Select--</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            );
           }
-          className={`w-full px-2 py-1 ${
-            !userInfo?.isAdmin
-              ? "cursor-not-allowed"
-              : "border rounded bg-gray-100"
-          }`}
-          readOnly={!userInfo?.isAdmin}
-        />
-      ),
-    }));
+
+          return (
+            <input
+              type="text"
+              value={value}
+              onChange={(e) =>
+                handleInputChange(row.index, vendorKey, e.target.value)
+              }
+              className={`w-full px-2 py-1 ${
+                !userInfo?.isAdmin
+                  ? "cursor-not-allowed"
+                  : "border rounded bg-gray-100"
+              }`}
+              readOnly={isReadOnly}
+            />
+          );
+        },
+      };
+    });
 
     return [
       {
@@ -125,7 +186,7 @@ export default function VerticalTable() {
       },
       ...vendorColumns,
     ];
-  }, [userInfo?.isAdmin]);
+  }, [userInfo?.isAdmin, vendorInfoWithTotal]);
 
   const handleInputChange = (rowIndex, vendorKey, newValue) => {
     setTableData((prevData) => {
@@ -155,7 +216,7 @@ export default function VerticalTable() {
             <th colSpan={3} className="border px-4 py-2 align-bottom w-64">
               Description
             </th>
-            {rawData.map((vendor) => (
+            {vendorInfoWithTotal.map((vendor) => (
               <th key={vendor.id} className="border px-4 py-2 w-40">
                 <div className="flex flex-col items-center">
                   <span className="font-medium">Vendor {vendor.id}</span>
@@ -171,7 +232,7 @@ export default function VerticalTable() {
             </th>
 
             <th className="border px-4 py-2 whitespace-nowrap">Qty</th>
-            {rawData.map((vendor) => (
+            {vendorInfoWithTotal.map((vendor) => (
               <th
                 key={vendor.id}
                 className="border px-4 py-2 text-xs text-gray-600 whitespace-nowrap w-40"
@@ -183,6 +244,8 @@ export default function VerticalTable() {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row, rowIndex) => {
+            const isTotalRow =
+              row.original.particulars.trim().toUpperCase() === "TOTAL PRICE";
             const cells = row.getVisibleCells();
 
             return (
@@ -198,20 +261,54 @@ export default function VerticalTable() {
 
                 {cells
                   .filter((cell) => cell.column.id !== "sl")
-                  .map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="border px-4 py-2 align-top whitespace-nowrap"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+                  .map((cell, colIndex) => {
+                    const isVendorColumn =
+                      cell.column.id?.startsWith("vendor_");
+                    const vendorIndex = vendorInfoWithTotal.findIndex(
+                      (v) => `vendor_${v.index}` === cell.column.id
+                    );
+
+                    return (
+                      <td
+                        key={cell.id}
+                        className={`border px-4 py-2 align-top whitespace-nowrap font-semibold ${
+                          isTotalRow ? "bg-yellow-100" : ""
+                        }`}
+                      >
+                        {isTotalRow && isVendorColumn
+                          ? vendorTotals[vendorIndex]?.toFixed(2)
+                          : flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                      </td>
+                    );
+                  })}
               </tr>
             );
           })}
+          {vendorTotals.some((val) => val > 0) && (
+            <tr>
+              <td
+                colSpan={3}
+                className="border px-4 py-2 font-semibold bg-green-50 text-green-800 text-center"
+              >
+                Selected Vendor
+              </td>
+              {vendorTotals.map((_, index) => (
+                <td
+                  key={index}
+                  className={`border px-4 py-2 text-center font-semibold ${
+                    index === 0
+                      ? "bg-green-100 text-green-700"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {index === 0 ? "✅ Selected" : "-"}
+                </td>
+              ))}
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

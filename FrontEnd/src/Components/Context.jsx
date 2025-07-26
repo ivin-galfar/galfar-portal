@@ -20,6 +20,9 @@ const AppContextProvider = ({ children }) => {
     tableData: initialTableData,
   });
   const [cleartable, setCleartable] = useState(false);
+  const [mrno, setMrno] = useState([]);
+  const [sortVendors, setSortVendors] = useState(false);
+
   return (
     <AppContext.Provider
       value={{
@@ -29,6 +32,10 @@ const AppContextProvider = ({ children }) => {
         setSharedTableData,
         setCleartable,
         cleartable,
+        mrno,
+        setMrno,
+        sortVendors,
+        setSortVendors,
       }}
     >
       {children}
