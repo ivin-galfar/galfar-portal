@@ -6,8 +6,16 @@ import { REACT_SERVER_URL } from "../../config/ENV";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
-  const { setSharedTableData, sharedTableData, setCleartable, mrno, setMrno } =
-    useContext(AppContext);
+  const {
+    setSharedTableData,
+    sharedTableData,
+    setCleartable,
+    reqmrno,
+    mrno,
+    setIsMRSelected,
+    setSortVendors,
+    setMrno,
+  } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
@@ -75,8 +83,9 @@ const TableHeader = ({ isAdmin }) => {
             setCleartable(true);
             setSharedTableData({ formData: {}, tableData: [] });
             setMrno([]);
+            setSortVendors(false);
           }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition duration-200"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -142,6 +151,7 @@ const TableHeader = ({ isAdmin }) => {
               handleChange("equipMrNoValue")(e);
               if (e.target.value !== "default") {
                 fetchReceipt(e.target.value);
+                setIsMRSelected(true);
               } else {
                 setCleartable(true);
                 setSharedTableData({ formData: {}, tableData: [] });
@@ -149,7 +159,7 @@ const TableHeader = ({ isAdmin }) => {
             }}
           >
             <option value="default">Select an option</option>
-            {mrno.map((value, index) => (
+            {(isAdmin ? mrno : reqmrno).map((value, index) => (
               <option key={index} value={value}>
                 {value}
               </option>

@@ -13,6 +13,7 @@ const formDataSchema = mongoose.Schema({
   emRegNoValue: { type: String },
   requiredDateValue: { type: String },
   requirementDurationValue: { type: String },
+  sentForApproval: { type: String },
 });
 
 const tableRowSchema = mongoose.Schema({

@@ -48,7 +48,7 @@ const createData = () =>
 
 const columnHelper = createColumnHelper();
 
-export default function VerticalTable() {
+export default function VerticalTable({ showcalc }) {
   const {
     sharedTableData,
     setSharedTableData,
@@ -56,12 +56,15 @@ export default function VerticalTable() {
     setCleartable,
     sortVendors,
     setSortVendors,
+    setHasInputActivity,
+    reqApprovalstatus,
   } = useContext(AppContext);
   const [tableData, setTableData] = useState(() =>
     sharedTableData?.tableData?.length
       ? sharedTableData.tableData
       : createData()
   );
+  console.log(showcalc);
 
   const userInfo = useUserInfo();
 
@@ -97,13 +100,12 @@ export default function VerticalTable() {
       }, 0),
       index: vIdx,
     }));
-    if (sortVendors) {
+    if (sortVendors || !userInfo?.isAdmin) {
       return vendors.slice().sort((a, b) => a.total - b.total);
     } else {
       return vendors;
     }
   }, [tableData, sortVendors]);
-  console.log(sortVendors);
 
   const vendorTotals = vendorInfoWithTotal.map((vendor) => {
     return tableData.reduce((sum, row) => {
@@ -140,6 +142,9 @@ export default function VerticalTable() {
             row.original.particulars.trim().toUpperCase() === "AVAILABILITY";
           const isReadOnly = !userInfo?.isAdmin;
           if (isAvailability) {
+            if (!userInfo?.isAdmin) {
+              return <div>{value || "-"}</div>;
+            }
             return (
               <select
                 value={value}
@@ -153,7 +158,7 @@ export default function VerticalTable() {
                     : "border rounded bg-gray-100"
                 }`}
               >
-                <option value="">--Select--</option>
+                <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
@@ -162,6 +167,7 @@ export default function VerticalTable() {
 
           return (
             <input
+              key={`${row.id}_${vendorKey}`}
               type="text"
               value={value}
               onChange={(e) =>
@@ -186,7 +192,7 @@ export default function VerticalTable() {
       },
       ...vendorColumns,
     ];
-  }, [userInfo?.isAdmin, vendorInfoWithTotal]);
+  }, [userInfo?.isAdmin, sortVendors, vendorInfoWithTotal.length]);
 
   const handleInputChange = (rowIndex, vendorKey, newValue) => {
     setTableData((prevData) => {
@@ -198,6 +204,12 @@ export default function VerticalTable() {
           [vendorKey]: newValue,
         },
       };
+      // Check if at least one input has value
+      const hasInput = updated.some((row) =>
+        Object.values(row.vendors).some((val) => val && val.trim() !== "")
+      );
+      setHasInputActivity(hasInput);
+
       return updated;
     });
   };
@@ -287,28 +299,30 @@ export default function VerticalTable() {
               </tr>
             );
           })}
-          {vendorTotals.some((val) => val > 0) && (
-            <tr>
-              <td
-                colSpan={3}
-                className="border px-4 py-2 font-semibold bg-green-50 text-green-800 text-center"
-              >
-                Selected Vendor
-              </td>
-              {vendorTotals.map((_, index) => (
+          {(showcalc || !userInfo?.isAdmin) &&
+            sharedTableData.formData.sentForApproval == "yes" &&
+            vendorTotals.some((val) => val > 0) && (
+              <tr>
                 <td
-                  key={index}
-                  className={`border px-4 py-2 text-center font-semibold ${
-                    index === 0
-                      ? "bg-green-100 text-green-700"
-                      : "text-gray-400"
-                  }`}
+                  colSpan={3}
+                  className="border px-4 py-2 font-semibold bg-green-50 text-green-800 text-center"
                 >
-                  {index === 0 ? "✅ Selected" : "-"}
+                  Selected Vendor
                 </td>
-              ))}
-            </tr>
-          )}
+                {vendorTotals.map((_, index) => (
+                  <td
+                    key={index}
+                    className={`border px-4 py-2 text-center font-semibold ${
+                      index === 0
+                        ? "bg-green-100 text-green-700"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {index === 0 ? "✅ Selected" : "-"}
+                  </td>
+                ))}
+              </tr>
+            )}
         </tbody>
       </table>
     </div>

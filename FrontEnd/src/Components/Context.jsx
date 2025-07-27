@@ -21,8 +21,11 @@ const AppContextProvider = ({ children }) => {
   });
   const [cleartable, setCleartable] = useState(false);
   const [mrno, setMrno] = useState([]);
+  const [reqmrno, setReqMrno] = useState([]);
   const [sortVendors, setSortVendors] = useState(false);
-
+  const [hasInputActivity, setHasInputActivity] = useState(false);
+  const [isMRSelected, setIsMRSelected] = useState(false);
+  const [reqApprovalstatus, setreqApprovalstatus] = useState("");
   return (
     <AppContext.Provider
       value={{
@@ -36,6 +39,14 @@ const AppContextProvider = ({ children }) => {
         setMrno,
         sortVendors,
         setSortVendors,
+        hasInputActivity,
+        setHasInputActivity,
+        isMRSelected,
+        setIsMRSelected,
+        reqApprovalstatus,
+        setreqApprovalstatus,
+        reqmrno,
+        setReqMrno,
       }}
     >
       {children}

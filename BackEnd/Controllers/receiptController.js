@@ -77,4 +77,19 @@ const fetchReceipt = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-module.exports = { feedReceipt, fetchReceipts, fetchReceipt };
+
+const updatestatus = async (req, res) => {
+  try {
+    const { mrno } = req.params;
+    const receipt = await Receipt.findOneAndUpdate(
+      { "formData.equipMrNoValue": mrno },
+      { $set: { "formData.sentForApproval": "yes" } },
+      { new: true }
+    );
+    console.log(receipt);
+
+    res.json(receipt);
+  } catch (error) {}
+};
+
+module.exports = { feedReceipt, fetchReceipts, fetchReceipt, updatestatus };
