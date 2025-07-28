@@ -1,4 +1,4 @@
-const Receipt = require("../Models/receiptModel"); // your receipt schema/model
+const Receipt = require("../Models/receiptModel");
 
 const feedReceipt = async (req, res) => {
   try {
@@ -89,7 +89,36 @@ const updatestatus = async (req, res) => {
     console.log(receipt);
 
     res.json(receipt);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-module.exports = { feedReceipt, fetchReceipts, fetchReceipt, updatestatus };
+const updateApprovalstatus = async (req, res) => {
+  try {
+    const { mrno } = req.params;
+    const { status } = req.body;
+    const { approverComments } = req.body;
+    const receipt = await Receipt.findOneAndUpdate(
+      { "formData.equipMrNoValue": mrno },
+      {
+        $set: {
+          "formData.status": status,
+          "formData.approverComments": approverComments,
+        },
+      },
+      { new: true }
+    );
+    res.json(receipt);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  feedReceipt,
+  fetchReceipts,
+  fetchReceipt,
+  updatestatus,
+  updateApprovalstatus,
+};

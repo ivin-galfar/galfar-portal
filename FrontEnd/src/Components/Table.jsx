@@ -192,7 +192,7 @@ export default function VerticalTable({ showcalc }) {
       },
       ...vendorColumns,
     ];
-  }, [userInfo?.isAdmin, sortVendors, vendorInfoWithTotal.length]);
+  }, [userInfo?.isAdmin, sortVendors, vendorInfoWithTotal]);
 
   const handleInputChange = (rowIndex, vendorKey, newValue) => {
     setTableData((prevData) => {

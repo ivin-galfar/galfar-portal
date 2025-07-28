@@ -6,17 +6,20 @@ import { AppContext } from "./Context";
 import { useState } from "react";
 import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
+import ApproveModal from "./ApproveModal";
 
 const Receipts = () => {
   const userInfo = useUserInfo();
   const [showToast, setShowToast] = useState(false);
   const [errormessage, setErrormessage] = useState("");
   const [showcalc, setShowcalc] = useState(false);
+  const [showmodal, setShowmodal] = useState(false);
 
   const {
     sharedTableData,
     setSharedTableData,
     setMrno,
+    reqmrno,
     setSortVendors,
     hasInputActivity,
     isMRSelected,
@@ -132,66 +135,82 @@ const Receipts = () => {
       </h1>
       <MyTable showcalc={showcalc} />
       <div
-        className={` z-50 flex justify-between items-center gap-3.5 pt-3 flex-wrap ${!userInfo?.isAdmin ? "hidden" : ""}`}
+        className={` z-50 flex justify-between items-center gap-3.5 pt-3 flex-wrap`}
       >
-        <div className="flex gap-3.5 min-w-[280px]">
-          {hasInputActivity || isMRSelected ? (
-            <>
-              <button
-                onClick={() => {
-                  setSortVendors(true);
-                  setShowcalc(true);
-                }}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-              >
-                Recalculate
-              </button>
-              <button
-                onClick={() => {
-                  setSortVendors(false);
-                  setShowcalc(false);
-                }}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-              >
-                Reset Calculation
-              </button>
-              <button
-                onClick={() =>
-                  reqApproval(sharedTableData.formData.equipMrNoValue)
-                }
-                className={`px-4 py-2 ml-110 text-white font-semibold rounded shadow ${
-                  sharedTableData.formData.sentForApproval === "yes"
-                    ? "bg-green-600 opacity-60 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer transition duration-300 ease-in-out"
-                }`}
-              >
-                {sharedTableData.formData.sentForApproval == "yes"
-                  ? "Already Requested "
-                  : "Request Approval"}
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="px-4 py-2 invisible">Recalculate</button>
-              <button className="px-4 py-2 invisible">Reset Calculation</button>
-            </>
-          )}
-        </div>
-
-        <div className="flex gap-3.5">
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-          >
-            Reset
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-          >
-            Create
-          </button>
-        </div>
+        {userInfo?.isAdmin ? (
+          <div className="flex gap-3.5 min-w-[280px]">
+            {hasInputActivity || isMRSelected ? (
+              <>
+                <button
+                  onClick={() => {
+                    setSortVendors(true);
+                    setShowcalc(true);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+                >
+                  Recalculate
+                </button>
+                <button
+                  onClick={() => {
+                    setSortVendors(false);
+                    setShowcalc(false);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+                >
+                  Reset Calculation
+                </button>
+                <button
+                  onClick={() =>
+                    reqApproval(sharedTableData.formData.equipMrNoValue)
+                  }
+                  className={`px-4 py-2 ml-110 text-white font-semibold rounded shadow ${
+                    sharedTableData.formData.sentForApproval === "yes"
+                      ? "bg-green-600 opacity-60 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer transition duration-300 ease-in-out"
+                  }`}
+                >
+                  {sharedTableData.formData.sentForApproval == "yes"
+                    ? "Already Requested "
+                    : "Request Approval"}
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="px-4 py-2 invisible">Recalculate</button>
+                <button className="px-4 py-2 invisible">
+                  Reset Calculation
+                </button>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="justify-end flex ml-68 ">
+            <button
+              className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
+              onClick={() => setShowmodal(true)}
+            >
+              Approve/Reject
+            </button>
+          </div>
+        )}
+        {userInfo?.isAdmin ? (
+          <div className="justify-end  flex gap-3.5">
+            <button
+              onClick={handleReset}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+            >
+              Reset
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+            >
+              Create
+            </button>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       {showToast && errormessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
@@ -207,6 +226,12 @@ const Receipts = () => {
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
           ✅ You have succesfully requested for Approval!
         </div>
+      )}
+      {showmodal && (
+        <ApproveModal
+          setShowmodal={setShowmodal}
+          mrno={sharedTableData?.formData?.equipMrNoValue}
+        />
       )}
     </div>
   );

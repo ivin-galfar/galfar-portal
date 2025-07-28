@@ -14,6 +14,8 @@ const formDataSchema = mongoose.Schema({
   requiredDateValue: { type: String },
   requirementDurationValue: { type: String },
   sentForApproval: { type: String },
+  status: { type: String },
+  approverComments: { type: String },
 });
 
 const tableRowSchema = mongoose.Schema({

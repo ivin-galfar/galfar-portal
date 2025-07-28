@@ -85,7 +85,9 @@ const TableHeader = ({ isAdmin }) => {
             setMrno([]);
             setSortVendors(false);
           }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer"
+          className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
+            !userInfo?.isAdmin ? "hidden" : ""
+          }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
