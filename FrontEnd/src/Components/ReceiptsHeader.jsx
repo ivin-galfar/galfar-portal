@@ -18,7 +18,6 @@ const TableHeader = ({ isAdmin }) => {
     setSortVendors,
     setMrno,
     setSelectedMr,
-    selectedmr,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -78,6 +77,13 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
+  useEffect(() => {
+    const mrNo = sharedTableData?.formData?.equipMrNoValue;
+    if (mrNo && mrNo !== "default") {
+      fetchReceipt(mrNo);
+    }
+  }, [sharedTableData?.formData?.status]);
+
   let statusLogo = null;
   const status = sharedTableData.formData.status;
   var approverComments = sharedTableData.formData.approverComments;
