@@ -65,6 +65,7 @@ export default function VerticalTable({ showcalc }) {
   );
 
   const userInfo = useUserInfo();
+  const [vatRate, setVatRate] = useState(5);
 
   useEffect(() => {
     setSharedTableData((prev) => ({ ...prev, tableData }));
@@ -144,9 +145,11 @@ export default function VerticalTable({ showcalc }) {
           const isAvailability =
             row.original.particulars.trim().toUpperCase() === "AVAILABILITY";
           const isReadOnly = !userInfo?.isAdmin;
+          const isVAT =
+            row.original.particulars.trim().toUpperCase() === "VAT @5%";
           if (isAvailability) {
             if (!userInfo?.isAdmin) {
-              return <div>{value || "-"}</div>;
+              return <div className="text-center">{value || "-"}</div>;
             }
             return (
               <select
@@ -167,6 +170,13 @@ export default function VerticalTable({ showcalc }) {
               </select>
             );
           }
+          if (isVAT) {
+            return (
+              <div className="text-center font-semibold text-gray-700">
+                {vendorVATs[index]?.toFixed(2)}
+              </div>
+            );
+          }
 
           return (
             <input
@@ -176,7 +186,7 @@ export default function VerticalTable({ showcalc }) {
               onChange={(e) =>
                 handleInputChange(row.index, vendorKey, e.target.value)
               }
-              className={`w-full px-2 py-1 ${
+              className={`w-full px-2 py-1 text-center ${
                 !userInfo?.isAdmin
                   ? "cursor-not-allowed"
                   : "border rounded bg-gray-100"
@@ -200,13 +210,21 @@ export default function VerticalTable({ showcalc }) {
     sortVendors,
     !userInfo?.isAdmin ? vendorInfoWithTotal : "",
   ]);
+  const vendorVATs = useMemo(() => {
+    if (!Array.isArray(vendorInfoWithTotal) || vendorInfoWithTotal.length === 0)
+      return [];
 
-  const vendorVATs = vendorInfoWithTotal.map((vendor) => {
-    const value = parseFloat(
-      tableData[vatRowIndex]?.vendors?.[`vendor_${vendor.index}`] || 0
+    const vatRowExists = tableData.some(
+      (row) => row.particulars?.trim().toUpperCase() === "VAT @5%"
     );
-    return isNaN(value) ? 0 : value;
-  });
+    if (!vatRowExists) return [];
+
+    return vendorInfoWithTotal.map((vendor) => {
+      const total = parseFloat(vendor.total || 0);
+      const vat = (total * vatRate) / 100;
+      return isNaN(vat) ? 0 : vat;
+    });
+  }, [tableData, vendorInfoWithTotal, vatRate]);
 
   const vendorNetPrices = vendorTotals.map(
     (total, idx) => total + vendorVATs[idx]

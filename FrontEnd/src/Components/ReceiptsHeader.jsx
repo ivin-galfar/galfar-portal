@@ -116,7 +116,7 @@ const TableHeader = ({ isAdmin }) => {
             setMrno([]);
             setSortVendors(false);
           }}
-          className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
+          className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
             !userInfo?.isAdmin ? "hidden" : ""
           }`}
         >
@@ -137,7 +137,7 @@ const TableHeader = ({ isAdmin }) => {
           New Receipt
         </button>
 
-        <h2 className="text-2xl font-semibold uppercase  flex-1">
+        <h2 className="text-2xl font-medium uppercase  flex-1">
           GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
         </h2>
       </div>
@@ -224,15 +224,13 @@ const TableHeader = ({ isAdmin }) => {
                 value={formData?.hiringName ?? ""}
                 ref={inputRef}
                 onChange={handleChange("hiringName")}
-                className="border-b border-gray-500 outline-none text-sm font-semibold text-center px-2 py-1"
+                className="border-b border-gray-500 outline-none text-sm font-medium text-center px-2 py-1"
               />
             </>
           ) : (
             <p className="text-sm font-medium">
               HIRING -{" "}
-              <span className="font-semibold">
-                {formData?.hiringName ?? ""}
-              </span>
+              <span className="font-medium">{formData?.hiringName ?? ""}</span>
             </p>
           )}
         </div>
@@ -242,7 +240,7 @@ const TableHeader = ({ isAdmin }) => {
       <div className="flex justify-between mt-4 px-4">
         <div className="flex flex-col space-y-1 text-left w-1/3">
           <p>
-            <span className="font-semibold">PROJECT:</span>{" "}
+            <span className="font-medium">PROJECT:</span>{" "}
             {isAdmin ? (
               <input
                 type="text"
@@ -255,7 +253,7 @@ const TableHeader = ({ isAdmin }) => {
             )}
           </p>
           <p>
-            <span className="font-semibold">Location:</span>{" "}
+            <span className="font-medium">Location:</span>{" "}
             {isAdmin ? (
               <input
                 type="text"
@@ -271,7 +269,7 @@ const TableHeader = ({ isAdmin }) => {
 
         <div className="flex flex-col space-y-1 text-center w-1/3">
           <p>
-            <span className="font-semibold">EQUIP MR NO:</span>{" "}
+            <span className="font-medium">EQUIP MR NO:</span>{" "}
             {isAdmin ? (
               <input
                 type="text"
@@ -284,7 +282,7 @@ const TableHeader = ({ isAdmin }) => {
             )}
           </p>
           <p>
-            <span className="font-semibold">EM REG NO:</span>{" "}
+            <span className="font-medium">EM REG NO:</span>{" "}
             {isAdmin ? (
               <input
                 type="text"
@@ -298,9 +296,12 @@ const TableHeader = ({ isAdmin }) => {
           </p>
         </div>
 
-        <div className="flex flex-col space-y-1 text-right w-1/3">
-          <p>
-            <span className="font-semibold m-15">REQUIRED DATE:</span>{" "}
+        <div className="flex flex-col space-y-2 text-sm w-1/3">
+          {/* REQUIRED DATE */}
+          <div className="flex items-center justify-between">
+            <label className="font-medium whitespace-nowrap mr-2 ml-50">
+              REQUIRED DATE:
+            </label>
             {isAdmin ? (
               <input
                 type="date"
@@ -312,25 +313,29 @@ const TableHeader = ({ isAdmin }) => {
                     : ""
                 }
                 onChange={handleChange("requiredDateValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm"
+                className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
               />
             ) : (
-              formData?.requiredDateValue
+              <span>{formData?.requiredDateValue}</span>
             )}
-          </p>
-          <p>
-            <span className="font-medium">REQUIREMENT DURATIONS:</span>{" "}
+          </div>
+
+          {/* REQUIREMENT DURATIONS */}
+          <div className="flex items-center justify-between">
+            <label className="font-medium whitespace-nowrap mr-2 ml-50">
+              REQUIREMENT DURATIONS:
+            </label>
             {isAdmin ? (
               <input
                 type="text"
                 value={formData?.requirementDurationValue ?? ""}
                 onChange={handleChange("requirementDurationValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm"
+                className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
               />
             ) : (
-              (formData?.requirementDurationValue ?? "")
+              <span>{formData?.requirementDurationValue ?? ""}</span>
             )}
-          </p>
+          </div>
         </div>
       </div>
     </div>

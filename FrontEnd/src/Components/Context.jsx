@@ -3,7 +3,7 @@ import { createContext, useState } from "react";
 export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
-  const [newuser, setNewuser] = useState(true);
+  const [newuser, setNewuser] = useState(false);
   const initialTableData = [];
   const [sharedTableData, setSharedTableData] = useState({
     formData: {
