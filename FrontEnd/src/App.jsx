@@ -3,9 +3,12 @@ import LoginPage from "./Pages/LoginPage";
 import Dashboard from "./Components/Dashboard";
 import Header from "./Components/Header";
 import Receipts from "./Components/Receipts";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import useUserInfo from "./CustomHooks/useUserInfo";
 
 const App = () => {
   const location = useLocation();
+  const userInfo = useUserInfo();
 
   return (
     <div>
@@ -14,7 +17,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/receipts" element={<Receipts />} />
+        <Route
+          path="/receipts"
+          element={
+            <ProtectedRoute userInfo={userInfo}>
+              <Receipts />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

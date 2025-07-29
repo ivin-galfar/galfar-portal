@@ -331,18 +331,17 @@ export default function VerticalTable({ showcalc }) {
               </td>
             ))}
           </tr>
-          {/* VAT Row */}
           <tr>
             <td
               colSpan={3}
-              className="border px-4 py-2 font-semibold bg-blue-50 text-blue-800 text-center"
+              className="border px-4 py-2 font-semibold text-center"
             >
               VAT @5%
             </td>
             {vendorVATs.map((val, idx) => (
               <td
                 key={`vat_${idx}`}
-                className="border px-4 py-2 font-semibold text-center bg-blue-100"
+                className="border px-4 py-2 font-semibold text-center"
               >
                 {val.toFixed(2)}
               </td>
@@ -352,14 +351,14 @@ export default function VerticalTable({ showcalc }) {
           <tr>
             <td
               colSpan={3}
-              className="border px-4 py-2 font-semibold bg-green-50 text-green-800 text-center"
+              className="border px-4 py-2 font-semibold  text-center"
             >
               Net Price (Incl. VAT)
             </td>
             {vendorNetPrices.map((val, idx) => (
               <td
                 key={`net_${idx}`}
-                className="border px-4 py-2 font-semibold text-center bg-green-100"
+                className="border px-4 py-2 font-semibold text-center"
               >
                 {val.toFixed(2)}
               </td>

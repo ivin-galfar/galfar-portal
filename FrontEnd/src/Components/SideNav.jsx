@@ -23,7 +23,6 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
         </button>
       </div>
 
-      {/* Menu Items */}
       <nav className="p-4 space-y-2">
         <a
           href="#"
