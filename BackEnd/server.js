@@ -9,14 +9,16 @@ const receiptRoutes = require("./Routes/ReceiptRoutes");
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT;
 
 dotenv.config({ path: "./.env" });
 connectDB();
 
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", ""];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://galfar-scm.onrender.com",
+];
 
 const corsOptions = {
   origin: (origin, callback) => {
