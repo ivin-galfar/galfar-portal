@@ -56,7 +56,7 @@ const UserDropdown = () => {
           </div>
           <span className={`${!isAdmin ? "hidden" : ""}`}>
             <button className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-red-50 transition cursor-pointer">
-              <Link to="/admin"> Dashboard </Link>
+              <Link to="/receipts"> Receipts </Link>
             </button>
           </span>
           <div className="border-t border-gray-100" />
