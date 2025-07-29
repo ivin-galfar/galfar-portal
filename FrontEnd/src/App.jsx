@@ -8,7 +8,6 @@ import useUserInfo from "./CustomHooks/useUserInfo";
 
 const App = () => {
   const location = useLocation();
-  const userInfo = useUserInfo();
 
   return (
     <div>
@@ -20,7 +19,7 @@ const App = () => {
         <Route
           path="/receipts"
           element={
-            <ProtectedRoute userInfo={userInfo}>
+            <ProtectedRoute>
               <Receipts />
             </ProtectedRoute>
           }

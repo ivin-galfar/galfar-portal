@@ -1,6 +1,9 @@
 import { Navigate } from "react-router-dom";
+import useUserInfo from "../CustomHooks/useUserInfo";
 
-const ProtectedRoute = ({ userInfo, children }) => {
+const ProtectedRoute = ({ children }) => {
+  const userInfo = useUserInfo();
+
   if (!userInfo) {
     return <Navigate to="/login" replace />;
   }
