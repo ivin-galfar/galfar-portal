@@ -55,8 +55,11 @@ const Login = () => {
           },
           config
         );
-        setErrormessage("");
         setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 1500);
+        setErrormessage("");
       } catch (error) {
         let message = error?.response?.data?.message;
         setErrormessage(message ? message : error.message);
