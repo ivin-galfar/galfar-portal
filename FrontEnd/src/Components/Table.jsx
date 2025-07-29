@@ -24,7 +24,6 @@ const descriptionRows = [
   { sl: "1", particulars: "ACCESSORIES (IF ANY)", qty: "1" },
   { sl: "1", particulars: "TPI CHARGES (IF ANY)", qty: "1" },
   { sl: "1", particulars: "INSURANCE (IF ANY)", qty: "1" },
-  { sl: "1", particulars: "TOTAL PRICE", qty: "1" },
   { sl: "1", particulars: "VAT @5%", qty: "1" },
   { sl: "1", particulars: "AVAILABILITY", qty: "1" },
   { sl: "1", particulars: "NOTE", qty: "1" },
@@ -64,7 +63,6 @@ export default function VerticalTable({ showcalc }) {
       ? sharedTableData.tableData
       : createData()
   );
-  console.log(showcalc);
 
   const userInfo = useUserInfo();
 
@@ -107,8 +105,13 @@ export default function VerticalTable({ showcalc }) {
     }
   }, [tableData, sortVendors]);
 
+  const vatRowIndex = tableData.findIndex(
+    (row) => row.particulars.trim().toUpperCase() === "VAT @5%"
+  );
+
   const vendorTotals = vendorInfoWithTotal.map((vendor) => {
-    return tableData.reduce((sum, row) => {
+    return tableData.reduce((sum, row, idx) => {
+      if (idx >= vatRowIndex && vatRowIndex !== -1) return sum;
       const value = parseFloat(row.vendors?.[`vendor_${vendor.index}`] || 0);
       return sum + (isNaN(value) ? 0 : value);
     }, 0);
@@ -192,7 +195,22 @@ export default function VerticalTable({ showcalc }) {
       },
       ...vendorColumns,
     ];
-  }, [userInfo?.isAdmin, sortVendors, vendorInfoWithTotal]);
+  }, [
+    userInfo?.isAdmin,
+    sortVendors,
+    !userInfo?.isAdmin ? vendorInfoWithTotal : "",
+  ]);
+
+  const vendorVATs = vendorInfoWithTotal.map((vendor) => {
+    const value = parseFloat(
+      tableData[vatRowIndex]?.vendors?.[`vendor_${vendor.index}`] || 0
+    );
+    return isNaN(value) ? 0 : value;
+  });
+
+  const vendorNetPrices = vendorTotals.map(
+    (total, idx) => total + vendorVATs[idx]
+  );
 
   const handleInputChange = (rowIndex, vendorKey, newValue) => {
     setTableData((prevData) => {
@@ -204,7 +222,6 @@ export default function VerticalTable({ showcalc }) {
           [vendorKey]: newValue,
         },
       };
-      // Check if at least one input has value
       const hasInput = updated.some((row) =>
         Object.values(row.vendors).some((val) => val && val.trim() !== "")
       );
@@ -257,9 +274,8 @@ export default function VerticalTable({ showcalc }) {
         <tbody>
           {table.getRowModel().rows.map((row, rowIndex) => {
             const isTotalRow =
-              row.original.particulars.trim().toUpperCase() === "TOTAL PRICE";
+              row.original.particulars.trim().toUpperCase() === "NET PRICE";
             const cells = row.getVisibleCells();
-
             return (
               <tr key={row.id}>
                 {rowIndex === 0 && (
@@ -299,8 +315,59 @@ export default function VerticalTable({ showcalc }) {
               </tr>
             );
           })}
-          {(showcalc || !userInfo?.isAdmin) &&
-            sharedTableData.formData.sentForApproval == "yes" &&
+          <tr>
+            <td
+              colSpan={3}
+              className="border px-4 py-2 font-semibold bg-yellow-50 text-yellow-800 text-center"
+            >
+              Total Price (Excl. VAT)
+            </td>
+            {vendorTotals.map((val, idx) => (
+              <td
+                key={`total_${idx}`}
+                className="border px-4 py-2 font-semibold text-center bg-yellow-100"
+              >
+                {val.toFixed(2)}
+              </td>
+            ))}
+          </tr>
+          {/* VAT Row */}
+          <tr>
+            <td
+              colSpan={3}
+              className="border px-4 py-2 font-semibold bg-blue-50 text-blue-800 text-center"
+            >
+              VAT @5%
+            </td>
+            {vendorVATs.map((val, idx) => (
+              <td
+                key={`vat_${idx}`}
+                className="border px-4 py-2 font-semibold text-center bg-blue-100"
+              >
+                {val.toFixed(2)}
+              </td>
+            ))}
+          </tr>
+
+          <tr>
+            <td
+              colSpan={3}
+              className="border px-4 py-2 font-semibold bg-green-50 text-green-800 text-center"
+            >
+              Net Price (Incl. VAT)
+            </td>
+            {vendorNetPrices.map((val, idx) => (
+              <td
+                key={`net_${idx}`}
+                className="border px-4 py-2 font-semibold text-center bg-green-100"
+              >
+                {val.toFixed(2)}
+              </td>
+            ))}
+          </tr>
+          {(sharedTableData.formData.sentForApproval == "yes" ||
+            showcalc ||
+            !userInfo?.isAdmin) &&
             vendorTotals.some((val) => val > 0) && (
               <tr>
                 <td

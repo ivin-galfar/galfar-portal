@@ -19,7 +19,7 @@ const Receipts = () => {
     sharedTableData,
     setSharedTableData,
     setMrno,
-    reqmrno,
+    selectedmr,
     setSortVendors,
     hasInputActivity,
     isMRSelected,
@@ -93,7 +93,6 @@ const Receipts = () => {
           .map((receipt) => receipt.formData?.equipMrNoValue)
           .filter(Boolean);
         setReqMrno(reqMrValues);
-
         setMrno(mrValues);
       } catch (error) {
         console.log(error);
@@ -128,6 +127,21 @@ const Receipts = () => {
     }
   };
 
+  const isSentForApproval = sharedTableData.formData.sentForApproval === "yes";
+  console.log(sharedTableData.formData);
+
+  const isStatusSet = !!sharedTableData.formData.status;
+  const buttonClass = isSentForApproval
+    ? isStatusSet
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-green-600 opacity-60 cursor-not-allowed"
+    : "bg-blue-600 hover:bg-blue-700 cursor-pointer";
+
+  const buttonText = isSentForApproval
+    ? isStatusSet
+      ? "Approval Completed"
+      : "Already Requested"
+    : "Request Approval";
   return (
     <div className="p-10  pb-28 relative">
       <h1 className="font-bold mb-4">
@@ -159,20 +173,21 @@ const Receipts = () => {
                 >
                   Reset Calculation
                 </button>
-                <button
-                  onClick={() =>
-                    reqApproval(sharedTableData.formData.equipMrNoValue)
-                  }
-                  className={`px-4 py-2 ml-110 text-white font-semibold rounded shadow ${
-                    sharedTableData.formData.sentForApproval === "yes"
-                      ? "bg-green-600 opacity-60 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer transition duration-300 ease-in-out"
+                {selectedmr != "default" ? (
+                  <button
+                    onClick={() =>
+                      reqApproval(sharedTableData.formData.equipMrNoValue)
+                    }
+                    className={`px-4 py-2 ml-110 text-white font-semibold rounded shadow ${
+                      buttonClass
+                    }focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer transition duration-300 ease-in-out"
                   }`}
-                >
-                  {sharedTableData.formData.sentForApproval == "yes"
-                    ? "Already Requested "
-                    : "Request Approval"}
-                </button>
+                  >
+                    {buttonText}
+                  </button>
+                ) : (
+                  ""
+                )}
               </>
             ) : (
               <>

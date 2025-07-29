@@ -3,6 +3,8 @@ import useUserInfo from "../CustomHooks/useUserInfo";
 import { AppContext } from "./Context";
 import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
+import { TiTick } from "react-icons/ti";
+import { RxCrossCircled } from "react-icons/rx";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
@@ -15,6 +17,8 @@ const TableHeader = ({ isAdmin }) => {
     setIsMRSelected,
     setSortVendors,
     setMrno,
+    setSelectedMr,
+    selectedmr,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -74,6 +78,27 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
+  let statusLogo = null;
+  const status = sharedTableData.formData.status;
+  var approverComments = sharedTableData.formData.approverComments;
+
+  if (status === "approved") {
+    statusLogo = (
+      <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-600 rounded-full w-fit">
+        <TiTick className="text-green-600 text-2xl" />
+        <span className="font-medium text-sm">Approved</span>
+      </div>
+    );
+  } else if (status === "rejected") {
+    statusLogo = (
+      <div className="flex items-center gap-2 px-3 py-1 bg-red-100  text-red-600 rounded-full w-fit">
+        <RxCrossCircled className="text-red-600 text-2xl" />
+        <span className="font-medium text-sm">Rejected</span>
+      </div>
+    );
+  } else {
+    statusLogo = "";
+  }
 
   return (
     <div className="text-center mb-6 space-y-2">
@@ -142,31 +167,46 @@ const TableHeader = ({ isAdmin }) => {
 
       <div className="flex items-center w-full">
         <div className="flex items-center text-sm font-medium w-1/3">
-          <label htmlFor="mrNo" className="text-gray-700 mr-2">
-            Choose MR No.
-          </label>
-          <select
-            id="mrNo"
-            className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-            value={formData?.equipMrNoValue}
-            onChange={(e) => {
-              handleChange("equipMrNoValue")(e);
-              if (e.target.value !== "default") {
-                fetchReceipt(e.target.value);
-                setIsMRSelected(true);
-              } else {
-                setCleartable(true);
-                setSharedTableData({ formData: {}, tableData: [] });
-              }
-            }}
-          >
-            <option value="default">Select an option</option>
-            {(isAdmin ? mrno : reqmrno).map((value, index) => (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
+          <div className="ml-4">
+            <label htmlFor="mrNo" className="text-gray-700 mr-2">
+              Choose MR No.
+            </label>
+            <select
+              id="mrNo"
+              className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              value={formData?.equipMrNoValue}
+              onChange={(e) => {
+                handleChange("equipMrNoValue")(e);
+                if (e.target.value !== "default") {
+                  fetchReceipt(e.target.value);
+                  setIsMRSelected(true);
+                  setSelectedMr(e.target.value);
+                } else {
+                  setCleartable(true);
+                  setSelectedMr(e.target.value);
+                  setSharedTableData({ formData: {}, tableData: [] });
+                }
+              }}
+            >
+              <option value="default">Select an option</option>
+              {(isAdmin ? mrno : reqmrno).map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="relative group ml-3.5">
+            {/* Icon */}
+            {statusLogo}
+
+            {/* Tooltip */}
+            {approverComments && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-gray-800 text-white text-xs px-3 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                {approverComments}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-center text-sm font-medium w-1/3">

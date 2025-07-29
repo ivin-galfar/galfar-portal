@@ -86,11 +86,10 @@ const updatestatus = async (req, res) => {
       { $set: { "formData.sentForApproval": "yes" } },
       { new: true }
     );
-    console.log(receipt);
 
     res.json(receipt);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -111,7 +110,7 @@ const updateApprovalstatus = async (req, res) => {
     );
     res.json(receipt);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

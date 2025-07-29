@@ -26,6 +26,8 @@ const AppContextProvider = ({ children }) => {
   const [hasInputActivity, setHasInputActivity] = useState(false);
   const [isMRSelected, setIsMRSelected] = useState(false);
   const [reqApprovalstatus, setreqApprovalstatus] = useState("");
+  const [selectedmr, setSelectedMr] = useState(null);
+
   return (
     <AppContext.Provider
       value={{
@@ -47,6 +49,8 @@ const AppContextProvider = ({ children }) => {
         setreqApprovalstatus,
         reqmrno,
         setReqMrno,
+        selectedmr,
+        setSelectedMr,
       }}
     >
       {children}
