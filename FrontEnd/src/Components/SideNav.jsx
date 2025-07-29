@@ -7,6 +7,7 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
   return (
     <div
       ref={ref}
+      onMouseLeave={() => setIsMenuOpen(false)}
       className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-800 shadow transition-transform transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
