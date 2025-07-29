@@ -30,10 +30,9 @@ const Login = () => {
           },
           config
         );
-        setShowToast(true);
         localStorage.setItem("userInfo", JSON.stringify(data));
         setErrormessage("");
-
+        setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
           navigate("/");
@@ -58,13 +57,13 @@ const Login = () => {
         );
         setErrormessage("");
         setShowToast(true);
-        setNewuser(false);
       } catch (error) {
         let message = error?.response?.data?.message;
         setErrormessage(message ? message : error.message);
       }
     }
   };
+  console.log(newuser);
 
   return (
     <div>

@@ -3,13 +3,12 @@ import { createContext, useState } from "react";
 export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
-  const [newuser, setNewuser] = useState(false);
-  const initialTableData = []; // or import and call your createData() function here
-
+  const [newuser, setNewuser] = useState(true);
+  const initialTableData = [];
   const [sharedTableData, setSharedTableData] = useState({
     formData: {
       hiringName: "",
-      dateValue: new Date().toISOString().split("T")[0], // proper format for date input
+      dateValue: new Date().toISOString().split("T")[0],
       projectValue: "",
       locationValue: "",
       equipMrNoValue: "",
