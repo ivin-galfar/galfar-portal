@@ -44,7 +44,10 @@ const createData = () =>
     });
     return row;
   });
-
+const shouldSkipRow = (particulars) => {
+  const skipLabels = ["VAT @5%", "NET PRICE", "RATING", "NOTE"];
+  return skipLabels.includes(particulars?.trim().toUpperCase());
+};
 const columnHelper = createColumnHelper();
 
 export default function VerticalTable({ showcalc }) {
@@ -94,6 +97,7 @@ export default function VerticalTable({ showcalc }) {
     const vendors = rawData.map((vendor, vIdx) => ({
       ...vendor,
       total: tableData.reduce((sum, row) => {
+        if (shouldSkipRow(row.particulars)) return sum;
         const value = parseFloat(row.vendors?.[`vendor_${vIdx}`] || 0);
         return sum + (isNaN(value) ? 0 : value);
       }, 0),
@@ -112,7 +116,9 @@ export default function VerticalTable({ showcalc }) {
 
   const vendorTotals = vendorInfoWithTotal.map((vendor) => {
     return tableData.reduce((sum, row, idx) => {
+      if (shouldSkipRow(row.particulars)) return sum;
       if (idx >= vatRowIndex && vatRowIndex !== -1) return sum;
+      if (row.isRating) return sum;
       const value = parseFloat(row.vendors?.[`vendor_${vendor.index}`] || 0);
       return sum + (isNaN(value) ? 0 : value);
     }, 0);
