@@ -215,7 +215,7 @@ const TableHeader = ({ isAdmin }) => {
                   download
                   className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
                 >
-                  Download File
+                  Download Attachments
                   <FaFileDownload size={20} className="relative" />
                   {sharedTableData.formData.file && (
                     <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
