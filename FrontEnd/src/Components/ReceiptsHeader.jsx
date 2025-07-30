@@ -62,14 +62,10 @@ const TableHeader = ({ isAdmin }) => {
           config
         );
         const receipt = response.data;
-        setSharedTableData((prev) => ({
-          ...prev,
-          formData: {
-            ...prev.formData,
-            ...(receipt.formData || {}),
-          },
-          tableData: receipt.tableData || [], // This should now work
-        }));
+        setSharedTableData({
+          formData: receipt.formData || {},
+          tableData: receipt.tableData || [],
+        });
       } catch (error) {
         console.log(error);
       }
@@ -81,15 +77,15 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
-  useEffect(() => {
-    const mrNo = sharedTableData?.formData?.equipMrNoValue;
-    if (mrNo && mrNo !== "default") {
-      fetchReceipt(mrNo);
-    }
-  }, [sharedTableData?.formData?.status]);
+  // useEffect(() => {
+  //   const mrNo = sharedTableData?.formData?.equipMrNoValue;
+  //   if (mrNo && mrNo !== "default") {
+  //     fetchReceipt(mrNo);
+  //   }
+  // }, [sharedTableData?.formData?.status]);
 
   let statusLogo = null;
-  const status = sharedTableData.formData.status;
+  const status = sharedTableData.formData.status ?? null;
   var approverComments = sharedTableData.formData.approverComments;
 
   if (status === "approved") {

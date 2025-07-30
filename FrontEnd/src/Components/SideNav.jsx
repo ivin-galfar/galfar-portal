@@ -1,8 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
 
 const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
+  };
   const userInfo = useUserInfo();
   return (
     <div
@@ -43,12 +48,12 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
         >
           Receipts
         </Link>
-        <Link
-          to="/login"
+        <button
           className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+          onClick={handleLogout}
         >
           {userInfo ? "Sign out" : "Sign In"}
-        </Link>
+        </button>
       </nav>
     </div>
   );
