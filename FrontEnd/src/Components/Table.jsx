@@ -103,7 +103,7 @@ export default function VerticalTable({ showcalc }) {
       }, 0),
       index: vIdx,
     }));
-    if (sortVendors || !userInfo?.isAdmin) {
+    if (sortVendors) {
       return vendors.slice().sort((a, b) => a.total - b.total);
     } else {
       return vendors;
@@ -351,7 +351,10 @@ export default function VerticalTable({ showcalc }) {
                 key={`total_${idx}`}
                 className="border px-4 py-2 font-semibold text-center bg-yellow-100"
               >
-                {val.toFixed(2)}
+                {val.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </td>
             ))}
           </tr>
@@ -367,7 +370,10 @@ export default function VerticalTable({ showcalc }) {
                 key={`vat_${idx}`}
                 className="border px-4 py-2 font-semibold text-center"
               >
-                {val.toFixed(2)}
+                {val.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </td>
             ))}
           </tr>
@@ -384,7 +390,10 @@ export default function VerticalTable({ showcalc }) {
                 key={`net_${idx}`}
                 className="border px-4 py-2 font-semibold text-center"
               >
-                {val.toFixed(2)}
+                {val.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </td>
             ))}
           </tr>
