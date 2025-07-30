@@ -26,6 +26,7 @@ const AppContextProvider = ({ children }) => {
   const [isMRSelected, setIsMRSelected] = useState(false);
   const [reqApprovalstatus, setreqApprovalstatus] = useState("");
   const [selectedmr, setSelectedMr] = useState(null);
+  const [pdfurl, setPdfurl] = useState("");
 
   return (
     <AppContext.Provider
@@ -50,6 +51,8 @@ const AppContextProvider = ({ children }) => {
         setReqMrno,
         selectedmr,
         setSelectedMr,
+        setPdfurl,
+        pdfurl,
       }}
     >
       {children}

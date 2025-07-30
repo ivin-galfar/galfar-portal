@@ -2,9 +2,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { AppContext } from "./Context";
 import axios from "axios";
-import { REACT_SERVER_URL } from "../../config/ENV";
+import { REACT_SERVER_URL, CLOUDINARY_CLOUD_NAME } from "../../config/ENV";
 import { TiTick } from "react-icons/ti";
 import { RxCrossCircled } from "react-icons/rx";
+import { FaFileUpload } from "react-icons/fa";
+import { FaFileDownload } from "react-icons/fa";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
@@ -18,6 +20,8 @@ const TableHeader = ({ isAdmin }) => {
     setSortVendors,
     setMrno,
     setSelectedMr,
+    pdfurl,
+    setPdfurl,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -106,6 +110,42 @@ const TableHeader = ({ isAdmin }) => {
     statusLogo = "";
   }
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "Techno_computers");
+        formData.append("resource_type", "raw");
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const pdf_Url = data.secure_url;
+          setPdfurl(pdf_Url);
+          setSharedTableData((prev) => ({
+            ...prev,
+            formData: {
+              ...prev.formData,
+              file: pdf_Url,
+            },
+          }));
+        }
+        console.log(sharedTableData);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
   return (
     <div className="text-center mb-6 space-y-2">
       <div className="flex justify-between">
@@ -148,26 +188,65 @@ const TableHeader = ({ isAdmin }) => {
           COMPARATIVE STATEMENT
         </h3>
 
-        <div className="w-1/3 flex justify-end">
-          <h4 className="text-sm font-normal flex justify-center items-center gap-5">
-            Date:{" "}
-            {isAdmin ? (
-              <input
-                type="date"
-                value={formData?.dateValue ?? ""}
-                onChange={handleChange("dateValue")}
-                className="w-full max-w-xs border border-gray-300 rounded-xl px-4 py-2 shadow-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              />
-            ) : (
-              <span>
-                <p>
-                  {new Date(formData?.dateValue).getDate()}.
-                  {new Date(formData?.dateValue).getMonth() + 1}.
-                  {new Date(formData?.dateValue).getFullYear()}
-                </p>
-              </span>
-            )}
-          </h4>
+        <div className="flex w-1/4 justify-between">
+          {userInfo.isAdmin ? (
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="receiptfile"
+                className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
+              >
+                Upload File
+                <FaFileUpload size={20} />
+                <input
+                  id="receiptfile"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </label>
+            </div>
+          ) : (
+            <>
+              <div className="relative flex items-center gap-2">
+                <a
+                  href={sharedTableData.formData.file}
+                  target="_blank"
+                  download
+                  className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
+                >
+                  Download File
+                  <FaFileDownload size={20} className="relative" />
+                  {sharedTableData.formData.file && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                      1
+                    </span>
+                  )}
+                </a>
+              </div>
+            </>
+          )}
+          <div className="w-full flex justify-end">
+            <h4 className="text-sm font-normal flex items-center gap-5">
+              Date:{" "}
+              {isAdmin ? (
+                <input
+                  type="date"
+                  value={formData?.dateValue ?? ""}
+                  onChange={handleChange("dateValue")}
+                  className="w-full max-w-xs border border-gray-300 rounded-xl px-4 py-2 shadow-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                />
+              ) : (
+                <span>
+                  <p>
+                    {new Date(formData?.dateValue).getDate()}.
+                    {new Date(formData?.dateValue).getMonth() + 1}.
+                    {new Date(formData?.dateValue).getFullYear()}
+                  </p>
+                </span>
+              )}
+            </h4>
+          </div>
         </div>
       </div>
 
