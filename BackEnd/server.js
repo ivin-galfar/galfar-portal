@@ -5,6 +5,7 @@ const connectDB = require("./Config/db");
 const cors = require("cors");
 const userRoutes = require("./Routes/userRoutes");
 const receiptRoutes = require("./Routes/ReceiptRoutes");
+const particularRoutes = require("./Routes/ParticularRoutes");
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use(cors(corsOptions));
 
 app.use("/users", userRoutes);
 app.use("/receipts", receiptRoutes);
+app.use("/particulars", particularRoutes);
 
 app.get("/", (req, res) => res.send("API is running"));
 

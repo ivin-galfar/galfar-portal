@@ -36,12 +36,13 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
         >
           Dashboard
         </a>
-        <a
+        <Link
+          to="/particulars"
           href="#"
           className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         >
-          Users
-        </a>
+          Particulars
+        </Link>
         <Link
           to="/receipts"
           className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"

@@ -5,6 +5,7 @@ import Header from "./Components/Header";
 import Receipts from "./Components/Receipts";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import useUserInfo from "./CustomHooks/useUserInfo";
+import Particulars from "./Pages/Particulars";
 
 const App = () => {
   const location = useLocation();
@@ -16,6 +17,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/particulars" element={<Particulars />} />
+
         <Route
           path="/receipts"
           element={
