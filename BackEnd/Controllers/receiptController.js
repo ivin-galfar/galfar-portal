@@ -5,6 +5,7 @@ const feedReceipt = async (req, res) => {
     const { formData, tableData } = req.body;
 
     for (const [key, value] of Object.entries(formData)) {
+      if (key === "file") continue;
       if (
         value === "" ||
         value === null ||

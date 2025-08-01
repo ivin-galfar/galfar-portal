@@ -40,4 +40,24 @@ const fetchParticulars = async (req, res) => {
   });
 };
 
-module.exports = { feedParticulars, fetchParticulars };
+const fetchParticularstemplate = async (req, res) => {
+  const { pid } = req.params;
+
+  try {
+    const particular = await Particulars.findOne({
+      template: pid,
+    });
+    if (!particular) {
+      return res.status(404).json({ error: "Receipt not found" });
+    }
+    res.json({ particular });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = {
+  feedParticulars,
+  fetchParticulars,
+  fetchParticularstemplate,
+};

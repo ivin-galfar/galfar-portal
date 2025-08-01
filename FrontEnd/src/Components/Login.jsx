@@ -66,7 +66,6 @@ const Login = () => {
       }
     }
   };
-  console.log(newuser);
 
   return (
     <div>

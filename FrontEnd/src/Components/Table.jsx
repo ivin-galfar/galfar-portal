@@ -7,48 +7,8 @@ import {
 } from "@tanstack/react-table";
 import { AppContext } from "./Context";
 import useUserInfo from "../CustomHooks/useUserInfo";
-
-const rawData = [
-  { id: 1, company: "Techzpark LLC" },
-  { id: 2, company: "DevHouse Ltd" },
-  { id: 3, company: "Devtech Ltd" },
-];
-
-const descriptionRows = [
-  { sl: "1", particulars: "UNIT PRICES", qty: "1" },
-  { sl: "1", particulars: "MOBILIZATION CHARGE", qty: "1" },
-  { sl: "1", particulars: "DEMOBILIZATION Charge", qty: "1" },
-  { sl: "1", particulars: "Zone II CHarges", qty: "1" },
-  { sl: "1", particulars: "CICPA/AL DHAFRA CHARGES", qty: "1" },
-  { sl: "1", particulars: "OTHER (TOLL CHARGES0", qty: "1" },
-  { sl: "1", particulars: "ACCESSORIES (IF ANY)", qty: "1" },
-  { sl: "1", particulars: "TPI CHARGES (IF ANY)", qty: "1" },
-  { sl: "1", particulars: "INSURANCE (IF ANY)", qty: "1" },
-  { sl: "1", particulars: "VAT @5%", qty: "1" },
-  { sl: "1", particulars: "AVAILABILITY", qty: "1" },
-  { sl: "1", particulars: "NOTE", qty: "1" },
-  { sl: "1", particulars: "RATING", qty: "1" },
-];
-
-const createData = () =>
-  descriptionRows.map((descRow, idx) => {
-    const row = {
-      id: `row_${idx}`,
-      sl: descRow.sl,
-      particulars: descRow.particulars,
-      qty: descRow.qty,
-      vendors: {},
-    };
-    rawData.forEach((_, vIdx) => {
-      row.vendors[`vendor_${vIdx}`] = "";
-    });
-    return row;
-  });
-const shouldSkipRow = (particulars) => {
-  const skipLabels = ["VAT @5%", "NET PRICE", "RATING", "NOTE"];
-  return skipLabels.includes(particulars?.trim().toUpperCase());
-};
-const columnHelper = createColumnHelper();
+import { REACT_SERVER_URL } from "../../config/ENV";
+import axios from "axios";
 
 export default function VerticalTable({ showcalc }) {
   const {
@@ -57,10 +17,64 @@ export default function VerticalTable({ showcalc }) {
     cleartable,
     setCleartable,
     sortVendors,
-    setSortVendors,
     setHasInputActivity,
-    reqApprovalstatus,
+    particularname,
+    newMr,
+    hasInputActivity,
   } = useContext(AppContext);
+  const [particular, setParticular] = useState([]);
+  const fetchParticular = async (particularname) => {
+    try {
+      const response = await axios.get(
+        `${REACT_SERVER_URL}/particulars/${particularname}`
+      );
+      setParticular(response.data.particular.particulars);
+    } catch (error) {
+      setParticular([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchParticular(particularname);
+  }, [particularname]);
+
+  useEffect(() => {
+    if (Array.isArray(particular) && particular.length > 0) {
+      const newTableData = createData();
+      setTableData(newTableData);
+      setSharedTableData((prev) => ({ ...prev, tableData: newTableData }));
+    } else {
+      setTableData([]);
+
+      setSharedTableData((prev) => ({ ...prev, tableData: [] }));
+    }
+  }, [particular]);
+
+  const rawData = [
+    { id: 1, company: "Techzpark LLC" },
+    { id: 2, company: "DevHouse Ltd" },
+    { id: 3, company: "Devtech Ltd" },
+  ];
+
+  const createData = () =>
+    particular.map((descRow, idx) => {
+      const row = {
+        id: `row_${idx}`,
+        sl: 1,
+        particulars: descRow,
+        qty: 1,
+        vendors: {},
+      };
+      rawData.forEach((_, vIdx) => {
+        row.vendors[`vendor_${vIdx}`] = "";
+      });
+      return row;
+    });
+  const shouldSkipRow = (particulars) => {
+    const skipLabels = ["NET PRICE", "RATING", "NOTE"];
+    return skipLabels.includes(particulars?.trim().toUpperCase());
+  };
+  const columnHelper = createColumnHelper();
   const [tableData, setTableData] = useState(() =>
     sharedTableData?.tableData?.length
       ? sharedTableData.tableData
@@ -103,7 +117,12 @@ export default function VerticalTable({ showcalc }) {
       }, 0),
       index: vIdx,
     }));
-    if (sortVendors) {
+    if (
+      sortVendors ||
+      !userInfo?.isAdmin ||
+      sharedTableData.formData?.status ||
+      showcalc
+    ) {
       return vendors.slice().sort((a, b) => a.total - b.total);
     } else {
       return vendors;
@@ -151,8 +170,6 @@ export default function VerticalTable({ showcalc }) {
           const isAvailability =
             row.original.particulars.trim().toUpperCase() === "AVAILABILITY";
           const isReadOnly = !userInfo?.isAdmin;
-          const isVAT =
-            row.original.particulars.trim().toUpperCase() === "VAT @5%";
           if (isAvailability) {
             if (!userInfo?.isAdmin) {
               return <div className="text-center">{value || "-"}</div>;
@@ -176,13 +193,13 @@ export default function VerticalTable({ showcalc }) {
               </select>
             );
           }
-          if (isVAT) {
-            return (
-              <div className="text-center font-semibold text-gray-700">
-                {vendorVATs[index]?.toFixed(2)}
-              </div>
-            );
-          }
+          // if (isVAT) {
+          //   return (
+          //     <div className="text-center font-semibold text-gray-700">
+          //       {vendorVATs[index]?.toFixed(2)}
+          //     </div>
+          //   );
+          // }
 
           return (
             <input
@@ -217,20 +234,20 @@ export default function VerticalTable({ showcalc }) {
     !userInfo?.isAdmin ? vendorInfoWithTotal : "",
   ]);
   const vendorVATs = useMemo(() => {
-    if (!Array.isArray(vendorInfoWithTotal) || vendorInfoWithTotal.length === 0)
+    if (
+      !Array.isArray(vendorInfoWithTotal) ||
+      vendorInfoWithTotal.length === 0 ||
+      (newMr && !hasInputActivity)
+    ) {
       return [];
-
-    const vatRowExists = tableData.some(
-      (row) => row.particulars?.trim().toUpperCase() === "VAT @5%"
-    );
-    if (!vatRowExists) return [];
+    }
 
     return vendorInfoWithTotal.map((vendor) => {
       const total = parseFloat(vendor.total || 0);
       const vat = (total * vatRate) / 100;
       return isNaN(vat) ? 0 : vat;
     });
-  }, [tableData, vendorInfoWithTotal, vatRate]);
+  }, [vendorInfoWithTotal, vatRate, newMr, hasInputActivity]);
 
   const vendorNetPrices = vendorTotals.map(
     (total, idx) => total + vendorVATs[idx]

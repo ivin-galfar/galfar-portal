@@ -56,7 +56,7 @@ const UserDropdown = () => {
           </div>
           <span>
             <button className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-red-50 transition cursor-pointer">
-              <Link to="/receipts"> Receipts </Link>
+              <Link to="/receipts"> Statements </Link>
             </button>
           </span>
           <div className="border-t border-gray-100" />

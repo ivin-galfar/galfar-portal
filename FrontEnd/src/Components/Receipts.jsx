@@ -105,6 +105,17 @@ const Receipts = () => {
   const reqApproval = async (mrno) => {
     try {
       const response = await axios.put(`${REACT_SERVER_URL}/receipts/${mrno}`);
+      if (response.data == null) {
+        setErrormessage(
+          "Please create statement before requesting for approval!"
+        );
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 1500);
+        return;
+      }
+
       setreqApprovalstatus(response.data.formData.sentForApproval);
       setErrormessage("");
       setShowToast(true);
@@ -211,16 +222,16 @@ const Receipts = () => {
         {userInfo?.isAdmin ? (
           <div className="justify-end  flex gap-3.5">
             <button
-              onClick={handleReset}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-            >
-              Reset
-            </button>
-            <button
               onClick={handleSubmit}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
             >
               Create
+            </button>
+            <button
+              onClick={handleReset}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+            >
+              Reset
             </button>
           </div>
         ) : (

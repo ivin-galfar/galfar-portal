@@ -4,6 +4,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { useEffect } from "react";
+import fetchParticulars from "../../Helpers/ParticularsApi";
+import { useContext } from "react";
+import { AppContext } from "../Components/Context";
 
 const Particulars = () => {
   const values = {
@@ -14,6 +18,18 @@ const Particulars = () => {
       owner: String,
     },
   };
+
+  const { particulars, setParticulars } = useContext(AppContext);
+
+  useEffect(() => {
+    const loadParticulars = async () => {
+      try {
+        const particulars = await fetchParticulars();
+        setParticulars(particulars);
+      } catch (error) {}
+    };
+    loadParticulars();
+  }, []);
 
   const columnHelper = createColumnHelper();
   const columns = [
@@ -42,7 +58,7 @@ const Particulars = () => {
     }),
   ];
   const table = useReactTable({
-    data,
+    // data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

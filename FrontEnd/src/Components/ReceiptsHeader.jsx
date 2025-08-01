@@ -7,6 +7,7 @@ import { TiTick } from "react-icons/ti";
 import { RxCrossCircled } from "react-icons/rx";
 import { FaFileUpload } from "react-icons/fa";
 import { FaFileDownload } from "react-icons/fa";
+import fetchParticulars from "../../Helpers/ParticularsApi";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
@@ -19,13 +20,31 @@ const TableHeader = ({ isAdmin }) => {
     setIsMRSelected,
     setSortVendors,
     setMrno,
+    cleartable,
     setSelectedMr,
-    pdfurl,
+    particulars,
     setPdfurl,
+    setParticularName,
+    particularname,
+    setParticulars,
+    setNewMr,
+    newMr,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    const loadParticulars = async () => {
+      try {
+        const particulars = await fetchParticulars();
+        setParticulars(particulars.Particulars);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadParticulars();
+  }, []);
 
   useEffect(() => {
     if (userInfo?.isAdmin) {
@@ -77,12 +96,6 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
-  // useEffect(() => {
-  //   const mrNo = sharedTableData?.formData?.equipMrNoValue;
-  //   if (mrNo && mrNo !== "default") {
-  //     fetchReceipt(mrNo);
-  //   }
-  // }, [sharedTableData?.formData?.status]);
 
   let statusLogo = null;
   const status = sharedTableData.formData.status ?? null;
@@ -135,7 +148,6 @@ const TableHeader = ({ isAdmin }) => {
             },
           }));
         }
-        console.log(sharedTableData);
       } catch (error) {
         console.error("Error uploading image:", error);
       }
@@ -144,38 +156,86 @@ const TableHeader = ({ isAdmin }) => {
 
   return (
     <div className="text-center mb-6 space-y-2">
-      <div className="flex justify-between">
-        <button
-          onClick={() => {
-            setCleartable(true);
-            setSharedTableData({ formData: {}, tableData: [] });
-            setMrno([]);
-            setSortVendors(false);
-          }}
-          className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
-            !userInfo?.isAdmin ? "hidden" : ""
-          }`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+      <div className="flex justify-between items-center w-full">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => {
+              setCleartable(true);
+              setSharedTableData({
+                formData: {
+                  equipMrNoValue: "",
+                  emRegNoValue: "",
+                  hiringName: "",
+                  locationValue: "",
+                  projectValue: "",
+                  requirementDurationValue: "",
+                  file: "",
+                  requiredDateValue: new Date(),
+                  dateValue: new Date(),
+                },
+                tableData: [],
+              });
+              setMrno([]);
+              setSortVendors(false);
+              setNewMr(true);
+              setParticularName([]);
+            }}
+            className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
+              !userInfo?.isAdmin ? "hidden" : ""
+            }`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          New Receipt
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            New Statement
+          </button>
+          <div
+            className={`flex items-center gap-2 ${!newMr ? "invisible" : ""}`}
+          >
+            {
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="templateSelect"
+                  className="text-sm font-medium text-gray-700 ml-5"
+                >
+                  Choose Template:
+                </label>{" "}
+                <select
+                  id="templateSelect"
+                  value={particularname}
+                  onChange={(e) => setParticularName(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                >
+                  <option value="">Select Template</option>
+                  {Array.isArray(particulars) &&
+                    particulars?.map((template, index) => (
+                      <option key={template._id} value={template.template}>
+                        {template.template}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            }
+          </div>
+        </div>
+        <div className="flex-1 flex justify-center mr-35">
+          <h2 className="text-2xl font-medium uppercase text-center">
+            GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
+          </h2>
+        </div>
 
-        <h2 className="text-2xl font-medium uppercase  flex-1">
-          GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
-        </h2>
+        <div className="w-[250px]" />
       </div>
       <div className="flex justify-between items-center w-full relative">
         <div className="w-1/3" />
@@ -228,7 +288,11 @@ const TableHeader = ({ isAdmin }) => {
               {isAdmin ? (
                 <input
                   type="date"
-                  value={formData?.dateValue ?? ""}
+                  value={
+                    formData?.dateValue
+                      ? new Date(formData.dateValue).toISOString().split("T")[0]
+                      : ""
+                  }
                   onChange={handleChange("dateValue")}
                   className="w-full max-w-xs border border-gray-300 rounded-xl px-4 py-2 shadow-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
@@ -262,6 +326,7 @@ const TableHeader = ({ isAdmin }) => {
                   fetchReceipt(e.target.value);
                   setIsMRSelected(true);
                   setSelectedMr(e.target.value);
+                  setNewMr(false);
                 } else {
                   setCleartable(true);
                   setSelectedMr(e.target.value);
@@ -372,7 +437,6 @@ const TableHeader = ({ isAdmin }) => {
         </div>
 
         <div className="flex flex-col space-y-2 text-sm w-1/3">
-          {/* REQUIRED DATE */}
           <div className="flex items-center justify-between">
             <label className="font-medium whitespace-nowrap mr-2 ml-50">
               REQUIRED DATE:
@@ -381,21 +445,24 @@ const TableHeader = ({ isAdmin }) => {
               <input
                 type="date"
                 value={
-                  formData?.requiredDateValue
-                    ? new Date(formData.requiredDateValue)
-                        .toISOString()
-                        .split("T")[0]
-                    : ""
+                  new Date(formData.requiredDateValue)
+                    .toISOString()
+                    .split("T")[0]
                 }
                 onChange={handleChange("requiredDateValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
               />
             ) : (
-              <span>{formData?.requiredDateValue}</span>
+              <span>
+                {formData.requiredDateValue
+                  ? new Date(formData.requiredDateValue)
+                      .toISOString()
+                      .split("T")[0]
+                  : ""}
+              </span>
             )}
           </div>
 
-          {/* REQUIREMENT DURATIONS */}
           <div className="flex items-center justify-between">
             <label className="font-medium whitespace-nowrap mr-2 ml-50">
               REQUIREMENT DURATIONS:

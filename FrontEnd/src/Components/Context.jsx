@@ -27,6 +27,9 @@ const AppContextProvider = ({ children }) => {
   const [reqApprovalstatus, setreqApprovalstatus] = useState("");
   const [selectedmr, setSelectedMr] = useState(null);
   const [pdfurl, setPdfurl] = useState("");
+  const [particulars, setParticulars] = useState([]);
+  const [particularname, setParticularName] = useState([]);
+  const [newMr, setNewMr] = useState(false);
 
   return (
     <AppContext.Provider
@@ -53,6 +56,12 @@ const AppContextProvider = ({ children }) => {
         setSelectedMr,
         setPdfurl,
         pdfurl,
+        particulars,
+        setParticulars,
+        particularname,
+        setParticularName,
+        newMr,
+        setNewMr,
       }}
     >
       {children}
