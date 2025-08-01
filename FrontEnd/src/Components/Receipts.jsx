@@ -210,14 +210,18 @@ const Receipts = () => {
             )}
           </div>
         ) : (
-          <div className="justify-end flex ml-68 ">
-            <button
-              className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
-              onClick={() => setShowmodal(true)}
-            >
-              Approve/Reject
-            </button>
-          </div>
+          <>
+            {sharedTableData.formData.equipMrNoValue && (
+              <div className="justify-end flex ml-68 ">
+                <button
+                  className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
+                  onClick={() => setShowmodal(true)}
+                >
+                  Approve/Reject
+                </button>
+              </div>
+            )}
+          </>
         )}
         {userInfo?.isAdmin ? (
           <div className="justify-end  flex gap-3.5">
