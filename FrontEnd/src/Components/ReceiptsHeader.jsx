@@ -329,6 +329,7 @@ const TableHeader = ({ isAdmin }) => {
                   setNewMr(false);
                 } else {
                   setCleartable(true);
+                  setIsMRSelected(false);
                   setSelectedMr(e.target.value);
                   setSharedTableData({ formData: {}, tableData: [] });
                 }
@@ -445,9 +446,11 @@ const TableHeader = ({ isAdmin }) => {
               <input
                 type="date"
                 value={
-                  new Date(formData.requiredDateValue)
-                    .toISOString()
-                    .split("T")[0]
+                  formData.requiredDateValue
+                    ? new Date(formData.requiredDateValue)
+                        .toISOString()
+                        .split("T")[0]
+                    : ""
                 }
                 onChange={handleChange("requiredDateValue")}
                 className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"

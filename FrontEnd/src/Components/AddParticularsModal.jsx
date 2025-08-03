@@ -20,6 +20,7 @@ const AddParticularsModal = ({ setShowmodal }) => {
     name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 
   const handleSubmit = async (e) => {
+    const filteredfields = fields.filter((f) => f.trim() !== "");
     if (templatename == "" || fields == "") {
       setShowToast(true);
       setErrormessage("Please fill the required fields!!");
@@ -42,7 +43,7 @@ const AddParticularsModal = ({ setShowmodal }) => {
           },
           template: {
             name: templatename,
-            particulars: fields,
+            particulars: filteredfields,
           },
         },
         config
@@ -70,6 +71,7 @@ const AddParticularsModal = ({ setShowmodal }) => {
 
   const updateField = (index, val) => {
     setFields((prev) => {
+      if (!val || val.trim() === "") return;
       const updated = [...prev];
       updated[index] = val;
       return updated;
@@ -111,7 +113,7 @@ const AddParticularsModal = ({ setShowmodal }) => {
                   </label>
                   <input
                     name={`particular-${index}`}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder={`Enter value for Field ${index + 1}`}
                     value={val}
                     onChange={(e) => updateField(index, e.target.value)}

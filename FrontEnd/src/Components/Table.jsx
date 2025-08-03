@@ -193,13 +193,6 @@ export default function VerticalTable({ showcalc }) {
               </select>
             );
           }
-          // if (isVAT) {
-          //   return (
-          //     <div className="text-center font-semibold text-gray-700">
-          //       {vendorVATs[index]?.toFixed(2)}
-          //     </div>
-          //   );
-          // }
 
           return (
             <input
@@ -239,7 +232,7 @@ export default function VerticalTable({ showcalc }) {
       vendorInfoWithTotal.length === 0 ||
       (newMr && !hasInputActivity)
     ) {
-      return [];
+      return Array(vendorInfoWithTotal.length).fill(0);
     }
 
     return vendorInfoWithTotal.map((vendor) => {

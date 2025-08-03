@@ -56,8 +56,26 @@ const fetchParticularstemplate = async (req, res) => {
   }
 };
 
+const deleteparticular = async (req, res) => {
+  const { pid } = req.params;
+
+  try {
+    const particular = await Particulars.findOne({
+      template: pid,
+    });
+    if (!particular) {
+      return res.status(404).json({ error: "Receipt not found" });
+    }
+    await Particulars.deleteOne({ template: pid });
+    return res.status(200).json({ message: "Particular deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   feedParticulars,
   fetchParticulars,
   fetchParticularstemplate,
+  deleteparticular,
 };

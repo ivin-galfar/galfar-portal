@@ -14,6 +14,9 @@ import ParticularsAccordion from "../Components/ParticularsAccordion";
 import { FaPlus } from "react-icons/fa6";
 import AddParticularsModal from "../Components/AddParticularsModal";
 import { MdDelete } from "react-icons/md";
+import axios from "axios";
+import { REACT_SERVER_URL } from "../../config/ENV";
+import Alerts from "../Components/Alerts";
 
 const Particulars = () => {
   const values = {
@@ -28,6 +31,11 @@ const Particulars = () => {
   const { particulars, setParticulars, showupdated, setShowUpdated } =
     useContext(AppContext);
   const [showmodal, setShowmodal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [errormessage, setErrormessage] = useState("");
+  const [triggerdelete, setTriggerdelete] = useState(false);
+  const [deletetemplate, setDeletetemplate] = useState("");
+
   useEffect(() => {
     const loadParticulars = async () => {
       try {
@@ -93,6 +101,33 @@ const Particulars = () => {
         day: "numeric",
       })
     : "-";
+  const handleDelete = async (deletetemplate) => {
+    setShowUpdated(false);
+    try {
+      const config = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      };
+      const { data } = await axios.delete(
+        `${REACT_SERVER_URL}/particulars/${deletetemplate}`,
+        config
+      );
+
+      setShowToast(true);
+      setShowUpdated(true);
+      setTimeout(() => {
+        setShowToast(false);
+        setTriggerdelete(false);
+      }, 1500);
+    } catch (error) {
+      let message = error?.response?.data?.message;
+      setErrormessage(message ? message : error.message);
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 1500);
+    }
+  };
 
   return (
     <div>
@@ -149,7 +184,7 @@ const Particulars = () => {
                     colSpan={columns.length}
                     className="text-center py-4 text-gray-500"
                   >
-                    No records found
+                    No templates found
                   </td>
                 </tr>
               ) : (
@@ -171,8 +206,11 @@ const Particulars = () => {
                     ))}
                     <td className="border-b border-gray-300 px-4 py-2 text-red-600 text-center">
                       <button
-                        onClick={() => handleDelete(row.original)}
-                        className="hover:text-red-800"
+                        onClick={() => {
+                          setTriggerdelete(true);
+                          setDeletetemplate(row.original.template);
+                        }}
+                        className="hover:text-red-800 cursor-pointer"
                       >
                         <MdDelete size={18} />
                       </button>
@@ -185,6 +223,23 @@ const Particulars = () => {
         </section>
       </div>
       {showmodal && <AddParticularsModal setShowmodal={setShowmodal} />}
+      {showToast && errormessage && (
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          {errormessage}
+        </div>
+      )}
+      {showToast && !errormessage && (
+        <div className="z-[9999] fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          ✅ Particular template has been removed successfully!
+        </div>
+      )}
+      {triggerdelete && (
+        <Alerts
+          message="Are you sure you want to Delete the property?"
+          onCancel={() => setTriggerdelete(false)}
+          onConfirm={() => handleDelete(deletetemplate)}
+        />
+      )}
     </div>
   );
 };

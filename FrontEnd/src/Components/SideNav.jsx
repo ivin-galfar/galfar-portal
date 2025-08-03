@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
+import { FaLock } from "react-icons/fa";
 
 const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
   const navigate = useNavigate();
@@ -38,10 +39,9 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
         </a>
         <Link
           to="/particulars"
-          href="#"
-          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+          className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${!userInfo.isAdmin ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}`}
         >
-          Particulars
+          Particulars {!userInfo.isAdmin ? <FaLock /> : ""}
         </Link>
         <Link
           to="/receipts"
