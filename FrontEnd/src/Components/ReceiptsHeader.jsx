@@ -20,7 +20,7 @@ const TableHeader = ({ isAdmin }) => {
     setIsMRSelected,
     setSortVendors,
     setMrno,
-    cleartable,
+    selectedmr,
     setSelectedMr,
     particulars,
     setPdfurl,
@@ -319,7 +319,7 @@ const TableHeader = ({ isAdmin }) => {
             <select
               id="mrNo"
               className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-              value={formData?.equipMrNoValue}
+              value={formData?.equipMrNoValue || "default"}
               onChange={(e) => {
                 handleChange("equipMrNoValue")(e);
                 if (e.target.value !== "default") {
@@ -344,10 +344,7 @@ const TableHeader = ({ isAdmin }) => {
             </select>
           </div>
           <div className="relative group ml-3.5">
-            {/* Icon */}
             {statusLogo}
-
-            {/* Tooltip */}
             {approverComments && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-gray-800 text-white text-xs px-3 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                 {approverComments}

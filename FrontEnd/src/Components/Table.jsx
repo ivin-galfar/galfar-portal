@@ -45,8 +45,7 @@ export default function VerticalTable({ showcalc }) {
       setSharedTableData((prev) => ({ ...prev, tableData: newTableData }));
     } else {
       setTableData([]);
-
-      setSharedTableData((prev) => ({ ...prev, tableData: [] }));
+      setSharedTableData((prev) => ({ ...prev, formData: {}, tableData: [] }));
     }
   }, [particular]);
 

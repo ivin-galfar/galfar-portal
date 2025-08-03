@@ -39,9 +39,9 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
         </a>
         <Link
           to="/particulars"
-          className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${!userInfo.isAdmin ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}`}
+          className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${!userInfo?.isAdmin ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}`}
         >
-          Particulars {!userInfo.isAdmin ? <FaLock /> : ""}
+          Particulars {!userInfo?.isAdmin ? <FaLock /> : ""}
         </Link>
         <Link
           to="/receipts"
