@@ -179,6 +179,7 @@ const TableHeader = ({ isAdmin }) => {
               setSortVendors(false);
               setNewMr(true);
               setParticularName([]);
+              setIsMRSelected(false);
             }}
             className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
               !userInfo?.isAdmin ? "hidden" : ""
