@@ -28,14 +28,21 @@ const feedReceipt = async (req, res) => {
         .json({ message: "Receipt with this equipment number already exists" });
     }
     const transformedTableData = tableData?.map(
-      ({ id, sl, particulars, qty, vendors }) => {
+      ({ id, sl, particulars, qty, vendors, vendorNames }) => {
         const cleanVendors = {};
         if (vendors) {
           Object.entries(vendors).forEach(([key, value]) => {
             cleanVendors[key] = value ?? "";
           });
         }
-        return { id, sl, particulars, qty, vendors: cleanVendors };
+        return {
+          id,
+          sl,
+          particulars,
+          qty,
+          vendors: cleanVendors,
+          ...(vendorNames ? { vendorNames } : {}),
+        };
       }
     );
 

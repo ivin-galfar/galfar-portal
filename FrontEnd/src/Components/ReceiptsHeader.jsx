@@ -19,6 +19,7 @@ const TableHeader = ({ isAdmin }) => {
     mrno,
     setIsMRSelected,
     setSortVendors,
+    sortVendors,
     setMrno,
     selectedmr,
     setSelectedMr,
@@ -70,6 +71,7 @@ const TableHeader = ({ isAdmin }) => {
   };
 
   const fetchReceipt = async (id) => {
+    setSortVendors(true);
     if (id && id != "default") {
       try {
         const config = {
@@ -329,6 +331,7 @@ const TableHeader = ({ isAdmin }) => {
                   setSelectedMr(e.target.value);
                   setNewMr(false);
                 } else {
+                  setSortVendors(false);
                   setCleartable(true);
                   setIsMRSelected(false);
                   setSelectedMr(e.target.value);

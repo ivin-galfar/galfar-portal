@@ -43,19 +43,7 @@ const Receipts = () => {
         config
       );
       setShowToast(true);
-      setSharedTableData({
-        formData: {
-          equipMrNoValue: "",
-          emRegNoValue: "",
-          hiringName: "",
-          locationValue: "",
-          projectValue: "",
-          requiredDateValue: new Date(),
-          requirementDurationValue: "",
-          dateValue: new Date(),
-          file: "",
-        },
-      });
+      setSortVendors(true);
 
       setErrormessage("");
       setTimeout(() => {
@@ -166,30 +154,12 @@ const Receipts = () => {
           <div className="flex gap-3.5 min-w-[280px]">
             {hasInputActivity || isMRSelected ? (
               <>
-                <button
-                  onClick={() => {
-                    setSortVendors(true);
-                    setShowcalc(true);
-                  }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-                >
-                  Calculate
-                </button>
-                <button
-                  onClick={() => {
-                    setSortVendors(false);
-                    setShowcalc(false);
-                  }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
-                >
-                  Reset Calculation
-                </button>
                 {selectedmr != "default" ? (
                   <button
                     onClick={() =>
                       reqApproval(sharedTableData.formData.equipMrNoValue)
                     }
-                    className={`px-4 py-2 ml-110 text-white font-semibold rounded shadow ${
+                    className={`px-4 py-2 ml-185 text-white font-semibold rounded shadow ${
                       buttonClass
                     } ${buttonText == "Already Requested" ? "cursor-not-allowed" : "cursor-pointer"}focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
                   }`}
@@ -227,7 +197,7 @@ const Receipts = () => {
           <div className="justify-end  flex gap-3.5">
             <button
               onClick={handleSubmit}
-              className={` ${isMRSelected ? "hidden" : ""} px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer `}
+              className={` ${isMRSelected ? "hidden" : ""} px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer ${sharedTableData.tableData.sentForApproval == "yes" ? "hidden" : ""}`}
             >
               Create
             </button>

@@ -28,6 +28,7 @@ const tableRowSchema = mongoose.Schema({
     type: Map,
     of: String,
   },
+  vendorNames: { type: [String] },
 });
 
 const dataSchema = mongoose.Schema(

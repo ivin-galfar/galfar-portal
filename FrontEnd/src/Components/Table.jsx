@@ -54,7 +54,7 @@ export default function VerticalTable({ showcalc }) {
     { id: 2, company: "DevHouse Ltd" },
     { id: 3, company: "Devtech Ltd" },
   ];
-
+  const vendorNames = rawData.map((v) => v.company);
   const createData = () =>
     particular.map((descRow, idx) => {
       const row = {
@@ -63,6 +63,7 @@ export default function VerticalTable({ showcalc }) {
         particulars: descRow,
         qty: 1,
         vendors: {},
+        vendorNames: vendorNames,
       };
       rawData.forEach((_, vIdx) => {
         row.vendors[`vendor_${vIdx}`] = "";
@@ -116,12 +117,8 @@ export default function VerticalTable({ showcalc }) {
       }, 0),
       index: vIdx,
     }));
-    if (
-      sortVendors ||
-      !userInfo?.isAdmin ||
-      sharedTableData.formData?.status ||
-      showcalc
-    ) {
+
+    if (sortVendors || !userInfo?.isAdmin || sharedTableData.formData?.status) {
       return vendors.slice().sort((a, b) => a.total - b.total);
     } else {
       return vendors;
@@ -407,8 +404,8 @@ export default function VerticalTable({ showcalc }) {
             ))}
           </tr>
           {(sharedTableData.formData.sentForApproval == "yes" ||
-            showcalc ||
-            !userInfo?.isAdmin) &&
+            !userInfo?.isAdmin ||
+            sortVendors) &&
             vendorTotals.some((val) => val > 0) && (
               <tr>
                 <td
