@@ -54,7 +54,6 @@ export default function VerticalTable({ showcalc }) {
     { id: 2, company: "DevHouse Ltd" },
     { id: 3, company: "Devtech Ltd" },
   ];
-  const vendorNames = rawData.map((v) => v.company);
   const createData = () =>
     particular.map((descRow, idx) => {
       const row = {
@@ -63,7 +62,6 @@ export default function VerticalTable({ showcalc }) {
         particulars: descRow,
         qty: 1,
         vendors: {},
-        vendorNames: vendorNames,
       };
       rawData.forEach((_, vIdx) => {
         row.vendors[`vendor_${vIdx}`] = "";
@@ -71,7 +69,15 @@ export default function VerticalTable({ showcalc }) {
       return row;
     });
   const shouldSkipRow = (particulars) => {
-    const skipLabels = ["NET PRICE", "RATING", "NOTE"];
+    const skipLabels = [
+      "NET PRICE",
+      "RATING",
+      "REMARKS",
+      "COMPANY NAME",
+      "NOTE",
+      "VENDOR NAME",
+      "NAME",
+    ];
     return skipLabels.includes(particulars?.trim().toUpperCase());
   };
   const columnHelper = createColumnHelper();
@@ -165,6 +171,8 @@ export default function VerticalTable({ showcalc }) {
           const value = getValue() || "";
           const isAvailability =
             row.original.particulars.trim().toUpperCase() === "AVAILABILITY";
+          const isCompanyname =
+            row.original.particulars.trim().toUpperCase() === "VENDOR NAME";
           const isReadOnly = !userInfo?.isAdmin;
           if (isAvailability) {
             if (!userInfo?.isAdmin) {
@@ -191,20 +199,26 @@ export default function VerticalTable({ showcalc }) {
           }
 
           return (
-            <input
-              key={`${row.id}_${vendorKey}`}
-              type="text"
-              value={value}
-              onChange={(e) =>
-                handleInputChange(row.index, vendorKey, e.target.value)
-              }
-              className={`w-full px-2 py-1 text-center ${
-                !userInfo?.isAdmin
-                  ? "cursor-not-allowed"
-                  : "border rounded bg-gray-100"
-              }`}
-              readOnly={isReadOnly}
-            />
+            <>
+              {isReadOnly ? (
+                <div
+                  className={`max-w-2xl px-2 py-1 text-center break-words whitespace-normal ${isCompanyname ? "font-bold" : ""}`}
+                  style={{ maxWidth: "150px" }}
+                >
+                  {value}
+                </div>
+              ) : (
+                <input
+                  key={`${row.id}_${vendorKey}`}
+                  type="text"
+                  value={value}
+                  onChange={(e) =>
+                    handleInputChange(row.index, vendorKey, e.target.value)
+                  }
+                  className={`w-full px-2 py-1 text-center border rounded bg-gray-100`}
+                />
+              )}
+            </>
           );
         },
       };
@@ -279,7 +293,6 @@ export default function VerticalTable({ showcalc }) {
               <th key={vendor.id} className="border px-4 py-2 w-40">
                 <div className="flex flex-col items-center">
                   <span className="font-medium">Vendor {vendor.id}</span>
-                  <span className="text-xs">{vendor.company}</span>
                 </div>
               </th>
             ))}
@@ -329,7 +342,7 @@ export default function VerticalTable({ showcalc }) {
                     return (
                       <td
                         key={cell.id}
-                        className={`border px-4 py-2 align-top whitespace-nowrap font-semibold ${
+                        className={`border px-4 py-2 align-top whitespace-nowrap  ${
                           isTotalRow ? "bg-yellow-100" : ""
                         }`}
                       >

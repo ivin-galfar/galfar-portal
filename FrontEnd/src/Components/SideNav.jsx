@@ -31,12 +31,12 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
       </div>
 
       <nav className="p-4 space-y-2">
-        <a
-          href="#"
+        <Link
+          to="/"
           className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         >
           Dashboard
-        </a>
+        </Link>
         <Link
           to="/particulars"
           className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${!userInfo?.isAdmin ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}`}
