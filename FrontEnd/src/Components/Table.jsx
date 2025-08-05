@@ -234,7 +234,7 @@ export default function VerticalTable({ showcalc }) {
   }, [
     userInfo?.isAdmin,
     sortVendors,
-    !userInfo?.isAdmin ? vendorInfoWithTotal : "",
+    ...(userInfo?.isAdmin ? [] : [vendorInfoWithTotal]),
   ]);
   const vendorVATs = useMemo(() => {
     if (

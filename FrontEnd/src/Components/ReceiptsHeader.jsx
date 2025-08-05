@@ -34,7 +34,8 @@ const TableHeader = ({ isAdmin }) => {
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
-
+  const [errormessage, setErrormessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
   useEffect(() => {
     const loadParticulars = async () => {
       try {
@@ -142,19 +143,26 @@ const TableHeader = ({ isAdmin }) => {
           if (response.ok) {
             const data = await response.json();
             uploadedUrls.push(data.secure_url);
-            setPdfurl(uploadedUrls);
           }
         } catch (error) {
           console.error("Error uploading image:", error);
+          setErrormessage(true);
         }
       }
-      setSharedTableData((prev) => ({
-        ...prev,
-        formData: {
-          ...prev.formData,
-          file: uploadedUrls,
-        },
-      }));
+      if (uploadedUrls.length > 0) {
+        setSharedTableData((prev) => ({
+          ...prev,
+          formData: {
+            ...prev.formData,
+            file: uploadedUrls,
+          },
+        }));
+        setShowToast(true);
+        setErrormessage(false);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 1500);
+      }
     }
   };
 
@@ -275,24 +283,43 @@ const TableHeader = ({ isAdmin }) => {
             </div>
           ) : (
             <>
-              <div className="relative flex items-center gap-2">
-                {sharedTableData.formData.file?.map((fileurl, index) => (
-                  <a
-                    href={fileurl}
-                    target="_blank"
-                    download
-                    className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
-                  >
-                    Download Attachment {index + 1}
-                    <FaFileDownload size={20} className="relative" />
-                  </a>
-                ))}
-                {sharedTableData.formData.file?.length > 0 && (
+              {sharedTableData.formData.file?.length <= 2 ? (
+                <div className="relative flex items-center gap-2">
+                  {sharedTableData.formData.file.map((fileurl, index) => (
+                    <a
+                      key={index}
+                      href={fileurl}
+                      target="_blank"
+                      download
+                      className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
+                    >
+                      Download Attachment {index + 1}
+                      <FaFileDownload size={20} className="relative" />
+                    </a>
+                  ))}
                   <span className="absolute -top-6 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
                     {sharedTableData.formData.file.length}
                   </span>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="relative flex flex-wrap gap-2 max-w-full">
+                  {sharedTableData.formData.file.map((fileurl, index) => (
+                    <a
+                      key={index}
+                      href={fileurl}
+                      target="_blank"
+                      download
+                      className="flex items-center gap-10 text-xs bg-blue-100 text-blue-700 px-2 py-1 max-w-[48%] rounded-md cursor-pointer hover:bg-blue-200 transition-all flex-shrink min-w-0 truncate"
+                    >
+                      <span>Attachment {index + 1}</span>
+                      <FaFileDownload size={16} />
+                    </a>
+                  ))}
+                  <span className="absolute -top-6 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                    {sharedTableData.formData.file.length}
+                  </span>
+                </div>
+              )}
             </>
           )}
           <div className="w-full flex justify-end">
@@ -311,11 +338,9 @@ const TableHeader = ({ isAdmin }) => {
                 />
               ) : (
                 <span>
-                  <p>
-                    {new Date(formData?.dateValue).getDate()}.
-                    {new Date(formData?.dateValue).getMonth() + 1}.
-                    {new Date(formData?.dateValue).getFullYear()}
-                  </p>
+                  {formData?.dateValue
+                    ? new Date(formData.dateValue).toISOString().split("T")[0]
+                    : "N/A"}
                 </span>
               )}
             </h4>
@@ -494,6 +519,16 @@ const TableHeader = ({ isAdmin }) => {
           </div>
         </div>
       </div>
+      {showToast && !errormessage && (
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          ✅ Attachments uploaded!
+        </div>
+      )}
+      {showToast && errormessage && (
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          {errormessage}
+        </div>
+      )}
     </div>
   );
 };

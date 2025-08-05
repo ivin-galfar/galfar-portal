@@ -142,7 +142,7 @@ const Receipts = () => {
       : "Already Requested"
     : "Request Approval";
   return (
-    <div className="p-10  pb-28 relative">
+    <div className="p-5  pb-28 relative">
       <h1 className="font-bold mb-4">
         <TableHeader isAdmin={userInfo?.isAdmin} />
       </h1>
