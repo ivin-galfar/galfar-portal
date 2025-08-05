@@ -122,37 +122,39 @@ const TableHeader = ({ isAdmin }) => {
   }
 
   const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+    const files = e.target.files;
+    const uploadedUrls = [];
+    if (files) {
+      for (const file of files) {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", "Techno_computers");
+          formData.append("resource_type", "raw");
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
 
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", "Techno_computers");
-        formData.append("resource_type", "raw");
-        const response = await fetch(
-          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`,
-          {
-            method: "POST",
-            body: formData,
+          if (response.ok) {
+            const data = await response.json();
+            uploadedUrls.push(data.secure_url);
+            setPdfurl(uploadedUrls);
           }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          const pdf_Url = data.secure_url;
-          setPdfurl(pdf_Url);
-          setSharedTableData((prev) => ({
-            ...prev,
-            formData: {
-              ...prev.formData,
-              file: pdf_Url,
-            },
-          }));
+        } catch (error) {
+          console.error("Error uploading image:", error);
         }
-      } catch (error) {
-        console.error("Error uploading image:", error);
       }
+      setSharedTableData((prev) => ({
+        ...prev,
+        formData: {
+          ...prev.formData,
+          file: uploadedUrls,
+        },
+      }));
     }
   };
 
@@ -256,9 +258,15 @@ const TableHeader = ({ isAdmin }) => {
               >
                 Upload File
                 <FaFileUpload size={20} />
+                {sharedTableData.formData.file?.length > 0 && (
+                  <span className="relative -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                    {sharedTableData.formData.file.length}
+                  </span>
+                )}
                 <input
                   id="receiptfile"
                   type="file"
+                  multiple
                   accept="image/*"
                   className="hidden"
                   onChange={handleFileUpload}
@@ -268,20 +276,22 @@ const TableHeader = ({ isAdmin }) => {
           ) : (
             <>
               <div className="relative flex items-center gap-2">
-                <a
-                  href={sharedTableData.formData.file}
-                  target="_blank"
-                  download
-                  className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
-                >
-                  Download Attachments
-                  <FaFileDownload size={20} className="relative" />
-                  {sharedTableData.formData.file && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                      1
-                    </span>
-                  )}
-                </a>
+                {sharedTableData.formData.file?.map((fileurl, index) => (
+                  <a
+                    href={fileurl}
+                    target="_blank"
+                    download
+                    className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
+                  >
+                    Download Attachment {index + 1}
+                    <FaFileDownload size={20} className="relative" />
+                  </a>
+                ))}
+                {sharedTableData.formData.file?.length > 0 && (
+                  <span className="absolute -top-6 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                    {sharedTableData.formData.file.length}
+                  </span>
+                )}
               </div>
             </>
           )}

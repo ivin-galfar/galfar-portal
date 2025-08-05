@@ -16,7 +16,7 @@ const formDataSchema = mongoose.Schema({
   sentForApproval: { type: String },
   status: { type: String },
   approverComments: { type: String },
-  file: { type: String, required: false },
+  file: { type: [String], required: false },
 });
 
 const tableRowSchema = mongoose.Schema({
