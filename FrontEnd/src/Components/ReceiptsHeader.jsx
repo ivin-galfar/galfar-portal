@@ -258,7 +258,7 @@ const TableHeader = ({ isAdmin }) => {
         </h3>
 
         <div className="flex w-1/4 justify-between">
-          {userInfo.isAdmin ? (
+          {userInfo?.isAdmin ? (
             <div className="flex items-center gap-2">
               <label
                 htmlFor="receiptfile"
@@ -303,7 +303,7 @@ const TableHeader = ({ isAdmin }) => {
                 </div>
               ) : (
                 <div className="relative flex flex-wrap gap-2 max-w-full">
-                  {sharedTableData.formData.file.map((fileurl, index) => (
+                  {sharedTableData.formData.file?.map((fileurl, index) => (
                     <a
                       key={index}
                       href={fileurl}
@@ -316,7 +316,7 @@ const TableHeader = ({ isAdmin }) => {
                     </a>
                   ))}
                   <span className="absolute -top-6 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                    {sharedTableData.formData.file.length}
+                    {sharedTableData.formData.file?.length}
                   </span>
                 </div>
               )}
