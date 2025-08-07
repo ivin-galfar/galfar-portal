@@ -13,3 +13,6 @@
 .animate-slide-in {
   animation: slide-in 0.4s ease-out;
 }
+tbody tr:hover {
+  background-color: #f3f4f6; /* Tailwind's gray-100 */
+}

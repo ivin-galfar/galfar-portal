@@ -287,7 +287,7 @@ const TableHeader = ({ isAdmin }) => {
       <div className="flex justify-between items-center w-full relative">
         <div className="w-1/3" />
 
-        <h3 className="text-md font-medium text-center absolute left-1/2 transform -translate-x-1/2 italic">
+        <h3 className="text-md font-medium text-center absolute left-1/2 ml-10 transform -translate-x-1/2 italic">
           COMPARATIVE STATEMENT
         </h3>
 
@@ -415,12 +415,6 @@ const TableHeader = ({ isAdmin }) => {
                 </option>
               ))}
             </select>
-            {isAdmin && selectedmr !== null && selectedmr !== "default" && (
-              <FaTrash
-                className="text-red-500 cursor-pointer inline-block ml-2"
-                onClick={() => setTriggerdelete(true)}
-              />
-            )}
           </div>
           <div className="relative group ml-3.5">
             {statusLogo}
@@ -431,7 +425,6 @@ const TableHeader = ({ isAdmin }) => {
             )}
           </div>
         </div>
-
         <div className="flex items-center justify-center text-sm font-medium w-1/3">
           {isAdmin ? (
             <>
@@ -451,8 +444,19 @@ const TableHeader = ({ isAdmin }) => {
             </p>
           )}
         </div>
-
-        <div className="w-1/3" />
+        <div className="w-1/3 flex justify-end">
+          {isAdmin && selectedmr && selectedmr !== "default" && (
+            <button
+              onClick={() => setTriggerdelete(true)}
+              aria-label="Delete selected MR"
+              className="flex items-center px-2 py-0.5 bg-red-500 text-white text-sm rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition cursor-pointer"
+              type="button"
+            >
+              <FaTrash className="mr-1" size={14} />
+              Delete Statement
+            </button>
+          )}
+        </div>
       </div>
       <div className="flex justify-between mt-4 px-4">
         <div className="flex flex-col space-y-1 text-left w-1/3">

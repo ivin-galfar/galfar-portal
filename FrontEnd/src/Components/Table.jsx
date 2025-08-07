@@ -173,6 +173,8 @@ export default function VerticalTable({ showcalc }) {
             row.original.particulars.trim().toUpperCase() === "AVAILABILITY";
           const isCompanyname =
             row.original.particulars.trim().toUpperCase() === "VENDOR NAME";
+          const isRemarks =
+            row.original.particulars.trim().toUpperCase() === "REMARKS";
           const isReadOnly = !userInfo?.isAdmin;
           if (isAvailability) {
             if (!userInfo?.isAdmin) {
@@ -212,10 +214,24 @@ export default function VerticalTable({ showcalc }) {
                   key={`${row.id}_${vendorKey}`}
                   type="text"
                   value={value}
+                  placeholder={
+                    isCompanyname
+                      ? "Vendor name"
+                      : isRemarks
+                        ? "--Remarks--"
+                        : ""
+                  }
                   onChange={(e) =>
                     handleInputChange(row.index, vendorKey, e.target.value)
                   }
-                  className={`w-full px-2 py-1 text-center border rounded bg-gray-100`}
+                  className={`w-full px-2 py-1 text-center text-sm border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all placeholder:text-gray-400`}
+                  aria-label={
+                    isCompanyname
+                      ? "Vendor name"
+                      : isRemarks
+                        ? "Remarks"
+                        : "Input"
+                  }
                 />
               )}
             </>
@@ -436,7 +452,18 @@ export default function VerticalTable({ showcalc }) {
                         : "text-gray-400"
                     }`}
                   >
-                    {index === 0 ? "✅ Selected" : "-"}
+                    {index === 0 ? (
+                      <div className="relative group inline-block">
+                        <span className="inline-block bg-green-500 text-white px-2 py-0.5 rounded text-xs">
+                          ✅ Selected
+                        </span>
+                        <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                          Primary selected vendor
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-xs">–</span>
+                    )}
                   </td>
                 ))}
               </tr>
