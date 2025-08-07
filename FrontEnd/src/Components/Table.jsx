@@ -53,8 +53,6 @@ export default function VerticalTable({ showcalc }) {
     { id: 1, company: "" },
     { id: 2, company: "" },
     { id: 3, company: "" },
-    { id: 4, company: "" },
-    { id: 5, company: "" },
   ];
   const createData = () =>
     particular.map((descRow, idx) => {
