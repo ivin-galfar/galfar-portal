@@ -198,7 +198,6 @@ const TableHeader = ({ isAdmin }) => {
       setErrormessage(message ? message : error.message);
     }
   };
-  // console.log(selectedmr);
 
   return (
     <div className="text-center mb-6 space-y-2">
@@ -224,6 +223,7 @@ const TableHeader = ({ isAdmin }) => {
               setMrno([]);
               setSortVendors(false);
               setNewMr(true);
+              setSelectedMr(null);
               setParticularName([]);
               setIsMRSelected(false);
             }}
@@ -451,7 +451,7 @@ const TableHeader = ({ isAdmin }) => {
           )}
         </div>
         <div className="w-1/3 flex justify-end">
-          {isAdmin && selectedmr !== "default" && (
+          {isAdmin && selectedmr !== null && selectedmr !== "default" && (
             <button
               onClick={() => setTriggerdelete(true)}
               aria-label="Delete selected MR"
