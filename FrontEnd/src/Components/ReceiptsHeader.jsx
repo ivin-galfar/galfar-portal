@@ -258,26 +258,29 @@ const TableHeader = ({ isAdmin }) => {
                 >
                   Choose Template:
                 </label>{" "}
-                <select
-                  id="templateSelect"
-                  value={particularname}
-                  onChange={(e) => setParticularName(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                >
-                  <option value="">Select Template</option>
-                  {Array.isArray(particulars) &&
-                    particulars?.map((template, index) => (
-                      <option key={template._id} value={template.template}>
-                        {template.template}
-                      </option>
-                    ))}
-                </select>
+                <div className="w-full max-w-xs">
+                  {" "}
+                  <select
+                    id="templateSelect"
+                    value={particularname}
+                    onChange={(e) => setParticularName(e.target.value)}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white overflow-hidden"
+                  >
+                    <option value="">Select Template</option>
+                    {Array.isArray(particulars) &&
+                      particulars.map((template, index) => (
+                        <option key={template._id} value={template.template}>
+                          {template.template}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
             }
           </div>
         </div>
         <div className="flex-1 flex justify-center mr-35">
-          <h2 className="text-2xl font-medium uppercase text-center">
+          <h2 className="text-2xl font-medium uppercase text-center p-2">
             GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
           </h2>
         </div>
@@ -382,15 +385,15 @@ const TableHeader = ({ isAdmin }) => {
         </div>
       </div>
 
-      <div className="flex items-center w-full">
-        <div className="flex items-center text-sm font-medium w-1/3">
-          <div className="ml-4">
-            <label htmlFor="mrNo" className="text-gray-700 mr-2">
+      <div className="flex items-center w-full p-0.5">
+        <div className="flex items-start gap-2 text-sm font-medium w-full max-w-md">
+          <div className="flex flex-col flex-grow">
+            <label htmlFor="mrNo" className=" text-left text-gray-700 mb-1">
               Choose MR No.
             </label>
             <select
               id="mrNo"
-              className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               value={formData?.equipMrNoValue || "default"}
               onChange={(e) => {
                 handleChange("equipMrNoValue")(e);
@@ -416,7 +419,9 @@ const TableHeader = ({ isAdmin }) => {
               ))}
             </select>
           </div>
-          <div className="relative group ml-3.5">
+
+          {/* Tooltip */}
+          <div className="relative group mt-6">
             {statusLogo}
             {approverComments && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-gray-800 text-white text-xs px-3 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
@@ -425,7 +430,8 @@ const TableHeader = ({ isAdmin }) => {
             )}
           </div>
         </div>
-        <div className="flex items-center justify-center text-sm font-medium w-1/3">
+
+        <div className="flex items-center justify-center text-sm font-medium w-1/2">
           {isAdmin ? (
             <>
               <span className="mr-2">HIRING -</span>
@@ -445,7 +451,7 @@ const TableHeader = ({ isAdmin }) => {
           )}
         </div>
         <div className="w-1/3 flex justify-end">
-          {isAdmin && selectedmr && selectedmr !== "default" && (
+          {isAdmin && selectedmr !== "default" && (
             <button
               onClick={() => setTriggerdelete(true)}
               aria-label="Delete selected MR"

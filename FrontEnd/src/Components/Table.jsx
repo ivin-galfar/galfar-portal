@@ -224,7 +224,7 @@ export default function VerticalTable({ showcalc }) {
                   onChange={(e) =>
                     handleInputChange(row.index, vendorKey, e.target.value)
                   }
-                  className={`w-full px-2 py-1 text-center text-sm border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all placeholder:text-gray-400`}
+                  className={`w-full px-2 py-1 text-center  font-semibold border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all placeholder:text-gray-400`}
                   aria-label={
                     isCompanyname
                       ? "Vendor name"
