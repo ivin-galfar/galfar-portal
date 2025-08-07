@@ -235,7 +235,7 @@ const Particulars = () => {
       )}
       {triggerdelete && (
         <Alerts
-          message="Are you sure you want to Delete the property?"
+          message="Are you sure you want to Delete the Particular template?"
           onCancel={() => setTriggerdelete(false)}
           onConfirm={() => handleDelete(deletetemplate)}
         />

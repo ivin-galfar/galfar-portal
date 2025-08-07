@@ -8,6 +8,8 @@ import { RxCrossCircled } from "react-icons/rx";
 import { FaFileUpload } from "react-icons/fa";
 import { FaFileDownload } from "react-icons/fa";
 import fetchParticulars from "../../Helpers/ParticularsApi";
+import { FaTrash } from "react-icons/fa";
+import Alerts from "../Components/Alerts";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
@@ -30,12 +32,16 @@ const TableHeader = ({ isAdmin }) => {
     setParticulars,
     setNewMr,
     newMr,
+    deleted,
+    setDeleted,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
   const [editing, setEditing] = useState(false);
   const [errormessage, setErrormessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [triggerdelete, setTriggerdelete] = useState(false);
+
   useEffect(() => {
     const loadParticulars = async () => {
       try {
@@ -165,6 +171,34 @@ const TableHeader = ({ isAdmin }) => {
       }
     }
   };
+  const handleDelete = async (mr) => {
+    try {
+      const config = {
+        "Content-type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      };
+      const response = await axios.delete(
+        `${REACT_SERVER_URL}/receipts/${mr}`,
+        config
+      );
+      setShowToast(true);
+      setErrormessage("");
+      setDeleted(true);
+      setTriggerdelete(false);
+      setTimeout(() => {
+        setShowToast(false);
+        setDeleted(false);
+      }, 1500);
+      setParticularName([]);
+      setIsMRSelected(false);
+      setSelectedMr(null);
+    } catch (error) {
+      setDeleted(false);
+      let message = error?.response?.data?.message;
+      setErrormessage(message ? message : error.message);
+    }
+  };
+  // console.log(selectedmr);
 
   return (
     <div className="text-center mb-6 space-y-2">
@@ -381,6 +415,12 @@ const TableHeader = ({ isAdmin }) => {
                 </option>
               ))}
             </select>
+            {isAdmin && selectedmr !== null && selectedmr !== "default" && (
+              <FaTrash
+                className="text-red-500 cursor-pointer inline-block ml-2"
+                onClick={() => setTriggerdelete(true)}
+              />
+            )}
           </div>
           <div className="relative group ml-3.5">
             {statusLogo}
@@ -528,6 +568,18 @@ const TableHeader = ({ isAdmin }) => {
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
           {errormessage}
         </div>
+      )}
+      {showToast && !errormessage && deleted && (
+        <div className="z-[9999] fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          ✅ Statement successfully Deleted!!
+        </div>
+      )}
+      {triggerdelete && (
+        <Alerts
+          message="Are you sure you want to Delete the Selected statement?"
+          onCancel={() => setTriggerdelete(false)}
+          onConfirm={() => handleDelete(selectedmr)}
+        />
       )}
     </div>
   );

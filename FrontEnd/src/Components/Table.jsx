@@ -50,9 +50,11 @@ export default function VerticalTable({ showcalc }) {
   }, [particular]);
 
   const rawData = [
-    { id: 1, company: "Techzpark LLC" },
-    { id: 2, company: "DevHouse Ltd" },
-    { id: 3, company: "Devtech Ltd" },
+    { id: 1, company: "" },
+    { id: 2, company: "" },
+    { id: 3, company: "" },
+    { id: 4, company: "" },
+    { id: 5, company: "" },
   ];
   const createData = () =>
     particular.map((descRow, idx) => {

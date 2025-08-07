@@ -31,6 +31,7 @@ const AppContextProvider = ({ children }) => {
   const [particularname, setParticularName] = useState([]);
   const [newMr, setNewMr] = useState(false);
   const [showupdated, setShowUpdated] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   return (
     <AppContext.Provider
@@ -65,6 +66,8 @@ const AppContextProvider = ({ children }) => {
         setNewMr,
         setShowUpdated,
         showupdated,
+        deleted,
+        setDeleted,
       }}
     >
       {children}

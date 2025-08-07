@@ -10,13 +10,13 @@ const Alerts = ({ message, onCancel, onConfirm }) => {
             onClick={onCancel}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition cursor-pointer"
           >
-            Cancel
+            No
           </button>
           <button
             onClick={onConfirm}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition cursor-pointer"
           >
-            OK
+            Yes
           </button>
         </div>
       </div>

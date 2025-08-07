@@ -121,10 +121,29 @@ const updateApprovalstatus = async (req, res) => {
   }
 };
 
+const removeReceipt = async (req, res) => {
+  try {
+    const { mrno } = req.params;
+    const receipt = await Receipt.findOne({ "formData.equipMrNoValue": mrno });
+
+    if (!receipt) {
+      return res.status(404).json({ error: "Receipt not found" });
+    }
+
+    await Receipt.findOneAndDelete({
+      "formData.equipMrNoValue": mrno,
+    });
+    res.status(200).json({ message: "The receipt is successfully deleted!!" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   feedReceipt,
   fetchReceipts,
   fetchReceipt,
   updatestatus,
   updateApprovalstatus,
+  removeReceipt,
 };
