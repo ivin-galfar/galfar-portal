@@ -14,6 +14,8 @@ const formDataSchema = mongoose.Schema({
   requiredDateValue: { type: String },
   requirementDurationValue: { type: String },
   sentForApproval: { type: String },
+  selectedVendorIndex: { type: Number },
+  selectedVendorReason: { type: String },
   status: { type: String },
   approverComments: { type: String },
   file: { type: [String], required: false },

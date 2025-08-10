@@ -88,9 +88,25 @@ const fetchReceipt = async (req, res) => {
 const updatestatus = async (req, res) => {
   try {
     const { mrno } = req.params;
+    const { selectedVendorIndex } = req.body;
+    const { selectedVendorReason } = req.body;
+
+    const receiptExists = await Receipt.findOne({
+      "formData.equipMrNoValue": mrno,
+    });
+
+    if (!receiptExists) {
+      return res.status(404).json({ error: "Receipt not found" });
+    }
     const receipt = await Receipt.findOneAndUpdate(
       { "formData.equipMrNoValue": mrno },
-      { $set: { "formData.sentForApproval": "yes" } },
+      {
+        $set: {
+          "formData.selectedVendorIndex": selectedVendorIndex,
+          "formData.selectedVendorReason": selectedVendorReason,
+          "formData.sentForApproval": "yes",
+        },
+      },
       { new: true }
     );
 

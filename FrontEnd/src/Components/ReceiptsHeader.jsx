@@ -303,11 +303,13 @@ const TableHeader = ({ isAdmin }) => {
               >
                 Upload File
                 <FaFileUpload size={20} />
-                {sharedTableData.formData.file?.length > 0 && (
-                  <span className="relative -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                    {sharedTableData.formData.file.length}
-                  </span>
-                )}
+                {Array.isArray(sharedTableData.formData?.file) &&
+                  sharedTableData.formData?.file?.filter((f) => f.trim() !== "")
+                    .length > 0 && (
+                    <span className="relative -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                      {sharedTableData.formData.file.length}
+                    </span>
+                  )}
                 <input
                   id="receiptfile"
                   type="file"
@@ -320,43 +322,46 @@ const TableHeader = ({ isAdmin }) => {
             </div>
           ) : (
             <>
-              {sharedTableData.formData.file?.length <= 2 ? (
-                <div className="relative flex items-center gap-2">
-                  {sharedTableData.formData.file.map((fileurl, index) => (
-                    <a
-                      key={index}
-                      href={fileurl}
-                      target="_blank"
-                      download
-                      className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
-                    >
-                      Download Attachment {index + 1}
-                      <FaFileDownload size={20} className="relative" />
-                    </a>
-                  ))}
-                  <span className="absolute -top-6 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                    {sharedTableData.formData.file.length}
-                  </span>
-                </div>
-              ) : (
-                <div className="relative flex flex-wrap gap-2 max-w-full">
-                  {sharedTableData.formData.file?.map((fileurl, index) => (
-                    <a
-                      key={index}
-                      href={fileurl}
-                      target="_blank"
-                      download
-                      className="flex items-center gap-10 text-xs bg-blue-100 text-blue-700 px-2 py-1 max-w-[48%] rounded-md cursor-pointer hover:bg-blue-200 transition-all flex-shrink min-w-0 truncate"
-                    >
-                      <span>Attachment {index + 1}</span>
-                      <FaFileDownload size={16} />
-                    </a>
-                  ))}
-                  <span className="absolute -top-6 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                    {sharedTableData.formData.file?.length}
-                  </span>
-                </div>
-              )}
+              {Array.isArray(sharedTableData.formData?.file) &&
+                sharedTableData.formData.file?.filter((f) => f.trim() !== "")
+                  .length > 0 &&
+                (sharedTableData.formData?.file?.length <= 2 ? (
+                  <div className="relative flex items-center gap-2">
+                    {sharedTableData.formData.file.map((fileurl, index) => (
+                      <a
+                        key={index}
+                        href={fileurl}
+                        target="_blank"
+                        download
+                        className="flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-200 transition-all"
+                      >
+                        Download Attachment {index + 1}
+                        <FaFileDownload size={20} className="relative" />
+                      </a>
+                    ))}
+                    <span className="absolute -top-6 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                      {sharedTableData.formData.file.length}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="relative flex flex-wrap gap-2 max-w-full">
+                    {sharedTableData.formData.file?.map((fileurl, index) => (
+                      <a
+                        key={index}
+                        href={fileurl}
+                        target="_blank"
+                        download
+                        className="flex items-center gap-10 text-xs bg-blue-100 text-blue-700 px-2 py-1 max-w-[48%] rounded-md cursor-pointer hover:bg-blue-200 transition-all flex-shrink min-w-0 truncate"
+                      >
+                        <span>Attachment {index + 1}</span>
+                        <FaFileDownload size={16} />
+                      </a>
+                    ))}
+                    <span className="absolute -top-6 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
+                      {sharedTableData.formData.file?.length}
+                    </span>
+                  </div>
+                ))}
             </>
           )}
           <div className="w-full flex justify-end">
@@ -387,7 +392,9 @@ const TableHeader = ({ isAdmin }) => {
 
       <div className="flex items-center w-full p-0.5">
         <div className="flex items-start gap-2 text-sm font-medium w-full max-w-md">
-          <div className="flex flex-col flex-grow">
+          <div
+            className={`flex flex-col flex-grow ${particularname != "" ? "hidden" : ""}`}
+          >
             <label htmlFor="mrNo" className=" text-left text-gray-700 mb-1">
               Choose MR No.
             </label>
@@ -420,7 +427,6 @@ const TableHeader = ({ isAdmin }) => {
             </select>
           </div>
 
-          {/* Tooltip */}
           <div className="relative group mt-6">
             {statusLogo}
             {approverComments && (

@@ -7,6 +7,7 @@ import { useState } from "react";
 import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import ApproveModal from "./ApproveModal";
+import ReasonForSelection from "./ReasonForSelection";
 
 const Receipts = () => {
   const userInfo = useUserInfo();
@@ -18,6 +19,7 @@ const Receipts = () => {
   const {
     sharedTableData,
     setSharedTableData,
+    setNewMr,
     setMrno,
     selectedmr,
     setSortVendors,
@@ -27,6 +29,8 @@ const Receipts = () => {
     setreqApprovalstatus,
     setReqMrno,
     setIsMRSelected,
+    selectedVendorIndex,
+    setParticularName,
   } = useContext(AppContext);
 
   const handleSubmit = async () => {
@@ -73,7 +77,8 @@ const Receipts = () => {
       setShowToast(true);
       setSortVendors(true);
       setIsMRSelected(true);
-      // setSelectedMr(null);
+      setParticularName([]);
+      setNewMr(false);
       setErrormessage("");
       setTimeout(() => {
         setShowToast(false);
@@ -119,43 +124,6 @@ const Receipts = () => {
     fetchMR();
   }, [sharedTableData, isMRSelected]);
 
-  const reqApproval = async (mrno) => {
-    try {
-      const response = await axios.put(`${REACT_SERVER_URL}/receipts/${mrno}`);
-      if (response.data == null) {
-        setErrormessage(
-          "Please create statement before requesting for approval!"
-        );
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 1500);
-        return;
-      }
-
-      setreqApprovalstatus(response.data.formData.sentForApproval);
-      setErrormessage("");
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 1500);
-      setSharedTableData((prev) => ({
-        ...prev,
-        formData: {
-          ...prev.formData,
-          sentForApproval: "yes",
-        },
-      }));
-    } catch (error) {
-      let message = error?.response?.data?.message;
-      setErrormessage(message ? message : error.message);
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 1500);
-    }
-  };
-
   const isSentForApproval = sharedTableData.formData.sentForApproval === "yes";
 
   const isStatusSet = !!sharedTableData.formData.status;
@@ -185,9 +153,9 @@ const Receipts = () => {
               <>
                 {selectedmr != "default" ? (
                   <button
-                    onClick={() =>
-                      reqApproval(sharedTableData.formData.equipMrNoValue)
-                    }
+                    onClick={() => {
+                      setShowmodal(true);
+                    }}
                     className={`px-4 py-2 ml-185 text-white font-semibold rounded shadow ${
                       buttonClass
                     } ${buttonText == "Already Requested" ? "cursor-not-allowed" : "cursor-pointer"}focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
@@ -246,7 +214,7 @@ const Receipts = () => {
           {errormessage}
         </div>
       )}
-      {showToast && !errormessage && (
+      {showToast && isMRSelected && !errormessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
           ✅ Receipt details added successfully!
         </div>
@@ -256,10 +224,20 @@ const Receipts = () => {
           ✅ You have succesfully requested for Approval!
         </div>
       )}
-      {showmodal && (
+      {showmodal && !userInfo?.isAdmin && (
         <ApproveModal
           setShowmodal={setShowmodal}
           mrno={sharedTableData?.formData?.equipMrNoValue}
+        />
+      )}
+      {showmodal && userInfo?.isAdmin && (
+        <ReasonForSelection
+          setShowmodal={setShowmodal}
+          reqApprovalMR={sharedTableData.formData.equipMrNoValue}
+          setShowToast={setShowToast}
+          setErrormessage={setErrormessage}
+          setreqApprovalstatus={setreqApprovalstatus}
+          selectedVendorIndex={selectedVendorIndex}
         />
       )}
     </div>

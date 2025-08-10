@@ -21,8 +21,15 @@ export default function VerticalTable({ showcalc }) {
     particularname,
     newMr,
     hasInputActivity,
+    selectedVendorIndex,
+    setSelectedVendorIndex,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
+
+  useEffect(() => {
+    setSelectedVendorIndex(sharedTableData.formData.selectedVendorIndex ?? 0);
+  }, [sharedTableData.formData.selectedVendorIndex]);
+
   const fetchParticular = async (particularname) => {
     try {
       const response = await axios.get(
@@ -35,6 +42,9 @@ export default function VerticalTable({ showcalc }) {
   };
 
   useEffect(() => {
+    if (particularname.length === 0) {
+      return;
+    }
     fetchParticular(particularname);
   }, [particularname]);
 
@@ -199,7 +209,14 @@ export default function VerticalTable({ showcalc }) {
               </select>
             );
           }
-
+          useEffect(() => {
+            if (
+              vendorTotals.some((val) => val > 0) &&
+              selectedVendorIndex === null
+            ) {
+              setSelectedVendorIndex(0);
+            }
+          }, [vendorTotals]);
           return (
             <>
               {isReadOnly ? (
@@ -447,23 +464,56 @@ export default function VerticalTable({ showcalc }) {
                   <td
                     key={index}
                     className={`border px-4 py-2 text-center font-semibold ${
-                      index === 0
+                      index === selectedVendorIndex
                         ? "bg-green-100 text-green-700"
                         : "text-gray-400"
                     }`}
                   >
-                    {index === 0 ? (
-                      <div className="relative group inline-block">
-                        <span className="inline-block bg-green-500 text-white px-2 py-0.5 rounded text-xs">
-                          ✅ Selected
-                        </span>
+                    <label
+                      className={`relative group inline-block select-none ${
+                        sharedTableData.formData.sentForApproval === "yes"
+                          ? "cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="selectedVendor"
+                        checked={selectedVendorIndex === index}
+                        onChange={() => {
+                          if (
+                            sharedTableData.formData.sentForApproval !==
+                              "yes" &&
+                            selectedVendorIndex !== index
+                          ) {
+                            setSelectedVendorIndex(index);
+                          }
+                        }}
+                        disabled={
+                          sharedTableData.formData.sentForApproval === "yes" &&
+                          selectedVendorIndex !== null &&
+                          selectedVendorIndex !== index
+                        }
+                        className="sr-only "
+                      />
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded text-xs ${
+                          selectedVendorIndex === index
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-200 text-gray-700  hover:bg-gray-300"
+                        } ${sharedTableData.formData.sentForApproval === "yes" ? "cursor-not-allowed" : ""}`}
+                      >
+                        {selectedVendorIndex === index
+                          ? "✅ Selected"
+                          : "Select"}
+                      </span>
+
+                      {selectedVendorIndex === index && (
                         <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          Primary selected vendor
+                          Selected vendor
                         </div>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400 text-xs">–</span>
-                    )}
+                      )}
+                    </label>
                   </td>
                 ))}
               </tr>

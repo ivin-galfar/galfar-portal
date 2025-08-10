@@ -32,6 +32,7 @@ const AppContextProvider = ({ children }) => {
   const [newMr, setNewMr] = useState(false);
   const [showupdated, setShowUpdated] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const [selectedVendorIndex, setSelectedVendorIndex] = useState(0);
 
   return (
     <AppContext.Provider
@@ -68,6 +69,8 @@ const AppContextProvider = ({ children }) => {
         showupdated,
         deleted,
         setDeleted,
+        selectedVendorIndex,
+        setSelectedVendorIndex,
       }}
     >
       {children}
