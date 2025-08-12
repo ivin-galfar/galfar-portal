@@ -9,6 +9,8 @@ import { AppContext } from "./Context";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import axios from "axios";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import VendorSelectionTooltip from "./VendorSelectionTooltip";
 
 export default function VerticalTable({ showcalc }) {
   const {
@@ -23,6 +25,8 @@ export default function VerticalTable({ showcalc }) {
     hasInputActivity,
     selectedVendorIndex,
     setSelectedVendorIndex,
+    selectedvendorReason,
+    deleted,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
 
@@ -99,6 +103,7 @@ export default function VerticalTable({ showcalc }) {
 
   const userInfo = useUserInfo();
   const [vatRate, setVatRate] = useState(5);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     setSharedTableData((prev) => ({ ...prev, tableData }));
@@ -449,6 +454,7 @@ export default function VerticalTable({ showcalc }) {
               </td>
             ))}
           </tr>
+
           {(sharedTableData.formData.sentForApproval == "yes" ||
             !userInfo?.isAdmin ||
             sortVendors) &&
@@ -472,7 +478,7 @@ export default function VerticalTable({ showcalc }) {
                     <label
                       className={`relative group inline-block select-none ${
                         sharedTableData.formData.sentForApproval === "yes"
-                          ? "cursor-not-allowed"
+                          ? "cursor-auto"
                           : "cursor-pointer"
                       }`}
                     >
@@ -501,18 +507,38 @@ export default function VerticalTable({ showcalc }) {
                           selectedVendorIndex === index
                             ? "bg-green-500 text-white"
                             : "bg-gray-200 text-gray-700  hover:bg-gray-300"
-                        } ${sharedTableData.formData.sentForApproval === "yes" ? "cursor-not-allowed" : ""}`}
+                        } ${sharedTableData.formData.sentForApproval === "yes" ? "cursor-auto" : ""}`}
                       >
-                        {selectedVendorIndex === index
-                          ? "✅ Selected"
-                          : "Select"}
+                        {selectedVendorIndex === index ? (
+                          <span className="flex  items-center ">
+                            <>Selected </>
+                            {sharedTableData.formData.selectedVendorReason && (
+                              <>
+                                <IoMdInformationCircleOutline
+                                  className="pl-2 "
+                                  size={25}
+                                  onClick={() => setShowTooltip(true)}
+                                />
+                                {showTooltip && (
+                                  <VendorSelectionTooltip
+                                    setShowTooltip={setShowTooltip}
+                                    message={
+                                      sharedTableData.formData
+                                        .selectedVendorReason
+                                    }
+                                  />
+                                )}
+                              </>
+                            )}
+                          </span>
+                        ) : (
+                          <span
+                            className={`${sharedTableData.formData.sentForApproval === "yes" ? "cursor-not-allowed" : ""}`}
+                          >
+                            Select
+                          </span>
+                        )}
                       </span>
-
-                      {selectedVendorIndex === index && (
-                        <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          Selected vendor
-                        </div>
-                      )}
                     </label>
                   </td>
                 ))}

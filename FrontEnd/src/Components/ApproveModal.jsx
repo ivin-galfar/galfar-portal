@@ -2,13 +2,29 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import { AppContext } from "./Context";
+import useUserInfo from "../CustomHooks/useUserInfo";
 
 const ApproveModal = ({ setShowmodal, mrno }) => {
   const [comments, setComments] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [errormessage, setErrormessage] = useState("");
   const { setSharedTableData, sharedTableData } = useContext(AppContext);
+  const userInfo = useUserInfo();
+
   const submitApproval = async (mrno, status) => {
+    let finalStatus = "";
+    let rejectedBy = "";
+    if (status === "rejected") {
+      finalStatus = "Rejected";
+      rejectedBy = userInfo.role;
+    } else if (userInfo.role === "Manager" && status === "approved") {
+      finalStatus = "pending for GM";
+    } else if (userInfo.role === "GM" && status === "approved") {
+      finalStatus = "pending for CEO";
+    } else if (userInfo.role === "CEO" && status === "approved") {
+      finalStatus = "Approved";
+    }
+
     try {
       const config = {
         "Content-type": "application/json",
@@ -17,8 +33,13 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
       const response = await axios.put(
         `${REACT_SERVER_URL}/receipts/approver/${mrno}`,
         {
-          status: status,
+          userId: userInfo._id,
+          role: userInfo.role,
+          approverstatus: finalStatus,
+          action: status,
           approverComments: comments,
+          rejectedby: rejectedBy,
+          status: finalStatus,
         },
         config
       );
@@ -26,8 +47,11 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
         ...prev,
         formData: {
           ...prev.formData,
-          status: status,
+          status: finalStatus,
+          approverstatus: finalStatus,
+          rejectedby: rejectedBy,
           approverComments: comments,
+          rejectedby: rejectedBy,
         },
       }));
       setErrormessage("");

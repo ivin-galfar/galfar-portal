@@ -108,16 +108,20 @@ const TableHeader = ({ isAdmin }) => {
 
   let statusLogo = null;
   const status = sharedTableData.formData.status ?? null;
-  var approverComments = sharedTableData.formData.approverComments;
+  let latestapproverComment = sharedTableData.formData.approverdetails?.length
+    ? sharedTableData.formData.approverdetails[
+        sharedTableData.formData.approverdetails.length - 1
+      ].comments
+    : "";
 
-  if (status === "approved") {
+  if (status === "Approved") {
     statusLogo = (
       <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-600 rounded-full w-fit">
         <TiTick className="text-green-600 text-2xl" />
         <span className="font-medium text-sm">Approved</span>
       </div>
     );
-  } else if (status === "rejected") {
+  } else if (status === "Rejected") {
     statusLogo = (
       <div className="flex items-center gap-2 px-3 py-1 bg-red-100  text-red-600 rounded-full w-fit">
         <RxCrossCircled className="text-red-600 text-2xl" />
@@ -192,6 +196,9 @@ const TableHeader = ({ isAdmin }) => {
       setParticularName([]);
       setIsMRSelected(false);
       setSelectedMr(null);
+      setSortVendors(false);
+      setCleartable(true);
+      setSharedTableData({ formData: {}, tableData: [] });
     } catch (error) {
       setDeleted(false);
       let message = error?.response?.data?.message;
@@ -389,7 +396,6 @@ const TableHeader = ({ isAdmin }) => {
           </div>
         </div>
       </div>
-
       <div className="flex items-center w-full p-0.5">
         <div className="flex items-start gap-2 text-sm font-medium w-full max-w-md">
           <div
@@ -429,18 +435,18 @@ const TableHeader = ({ isAdmin }) => {
 
           <div className="relative group mt-6">
             {statusLogo}
-            {approverComments && (
+            {latestapproverComment && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-gray-800 text-white text-xs px-3 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                {approverComments}
+                {latestapproverComment}
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex items-center justify-center text-sm font-medium w-1/2">
+        <div className="flex items-center justify-center text-sm font-medium w-1/2 ml-0 lg:ml-24">
           {isAdmin ? (
             <>
-              <span className="mr-2">HIRING -</span>
+              <span>HIRING -</span>
               <input
                 type="text"
                 value={formData?.hiringName ?? ""}

@@ -17,11 +17,10 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
-    pic: {
+    role: {
       type: String,
-      required: false,
-      default:
-        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+      required: true,
+      enum: ["Initiator", "Manager", "GM", "CEO"],
     },
   },
   {

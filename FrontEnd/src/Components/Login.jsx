@@ -35,7 +35,7 @@ const Login = () => {
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
-          navigate("/");
+          navigate("/receipts");
         }, 1500);
       } catch (error) {
         let message = error?.response?.data?.message;

@@ -2,7 +2,7 @@ const User = require("../Models/userModel");
 const generateToken = require("../Utils/generateToken");
 
 const registerUser = async (req, res) => {
-  const { email, password, isAdmin } = req.body;
+  const { email, password, isAdmin, role } = req.body;
 
   const userExists = await User.findOne({ email });
   if (userExists) {
@@ -14,6 +14,7 @@ const registerUser = async (req, res) => {
     email,
     password,
     isAdmin,
+    role,
   });
   if (user) {
     res.status(201).json({
@@ -21,7 +22,8 @@ const registerUser = async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       pic: user.pic,
-      token: generateToken(user._id), //check user successfully stored and used for authentication
+      role: user.role,
+      token: generateToken(user._id),
     });
   } else {
     res.status(400);
@@ -39,6 +41,7 @@ const authUser = async (req, res) => {
       _id: user.id,
       email: user.email,
       isAdmin: user.isAdmin,
+      role: user.role,
       token: generateToken(user._id),
     });
   } else {

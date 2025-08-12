@@ -2,6 +2,7 @@ import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import { AppContext } from "./Context";
 import { useContext } from "react";
+import useUserInfo from "../CustomHooks/useUserInfo";
 
 const ReasonForSelection = ({
   setShowmodal,
@@ -11,11 +12,26 @@ const ReasonForSelection = ({
   setreqApprovalstatus,
   selectedVendorIndex,
 }) => {
-  const { setSharedTableData } = useContext(AppContext);
+  const {
+    setSharedTableData,
+    sharedTableData,
+    setSelectedVendorReason,
+    selectedVendorReason,
+  } = useContext(AppContext);
+  const userInfo = useUserInfo();
+
+  const statusMap = {
+    Initiator: "Pending For HOM",
+    Manager: "Pending for GM",
+    GM: "Pending for CEO",
+    CEO: "Approved",
+  };
   const reqApproval = async (mrno) => {
     try {
       const response = await axios.put(`${REACT_SERVER_URL}/receipts/${mrno}`, {
         selectedVendorIndex: selectedVendorIndex,
+        selectedVendorReason: selectedVendorReason,
+        status: statusMap[userInfo.role] || "",
       });
       setreqApprovalstatus(response.data.formData.sentForApproval);
       setErrormessage("");
@@ -29,6 +45,7 @@ const ReasonForSelection = ({
         formData: {
           ...prev.formData,
           sentForApproval: "yes",
+          status: response.data.formData.status,
         },
       }));
     } catch (error) {
@@ -67,6 +84,7 @@ const ReasonForSelection = ({
               <textarea
                 rows={3}
                 placeholder="Add two to three points..."
+                onChange={(e) => setSelectedVendorReason(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
               />
             </div>

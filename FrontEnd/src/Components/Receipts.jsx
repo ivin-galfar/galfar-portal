@@ -96,6 +96,21 @@ const Receipts = () => {
   const handleReset = () => {
     window.location.reload();
   };
+  const statusMapping = {
+    Initiator: [],
+    Manager: [
+      "Pending for HOM",
+      "Pending for GM",
+      "Pending for CEO",
+      "Approved",
+    ],
+    GM: ["Pending for GM", "Pending for CEO", "Approved"],
+    CEO: ["Pending for CEO", "Approved"],
+  };
+
+  const expectedStatuses =
+    statusMapping[userInfo?.role]?.map((s) => s.toLowerCase()) || [];
+
   useEffect(() => {
     const fetchMR = async () => {
       try {
@@ -112,7 +127,33 @@ const Receipts = () => {
           .map((receipt) => receipt.formData?.equipMrNoValue)
           .filter(Boolean);
         const reqMrValues = receipts
-          .filter((receipt) => receipt.formData?.sentForApproval === "yes")
+          .filter((receipt) => {
+            const rejectedApprover = receipt.formData?.approverdetails?.find(
+              (rej) => rej.rejectedby && rej.rejectedby.trim() !== ""
+            );
+            const rejectedRole = rejectedApprover
+              ? rejectedApprover.rejectedby
+              : null;
+            const canSeeRejected =
+              receipt.formData?.status.toLowerCase() === "rejected" &&
+              rejectedRole &&
+              ((rejectedRole === "GM" &&
+                ["GM", "Initiator", "Manager"].includes(userInfo?.role)) ||
+                (rejectedRole === "Manager" &&
+                  ["Manager", "Initiator"].includes(userInfo?.role)) ||
+                (rejectedRole === "CEO" &&
+                  ["CEO", "GM", "Manager", "Initiator"].includes(
+                    userInfo?.role
+                  )));
+
+            return (
+              (receipt.formData?.sentForApproval === "yes" &&
+                expectedStatuses.includes(
+                  receipt.formData?.status.toLowerCase()
+                )) ||
+              canSeeRejected
+            );
+          })
           .map((receipt) => receipt.formData?.equipMrNoValue)
           .filter(Boolean);
         setReqMrno(reqMrValues);
@@ -126,24 +167,41 @@ const Receipts = () => {
 
   const isSentForApproval = sharedTableData.formData.sentForApproval === "yes";
 
-  const isStatusSet = !!sharedTableData.formData.status;
+  const isStatusSet = sharedTableData.formData.status;
+
+  let statusclass = "";
+  if (
+    (isStatusSet == "pending for CEO" && userInfo.role != "CEO") ||
+    (isStatusSet == "pending for GM" && userInfo.role != "GM") ||
+    (isStatusSet == "Pending For HOM" && userInfo.role != "Manager") ||
+    (isStatusSet == "Pending For HOM" && userInfo.role == "Initiator") ||
+    isStatusSet == "Approved" ||
+    isStatusSet == "Rejected"
+  ) {
+    statusclass = "bg-gray-400 cursor-not-allowed";
+  }
+
   const buttonClass = isSentForApproval
-    ? isStatusSet
-      ? "bg-gray-400 cursor-not-allowed"
-      : "bg-green-600 opacity-60 cursor-not-allowed"
-    : "bg-blue-600 hover:bg-blue-700 cursor-pointer";
+    ? statusclass || "bg-blue-600  cursor-pointer"
+    : sharedTableData.formData?.equipMrNoValue != undefined
+      ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+      : "";
 
   const buttonText = isSentForApproval
     ? isStatusSet
-      ? "Approval Completed"
+      ? sharedTableData.formData.status === "approved"
+        ? "Approved"
+        : sharedTableData.formData.status
       : "Already Requested"
     : "Request Approval";
+
   return (
     <div className="p-5  pb-28 relative">
       <h1 className="font-bold mb-4">
         <TableHeader isAdmin={userInfo?.isAdmin} />
       </h1>
       <MyTable showcalc={showcalc} />
+      <span className="invisible h-20"></span>
       <div
         className={` z-50 flex justify-between items-center gap-3.5 pt-3 flex-wrap`}
       >
@@ -156,10 +214,11 @@ const Receipts = () => {
                     onClick={() => {
                       setShowmodal(true);
                     }}
-                    className={`px-4 py-2 ml-185 text-white font-semibold rounded shadow ${
+                    disabled={statusclass != ""}
+                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-198" : "ml-185"} text-white font-semibold rounded shadow ${
                       buttonClass
-                    } ${buttonText == "Already Requested" ? "cursor-not-allowed" : "cursor-pointer"}focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
-                  }`}
+                    } ${buttonText == "Already Requested" ? "cursor-not-allowed" : ""} focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
+                  `}
                   >
                     {buttonText}
                   </button>
@@ -178,15 +237,28 @@ const Receipts = () => {
           </div>
         ) : (
           <>
-            {sharedTableData.formData.equipMrNoValue && (
+            {" "}
+            {sharedTableData.formData.status != "" ? (
               <div className="justify-end flex ml-68 ">
                 <button
-                  className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
+                  disabled={statusclass != ""}
+                  className={`px-10 py-2  text-white font-semibold rounded ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-120" : "ml-106"}  ${buttonClass}`}
                   onClick={() => setShowmodal(true)}
                 >
-                  Approve/Reject
+                  {sharedTableData.formData.status}
                 </button>
               </div>
+            ) : (
+              sharedTableData.formData.equipMrNoValue && (
+                <div className="justify-end flex ml-68 ">
+                  <button
+                    className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
+                    onClick={() => setShowmodal(true)}
+                  >
+                    Approve/Reject
+                  </button>
+                </div>
+              )
             )}
           </>
         )}

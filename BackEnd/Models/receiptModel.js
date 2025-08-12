@@ -17,7 +17,23 @@ const formDataSchema = mongoose.Schema({
   selectedVendorIndex: { type: Number },
   selectedVendorReason: { type: String },
   status: { type: String },
-  approverComments: { type: String },
+  approverdetails: [
+    {
+      role: {
+        type: String,
+        required: true,
+        enum: ["Initiator", "Manager", "GM", "CEO"],
+      },
+      userId: {
+        type: String,
+        required: true,
+      },
+      action: { type: String },
+      comments: { type: String },
+      rejectedby: { type: String },
+      timestamp: { type: Date, default: Date.now },
+    },
+  ],
   file: { type: [String], required: false },
 });
 

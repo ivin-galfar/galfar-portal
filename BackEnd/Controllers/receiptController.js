@@ -90,6 +90,7 @@ const updatestatus = async (req, res) => {
     const { mrno } = req.params;
     const { selectedVendorIndex } = req.body;
     const { selectedVendorReason } = req.body;
+    const { status } = req.body;
 
     const receiptExists = await Receipt.findOne({
       "formData.equipMrNoValue": mrno,
@@ -105,6 +106,7 @@ const updatestatus = async (req, res) => {
           "formData.selectedVendorIndex": selectedVendorIndex,
           "formData.selectedVendorReason": selectedVendorReason,
           "formData.sentForApproval": "yes",
+          "formData.status": status,
         },
       },
       { new: true }
@@ -119,14 +121,29 @@ const updatestatus = async (req, res) => {
 const updateApprovalstatus = async (req, res) => {
   try {
     const { mrno } = req.params;
+    const { action } = req.body;
+    const { approverComments } = req.body || {};
+    const { role } = req.body;
+    const { userId } = req.body;
     const { status } = req.body;
-    const { approverComments } = req.body;
+    const { rejectedby } = req.body || null;
+    const { approverstatus } = req.body || null;
+
     const receipt = await Receipt.findOneAndUpdate(
       { "formData.equipMrNoValue": mrno },
       {
+        $push: {
+          "formData.approverdetails": {
+            role: role,
+            userId: userId,
+            action: action,
+            approverstatus: approverstatus,
+            comments: approverComments,
+            rejectedby: rejectedby,
+          },
+        },
         $set: {
           "formData.status": status,
-          "formData.approverComments": approverComments,
         },
       },
       { new: true }
