@@ -18,9 +18,9 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
       finalStatus = "Rejected";
       rejectedBy = userInfo.role;
     } else if (userInfo.role === "Manager" && status === "approved") {
-      finalStatus = "pending for GM";
+      finalStatus = "Pending for GM";
     } else if (userInfo.role === "GM" && status === "approved") {
-      finalStatus = "pending for CEO";
+      finalStatus = "Pending for CEO";
     } else if (userInfo.role === "CEO" && status === "approved") {
       finalStatus = "Approved";
     }
@@ -108,7 +108,9 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
             </button>
           </div>
           {showToast &&
-            sharedTableData.formData.status == "approved" &&
+            (sharedTableData.formData.status == "Approved" ||
+              sharedTableData.formData.status == "Pending for CEO" ||
+              sharedTableData.formData.status == "Pending for GM") &&
             !errormessage && (
               <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
                 ✅ You have Approved this MR!

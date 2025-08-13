@@ -34,6 +34,10 @@ const TableHeader = ({ isAdmin }) => {
     newMr,
     deleted,
     setDeleted,
+    quantity,
+    setQuantity,
+    setfreezeQuantity,
+    freezequantity,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -68,6 +72,10 @@ const TableHeader = ({ isAdmin }) => {
 
   const handleChange = (field) => (e) => {
     const value = e.target.value;
+    if (field === "qty") {
+      setQuantity(value);
+    }
+
     setSharedTableData((prev) => ({
       ...prev,
       formData: {
@@ -78,6 +86,7 @@ const TableHeader = ({ isAdmin }) => {
   };
 
   const fetchReceipt = async (id) => {
+    setfreezeQuantity(true);
     setSortVendors(true);
     if (id && id != "default") {
       try {
@@ -222,6 +231,7 @@ const TableHeader = ({ isAdmin }) => {
                   projectValue: "",
                   requirementDurationValue: "",
                   file: "",
+                  qty: "",
                   requiredDateValue: new Date(),
                   dateValue: new Date(),
                 },
@@ -233,6 +243,7 @@ const TableHeader = ({ isAdmin }) => {
               setSelectedMr(null);
               setParticularName([]);
               setIsMRSelected(false);
+              setfreezeQuantity(false);
             }}
             className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
               !userInfo?.isAdmin ? "hidden" : ""
@@ -437,7 +448,7 @@ const TableHeader = ({ isAdmin }) => {
             {statusLogo}
             {latestapproverComment && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-gray-800 text-white text-xs px-3 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                {latestapproverComment}
+                CEO: {latestapproverComment}
               </div>
             )}
           </div>
@@ -491,19 +502,34 @@ const TableHeader = ({ isAdmin }) => {
               formData?.projectValue
             )}
           </p>
-          <p>
-            <span className="font-medium">Location:</span>{" "}
-            {isAdmin ? (
+          <div className="inline-flex items-center space-x-20">
+            <p>
+              <span className="font-medium">Location:</span>{" "}
+              {isAdmin ? (
+                <input
+                  type="text"
+                  value={formData?.locationValue ?? ""}
+                  onChange={handleChange("locationValue")}
+                  className="border-b border-gray-400 outline-none px-1 text-sm"
+                />
+              ) : (
+                formData?.locationValue
+              )}
+            </p>
+
+            <label className="font-medium text-sm flex items-center space-x-2">
+              <span>Quantity:</span>
               <input
-                type="text"
-                value={formData?.locationValue ?? ""}
-                onChange={handleChange("locationValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm"
+                type="number"
+                min={0}
+                step={1}
+                value={formData?.qty}
+                disabled={freezequantity}
+                onChange={handleChange("qty")}
+                className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
-            ) : (
-              formData?.locationValue
-            )}
-          </p>
+            </label>
+          </div>
         </div>
 
         <div className="flex flex-col space-y-1 text-center w-1/3">

@@ -25,8 +25,8 @@ export default function VerticalTable({ showcalc }) {
     hasInputActivity,
     selectedVendorIndex,
     setSelectedVendorIndex,
-    selectedvendorReason,
-    deleted,
+    quantity,
+    freezequantity,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
 
@@ -74,7 +74,6 @@ export default function VerticalTable({ showcalc }) {
         id: `row_${idx}`,
         sl: 1,
         particulars: descRow,
-        qty: 1,
         vendors: {},
       };
       rawData.forEach((_, vIdx) => {
@@ -151,13 +150,15 @@ export default function VerticalTable({ showcalc }) {
   );
 
   const vendorTotals = vendorInfoWithTotal.map((vendor) => {
-    return tableData.reduce((sum, row, idx) => {
-      if (shouldSkipRow(row.particulars)) return sum;
-      if (idx >= vatRowIndex && vatRowIndex !== -1) return sum;
-      if (row.isRating) return sum;
-      const value = parseFloat(row.vendors?.[`vendor_${vendor.index}`] || 0);
-      return sum + (isNaN(value) ? 0 : value);
-    }, 0);
+    return (
+      tableData.reduce((sum, row, idx) => {
+        if (shouldSkipRow(row.particulars)) return sum;
+        if (idx >= vatRowIndex && vatRowIndex !== -1) return sum;
+        if (row.isRating) return sum;
+        const value = parseFloat(row.vendors?.[`vendor_${vendor.index}`] || 0);
+        return sum + (isNaN(value) ? 0 : value);
+      }, 0) * Number(quantity || 1)
+    );
   });
 
   const columns = useMemo(() => {
@@ -170,10 +171,10 @@ export default function VerticalTable({ showcalc }) {
         header: "Particulars",
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor("qty", {
-        header: "Qty",
-        cell: (info) => info.getValue(),
-      }),
+      // columnHelper.accessor("qty", {
+      //   header: "Qty",
+      //   cell: (info) => info.getValue(),
+      // }),
     ];
 
     const vendorColumns = vendorInfoWithTotal.map((vendor, index) => {
@@ -243,6 +244,7 @@ export default function VerticalTable({ showcalc }) {
                         ? "--Remarks--"
                         : ""
                   }
+                  disabled={freezequantity}
                   onChange={(e) =>
                     handleInputChange(row.index, vendorKey, e.target.value)
                   }
@@ -285,10 +287,10 @@ export default function VerticalTable({ showcalc }) {
 
     return vendorInfoWithTotal.map((vendor) => {
       const total = parseFloat(vendor.total || 0);
-      const vat = (total * vatRate) / 100;
+      const vat = ((total * vatRate) / 100) * Number(quantity || 1);
       return isNaN(vat) ? 0 : vat;
     });
-  }, [vendorInfoWithTotal, vatRate, newMr, hasInputActivity]);
+  }, [vendorInfoWithTotal, vatRate, newMr, hasInputActivity, quantity]);
 
   const vendorNetPrices = vendorTotals.map(
     (total, idx) => total + vendorVATs[idx]
@@ -324,7 +326,7 @@ export default function VerticalTable({ showcalc }) {
       <table className="table border-collapse border border-gray-300 w-4xl text-sm">
         <thead className="text-center bg-gray-100">
           <tr>
-            <th colSpan={3} className="border px-4 py-2 align-bottom w-64">
+            <th colSpan={2} className="border px-4 py-2 align-bottom w-64">
               Description
             </th>
             {vendorInfoWithTotal.map((vendor) => (
@@ -341,7 +343,6 @@ export default function VerticalTable({ showcalc }) {
               Particulars
             </th>
 
-            <th className="border px-4 py-2 whitespace-nowrap">Qty</th>
             {vendorInfoWithTotal.map((vendor) => (
               <th
                 key={vendor.id}
@@ -398,7 +399,7 @@ export default function VerticalTable({ showcalc }) {
           })}
           <tr>
             <td
-              colSpan={3}
+              colSpan={2}
               className="border px-4 py-2 font-semibold bg-yellow-50 text-yellow-800 text-center"
             >
               Total Price (Excl. VAT)
@@ -417,7 +418,7 @@ export default function VerticalTable({ showcalc }) {
           </tr>
           <tr>
             <td
-              colSpan={3}
+              colSpan={2}
               className="border px-4 py-2 font-semibold text-center"
             >
               VAT @5%
@@ -437,7 +438,7 @@ export default function VerticalTable({ showcalc }) {
 
           <tr>
             <td
-              colSpan={3}
+              colSpan={2}
               className="border px-4 py-2 font-semibold  text-center"
             >
               Net Price (Incl. VAT)
@@ -461,7 +462,7 @@ export default function VerticalTable({ showcalc }) {
             vendorTotals.some((val) => val > 0) && (
               <tr>
                 <td
-                  colSpan={3}
+                  colSpan={2}
                   className="border px-4 py-2 font-semibold bg-green-50 text-green-800 text-center"
                 >
                   Selected Vendor

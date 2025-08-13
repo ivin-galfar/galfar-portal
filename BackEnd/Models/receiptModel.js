@@ -12,6 +12,7 @@ const formDataSchema = mongoose.Schema({
   },
   emRegNoValue: { type: String },
   requiredDateValue: { type: String },
+  qty: { type: Number },
   requirementDurationValue: { type: String },
   sentForApproval: { type: String },
   selectedVendorIndex: { type: Number },

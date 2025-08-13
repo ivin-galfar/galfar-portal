@@ -31,6 +31,7 @@ const Receipts = () => {
     setIsMRSelected,
     selectedVendorIndex,
     setParticularName,
+    setfreezeQuantity,
   } = useContext(AppContext);
 
   const handleSubmit = async () => {
@@ -78,6 +79,7 @@ const Receipts = () => {
       setSortVendors(true);
       setIsMRSelected(true);
       setParticularName([]);
+      setfreezeQuantity(true);
       setNewMr(false);
       setErrormessage("");
       setTimeout(() => {
@@ -135,7 +137,7 @@ const Receipts = () => {
               ? rejectedApprover.rejectedby
               : null;
             const canSeeRejected =
-              receipt.formData?.status.toLowerCase() === "rejected" &&
+              receipt.formData?.status?.toLowerCase() === "rejected" &&
               rejectedRole &&
               ((rejectedRole === "GM" &&
                 ["GM", "Initiator", "Manager"].includes(userInfo?.role)) ||
@@ -171,8 +173,8 @@ const Receipts = () => {
 
   let statusclass = "";
   if (
-    (isStatusSet == "pending for CEO" && userInfo.role != "CEO") ||
-    (isStatusSet == "pending for GM" && userInfo.role != "GM") ||
+    (isStatusSet == "Pending for CEO" && userInfo.role != "CEO") ||
+    (isStatusSet == "Pending for GM" && userInfo.role != "GM") ||
     (isStatusSet == "Pending For HOM" && userInfo.role != "Manager") ||
     (isStatusSet == "Pending For HOM" && userInfo.role == "Initiator") ||
     isStatusSet == "Approved" ||
@@ -196,7 +198,7 @@ const Receipts = () => {
     : "Request Approval";
 
   return (
-    <div className="p-5  pb-28 relative">
+    <div className="pt-1 pl-10 pr-5 pb-28 relative">
       <h1 className="font-bold mb-4">
         <TableHeader isAdmin={userInfo?.isAdmin} />
       </h1>

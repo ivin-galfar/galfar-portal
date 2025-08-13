@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
-import { FaLock } from "react-icons/fa";
+import { FaLock, FaHome, FaFileInvoice, FaList } from "react-icons/fa";
 
 const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
   const navigate = useNavigate();
@@ -19,8 +19,9 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
       }`}
     >
       <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
-          Menu
+        <h2 className="flex items-center space-x-2 text-lg font-semibold text-gray-700 dark:text-white">
+          <FaHome />
+          <span>Menu</span>
         </h2>
         <button
           onClick={() => setIsMenuOpen(false)}

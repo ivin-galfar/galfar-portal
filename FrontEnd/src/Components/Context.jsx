@@ -34,6 +34,8 @@ const AppContextProvider = ({ children }) => {
   const [deleted, setDeleted] = useState(false);
   const [selectedVendorIndex, setSelectedVendorIndex] = useState(0);
   const [selectedVendorReason, setSelectedVendorReason] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+  const [freezequantity, setfreezeQuantity] = useState(0);
 
   return (
     <AppContext.Provider
@@ -74,6 +76,10 @@ const AppContextProvider = ({ children }) => {
         setSelectedVendorIndex,
         setSelectedVendorReason,
         selectedVendorReason,
+        setQuantity,
+        quantity,
+        freezequantity,
+        setfreezeQuantity,
       }}
     >
       {children}
