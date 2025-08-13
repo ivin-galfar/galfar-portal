@@ -10,6 +10,7 @@ import { FaFileDownload } from "react-icons/fa";
 import fetchParticulars from "../../Helpers/ParticularsApi";
 import { FaTrash } from "react-icons/fa";
 import Alerts from "../Components/Alerts";
+import { useNavigate, useParams } from "react-router-dom";
 
 const TableHeader = ({ isAdmin }) => {
   const inputRef = useRef(null);
@@ -45,6 +46,8 @@ const TableHeader = ({ isAdmin }) => {
   const [errormessage, setErrormessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [triggerdelete, setTriggerdelete] = useState(false);
+  const navigate = useNavigate();
+  const { mrnumber } = useParams();
 
   useEffect(() => {
     const loadParticulars = async () => {
@@ -86,6 +89,11 @@ const TableHeader = ({ isAdmin }) => {
   };
 
   const fetchReceipt = async (id) => {
+    const receiptid = id || mrnumber;
+
+    if (id && id !== mrnumber) {
+      navigate(`/receipts/${id}`, { replace: true });
+    }
     setfreezeQuantity(true);
     setSortVendors(true);
     if (id && id != "default") {
@@ -95,7 +103,7 @@ const TableHeader = ({ isAdmin }) => {
           "Access-Control-Allow-Origin": "*",
         };
         const response = await axios.get(
-          `${REACT_SERVER_URL}/receipts/${id}`,
+          `${REACT_SERVER_URL}/receipts/${receiptid}`,
           config
         );
         const receipt = response.data;
@@ -114,6 +122,21 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
+
+  useEffect(() => {
+    if (mrnumber) {
+      fetchReceipt(mrnumber);
+      setIsMRSelected(true);
+      setSelectedMr(mrnumber);
+      setNewMr(false);
+    } else {
+      setSortVendors(false);
+      setCleartable(true);
+      setIsMRSelected(false);
+      setSelectedMr("");
+      setSharedTableData({ formData: {}, tableData: [] });
+    }
+  }, [mrnumber]);
 
   let statusLogo = null;
   const status = sharedTableData.formData.status ?? null;
@@ -244,6 +267,7 @@ const TableHeader = ({ isAdmin }) => {
               setParticularName([]);
               setIsMRSelected(false);
               setfreezeQuantity(false);
+              navigate("/receipts", { replace: true });
             }}
             className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl shadow-md transition duration-200 cursor-pointer ${
               !userInfo?.isAdmin ? "hidden" : ""
@@ -418,7 +442,7 @@ const TableHeader = ({ isAdmin }) => {
             <select
               id="mrNo"
               className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-              value={formData?.equipMrNoValue || "default"}
+              value={formData?.equipMrNoValue || mrnumber || "default"}
               onChange={(e) => {
                 handleChange("equipMrNoValue")(e);
                 if (e.target.value !== "default") {
@@ -432,6 +456,7 @@ const TableHeader = ({ isAdmin }) => {
                   setIsMRSelected(false);
                   setSelectedMr(e.target.value);
                   setSharedTableData({ formData: {}, tableData: [] });
+                  navigate("/receipts", { replace: true });
                 }
               }}
             >
@@ -474,17 +499,20 @@ const TableHeader = ({ isAdmin }) => {
           )}
         </div>
         <div className="w-1/3 flex justify-end">
-          {isAdmin && selectedmr !== null && selectedmr !== "default" && (
-            <button
-              onClick={() => setTriggerdelete(true)}
-              aria-label="Delete selected MR"
-              className="flex items-center px-2 py-0.5 bg-red-500 text-white text-sm rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition cursor-pointer"
-              type="button"
-            >
-              <FaTrash className="mr-1" size={14} />
-              Delete Statement
-            </button>
-          )}
+          {isAdmin &&
+            selectedmr !== "" &&
+            selectedmr !== null &&
+            selectedmr !== "default" && (
+              <button
+                onClick={() => setTriggerdelete(true)}
+                aria-label="Delete selected MR"
+                className="flex items-center px-2 py-0.5 bg-red-500 text-white text-sm rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition cursor-pointer"
+                type="button"
+              >
+                <FaTrash className="mr-1" size={14} />
+                Delete Statement
+              </button>
+            )}
         </div>
       </div>
       <div className="flex justify-between mt-4 px-4">
