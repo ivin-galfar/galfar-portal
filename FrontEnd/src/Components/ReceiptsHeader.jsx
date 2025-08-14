@@ -451,6 +451,7 @@ const TableHeader = ({ isAdmin }) => {
                   setSelectedMr(e.target.value);
                   setNewMr(false);
                 } else {
+                  setfreezeQuantity(false);
                   setSortVendors(false);
                   setCleartable(true);
                   setIsMRSelected(false);
@@ -551,7 +552,7 @@ const TableHeader = ({ isAdmin }) => {
                 type="number"
                 min={0}
                 step={1}
-                value={formData?.qty}
+                value={formData?.qty ?? ""}
                 disabled={freezequantity}
                 onChange={handleChange("qty")}
                 className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

@@ -51,7 +51,7 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
           Statements
         </Link>
         <button
-          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
           onClick={handleLogout}
         >
           {userInfo ? "Sign out" : "Sign In"}

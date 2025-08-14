@@ -79,7 +79,7 @@ const Receipts = () => {
       setSortVendors(true);
       setIsMRSelected(true);
       setParticularName([]);
-      setfreezeQuantity(true);
+      setfreezeQuantity(false);
       setNewMr(false);
       setErrormessage("");
       setTimeout(() => {

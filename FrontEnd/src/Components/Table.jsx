@@ -25,14 +25,14 @@ export default function VerticalTable({ showcalc }) {
     hasInputActivity,
     selectedVendorIndex,
     setSelectedVendorIndex,
-    quantity,
+    selectedmr,
     freezequantity,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
 
   useEffect(() => {
     setSelectedVendorIndex(sharedTableData.formData.selectedVendorIndex ?? 0);
-  }, [sharedTableData.formData.selectedVendorIndex]);
+  }, [sharedTableData.formData.selectedVendorIndex, selectedmr]);
 
   const fetchParticular = async (particularname) => {
     try {
@@ -143,7 +143,7 @@ export default function VerticalTable({ showcalc }) {
     } else {
       return vendors;
     }
-  }, [tableData, sortVendors]);
+  }, [tableData, sortVendors, sharedTableData.formData.qty, selectedmr]);
 
   const vatRowIndex = tableData.findIndex(
     (row) => row.particulars.trim().toUpperCase() === "VAT @5%"
@@ -157,7 +157,7 @@ export default function VerticalTable({ showcalc }) {
         if (row.isRating) return sum;
         const value = parseFloat(row.vendors?.[`vendor_${vendor.index}`] || 0);
         return sum + (isNaN(value) ? 0 : value);
-      }, 0) * Number(quantity || 1)
+      }, 0) * Number(sharedTableData.formData.qty || 1)
     );
   });
 
@@ -274,7 +274,9 @@ export default function VerticalTable({ showcalc }) {
   }, [
     userInfo?.isAdmin,
     sortVendors,
-    ...(userInfo?.isAdmin ? [] : [vendorInfoWithTotal]),
+    selectedmr == "default" || selectedmr == "" || selectedmr === null
+      ? ""
+      : vendorInfoWithTotal,
   ]);
   const vendorVATs = useMemo(() => {
     if (
@@ -287,10 +289,10 @@ export default function VerticalTable({ showcalc }) {
 
     return vendorInfoWithTotal.map((vendor) => {
       const total = parseFloat(vendor.total || 0);
-      const vat = ((total * vatRate) / 100) * Number(quantity || 1);
+      const vat = ((total * vatRate) / 100) * sharedTableData.formData.qty;
       return isNaN(vat) ? 0 : vat;
     });
-  }, [vendorInfoWithTotal, vatRate, newMr, hasInputActivity, quantity]);
+  }, [vendorInfoWithTotal, vatRate, newMr, hasInputActivity]);
 
   const vendorNetPrices = vendorTotals.map(
     (total, idx) => total + vendorVATs[idx]
