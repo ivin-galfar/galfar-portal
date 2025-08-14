@@ -7,7 +7,7 @@ import { TiTick } from "react-icons/ti";
 import { RxCrossCircled } from "react-icons/rx";
 import { FaFileUpload } from "react-icons/fa";
 import { FaFileDownload } from "react-icons/fa";
-import fetchParticulars from "../../Helpers/ParticularsApi";
+import fetchParticulars from "../../APIs/ParticularsApi";
 import { FaTrash } from "react-icons/fa";
 import Alerts from "../Components/Alerts";
 import { useNavigate, useParams } from "react-router-dom";
@@ -462,7 +462,7 @@ const TableHeader = ({ isAdmin }) => {
               }}
             >
               <option value="default">Select an option</option>
-              {(isAdmin ? mrno : reqmrno).map((value, index) => (
+              {(isAdmin ? mrno : reqmrno)?.map((value, index) => (
                 <option key={index} value={value}>
                   {value}
                 </option>

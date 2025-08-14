@@ -8,6 +8,7 @@ import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import ApproveModal from "./ApproveModal";
 import ReasonForSelection from "./ReasonForSelection";
+import fetchStatments from "../../APIs/StatementsApi";
 
 const Receipts = () => {
   const userInfo = useUserInfo();
@@ -32,6 +33,7 @@ const Receipts = () => {
     selectedVendorIndex,
     setParticularName,
     setfreezeQuantity,
+    setReceipts,
   } = useContext(AppContext);
 
   const handleSubmit = async () => {
@@ -116,52 +118,16 @@ const Receipts = () => {
   useEffect(() => {
     const fetchMR = async () => {
       try {
-        const config = {
-          "Content-type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        };
-        const response = await axios.get(
-          `${REACT_SERVER_URL}/receipts`,
-          config
-        );
-        const receipts = response.data.receipts;
-        const mrValues = receipts
-          .map((receipt) => receipt.formData?.equipMrNoValue)
-          .filter(Boolean);
-        const reqMrValues = receipts
-          .filter((receipt) => {
-            const rejectedApprover = receipt.formData?.approverdetails?.find(
-              (rej) => rej.rejectedby && rej.rejectedby.trim() !== ""
-            );
-            const rejectedRole = rejectedApprover
-              ? rejectedApprover.rejectedby
-              : null;
-            const canSeeRejected =
-              receipt.formData?.status?.toLowerCase() === "rejected" &&
-              rejectedRole &&
-              ((rejectedRole === "GM" &&
-                ["GM", "Initiator", "Manager"].includes(userInfo?.role)) ||
-                (rejectedRole === "Manager" &&
-                  ["Manager", "Initiator"].includes(userInfo?.role)) ||
-                (rejectedRole === "CEO" &&
-                  ["CEO", "GM", "Manager", "Initiator"].includes(
-                    userInfo?.role
-                  )));
+        const { reqMrValues, mrValues } = await fetchStatments({
+          expectedStatuses,
+          userInfo,
+        });
 
-            return (
-              (receipt.formData?.sentForApproval === "yes" &&
-                expectedStatuses.includes(
-                  receipt.formData?.status.toLowerCase()
-                )) ||
-              canSeeRejected
-            );
-          })
-          .map((receipt) => receipt.formData?.equipMrNoValue)
-          .filter(Boolean);
         setReqMrno(reqMrValues);
         setMrno(mrValues);
       } catch (error) {
-        console.log(error);
+        let message = error?.response?.data?.message;
+        setErrormessage(message ? message : error.message);
       }
     };
     fetchMR();

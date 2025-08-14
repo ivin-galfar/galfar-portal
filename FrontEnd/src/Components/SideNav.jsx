@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { FaLock, FaHome } from "react-icons/fa";
+import { IoDocumentText } from "react-icons/io5";
+import { HiDocumentText } from "react-icons/hi2";
+import { FaSignOutAlt } from "react-icons/fa";
+import { MdSpaceDashboard } from "react-icons/md";
 
 const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
   const navigate = useNavigate();
@@ -20,7 +24,6 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
     >
       <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="flex items-center space-x-2 text-lg font-semibold text-gray-700 dark:text-white">
-          <FaHome />
           <span>Menu</span>
         </h2>
         <button
@@ -34,26 +37,37 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
       <nav className="p-4 space-y-2">
         <Link
           to="/"
-          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+          className=" flex gap-2 items-center p-2   rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         >
-          Dashboard
+          <FaHome />
+          <span>Home</span>
+        </Link>
+        <Link
+          to="/dashboard"
+          className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 `}
+        >
+          <MdSpaceDashboard />
+          <span>Dashboard</span>
         </Link>
         <Link
           to="/particulars"
           className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${!userInfo?.isAdmin ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}`}
         >
+          <HiDocumentText />
           Particulars {!userInfo?.isAdmin ? <FaLock /> : ""}
         </Link>
         <Link
           to="/receipts"
-          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+          className=" flex gap-2  p-2  items-center  rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         >
+          <IoDocumentText />
           Statements
         </Link>
         <button
-          className="block p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
+          className="flex gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
           onClick={handleLogout}
         >
+          <FaSignOutAlt />
           {userInfo ? "Sign out" : "Sign In"}
         </button>
       </nav>

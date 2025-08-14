@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import fetchParticulars from "../../Helpers/ParticularsApi";
+import fetchParticulars from "../../APIs/ParticularsApi";
 import { useContext } from "react";
 import { AppContext } from "../Components/Context";
 import ParticularsAccordion from "../Components/ParticularsAccordion";
@@ -19,14 +19,14 @@ import { REACT_SERVER_URL } from "../../config/ENV";
 import Alerts from "../Components/Alerts";
 
 const Particulars = () => {
-  const values = {
-    Sl: String,
-    template: {
-      name: String,
-      date: Date,
-      owner: String,
-    },
-  };
+  // const values = {
+  //   Sl: String,
+  //   template: {
+  //     name: String,
+  //     date: Date,
+  //     owner: String,
+  //   },
+  // };
 
   const { particulars, setParticulars, showupdated, setShowUpdated } =
     useContext(AppContext);

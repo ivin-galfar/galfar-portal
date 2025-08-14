@@ -106,7 +106,7 @@ export default function VerticalTable({ showcalc }) {
 
   useEffect(() => {
     setSharedTableData((prev) => ({ ...prev, tableData }));
-  }, [tableData, setSharedTableData]);
+  }, [hasInputActivity ? tableData : ""]);
 
   useEffect(() => {
     if (sharedTableData?.tableData?.length) {
@@ -160,7 +160,11 @@ export default function VerticalTable({ showcalc }) {
       }, 0) * Number(sharedTableData.formData.qty || 1)
     );
   });
-
+  useEffect(() => {
+    if (vendorTotals.some((val) => val > 0) && selectedVendorIndex === null) {
+      setSelectedVendorIndex(0);
+    }
+  }, [vendorTotals]);
   const columns = useMemo(() => {
     const descriptionColumns = [
       columnHelper.accessor("sl", {
@@ -171,10 +175,6 @@ export default function VerticalTable({ showcalc }) {
         header: "Particulars",
         cell: (info) => info.getValue(),
       }),
-      // columnHelper.accessor("qty", {
-      //   header: "Qty",
-      //   cell: (info) => info.getValue(),
-      // }),
     ];
 
     const vendorColumns = vendorInfoWithTotal.map((vendor, index) => {
@@ -198,7 +198,7 @@ export default function VerticalTable({ showcalc }) {
             }
             return (
               <select
-                value={value}
+                value={value || ""}
                 onChange={(e) =>
                   handleInputChange(row.index, vendorKey, e.target.value)
                 }
@@ -215,14 +215,7 @@ export default function VerticalTable({ showcalc }) {
               </select>
             );
           }
-          useEffect(() => {
-            if (
-              vendorTotals.some((val) => val > 0) &&
-              selectedVendorIndex === null
-            ) {
-              setSelectedVendorIndex(0);
-            }
-          }, [vendorTotals]);
+
           return (
             <>
               {isReadOnly ? (

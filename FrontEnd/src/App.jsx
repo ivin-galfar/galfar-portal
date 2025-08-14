@@ -1,11 +1,12 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import LoginPage from "./Pages/LoginPage";
-import Dashboard from "./Components/Dashboard";
+import Home from "./Components/Home";
 import Header from "./Components/Header";
 import Receipts from "./Components/Receipts";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import useUserInfo from "./CustomHooks/useUserInfo";
 import Particulars from "./Pages/Particulars";
+import Dashboard from "./Pages/Dashboard";
 
 const App = () => {
   const location = useLocation();
@@ -15,7 +16,7 @@ const App = () => {
       {" "}
       {location.pathname !== "/login" && <Header />}
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/particulars" element={<Particulars />} />
 
@@ -35,6 +36,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </div>
   );

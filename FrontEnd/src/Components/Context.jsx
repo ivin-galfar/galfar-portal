@@ -36,7 +36,7 @@ const AppContextProvider = ({ children }) => {
   const [selectedVendorReason, setSelectedVendorReason] = useState("--");
   const [quantity, setQuantity] = useState(0);
   const [freezequantity, setfreezeQuantity] = useState(false);
-
+  const [receipts, setReceipts] = useState([]);
   return (
     <AppContext.Provider
       value={{
@@ -80,6 +80,8 @@ const AppContextProvider = ({ children }) => {
         quantity,
         freezequantity,
         setfreezeQuantity,
+        receipts,
+        setReceipts,
       }}
     >
       {children}
