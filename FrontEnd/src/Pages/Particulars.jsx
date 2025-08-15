@@ -19,15 +19,6 @@ import { REACT_SERVER_URL } from "../../config/ENV";
 import Alerts from "../Components/Alerts";
 
 const Particulars = () => {
-  // const values = {
-  //   Sl: String,
-  //   template: {
-  //     name: String,
-  //     date: Date,
-  //     owner: String,
-  //   },
-  // };
-
   const { particulars, setParticulars, showupdated, setShowUpdated } =
     useContext(AppContext);
   const [showmodal, setShowmodal] = useState(false);

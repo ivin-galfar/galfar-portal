@@ -37,6 +37,9 @@ const AppContextProvider = ({ children }) => {
   const [quantity, setQuantity] = useState(0);
   const [freezequantity, setfreezeQuantity] = useState(false);
   const [receipts, setReceipts] = useState([]);
+  const [allreceipts, setAllReceipts] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [multiStatusFilter, setMultiStatusFilter] = useState([]);
   return (
     <AppContext.Provider
       value={{
@@ -82,6 +85,12 @@ const AppContextProvider = ({ children }) => {
         setfreezeQuantity,
         receipts,
         setReceipts,
+        setAllReceipts,
+        allreceipts,
+        multiStatusFilter,
+        setMultiStatusFilter,
+        statusFilter,
+        setStatusFilter,
       }}
     >
       {children}

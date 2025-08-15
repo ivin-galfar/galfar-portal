@@ -9,41 +9,55 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../Components/Context";
 import fetchStatments from "../../APIs/StatementsApi";
 import useUserInfo from "../CustomHooks/useUserInfo";
+import { Link } from "react-router-dom";
+import { FaArrowAltCircleRight } from "react-icons/fa";
 
 const Dashboard = () => {
-  const { receipts, setReqMrno, setReceipts, setMrno } = useContext(AppContext);
+  const {
+    receipts,
+    setReqMrno,
+    setReceipts,
+    setMrno,
+    setAllReceipts,
+    allreceipts,
+    statusFilter,
+    setStatusFilter,
+    multiStatusFilter,
+    setMultiStatusFilter,
+  } = useContext(AppContext);
+
   const userInfo = useUserInfo();
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [multiStatusFilter, setMultiStatusFilter] = useState([]);
+
   const statusMapping = {
     Initiator: [
       "Pending for HOM",
       "Pending for GM",
       "Pending for CEO",
       "Approved",
+      "Rejected",
       "",
     ],
     Manager: [
       "Pending for HOM",
       "Pending for GM",
       "Pending for CEO",
+      "Rejected",
       "Approved",
     ],
-    GM: ["Pending for GM", "Pending for CEO", "Approved"],
-    CEO: ["Pending for CEO", "Approved"],
+    GM: ["Pending for GM", "Rejected", "Pending for CEO", "Approved"],
+    CEO: ["Pending for CEO", "Rejected", "Approved"],
   };
   const expectedStatuses = statusMapping[userInfo?.role] || [];
-  console.log(multiStatusFilter);
 
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
-        const { reqMrValues, categorizedReceipts, mrValues } =
+        const { filterreceipts, reqMrValues, categorizedReceipts, mrValues } =
           await fetchStatments({
             expectedStatuses,
             userInfo,
           });
-
+        setAllReceipts(filterreceipts);
         setReqMrno(reqMrValues);
         setReceipts(categorizedReceipts);
         setMrno(mrValues);
@@ -58,21 +72,19 @@ const Dashboard = () => {
 
   const filteredReceipts = useMemo(() => {
     if (!Array.isArray(receipts)) return [];
-    if (statusFilter === "All") return receipts;
+    if (statusFilter === "All") return allreceipts;
 
     if (multiStatusFilter && multiStatusFilter.length > 0) {
       return receipts.filter((r) =>
         multiStatusFilter
-          .filter((status) => status !== "Approved")
+          .filter((status) => status !== "Approved" && status !== "Rejected")
           .map((status) => status?.toLowerCase())
 
           .includes(r.formData?.status.toLowerCase())
       );
     }
     return receipts.filter(
-      (r) =>
-        (r.formData?.status || "").toLowerCase() ===
-        (statusFilter || "").toLowerCase()
+      (r) => (r.formData?.status).toLowerCase() === statusFilter.toLowerCase()
     );
   }, [receipts, statusFilter, multiStatusFilter]);
 
@@ -113,37 +125,63 @@ const Dashboard = () => {
 
   return (
     <div className="w-full p-5">
-      <div className="flex space-x-4 mb-4">
-        <button
-          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 cursor-pointer"
-          onClick={() => {
-            setStatusFilter("All");
-            setMultiStatusFilter([]);
-          }}
-        >
-          All
-        </button>
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
-          onClick={() => setStatusFilter("Approved")}
-        >
-          Approved
-        </button>
-        <button
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
-          onClick={() => setStatusFilter("Rejected")}
-        >
-          Rejected
-        </button>
-        <button
-          className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer"
-          onClick={() => {
-            setStatusFilter("");
-            setMultiStatusFilter(expectedStatuses);
-          }}
-        >
-          Pending
-        </button>
+      <div className="flex border-b border-gray-300 mb-4">
+        {["All", "Approved", "Rejected", "Pending"].map((tab) => {
+          const isActive =
+            (tab === "All" && statusFilter === "All") ||
+            (tab === "Approved" && statusFilter === "Approved") ||
+            (tab === "Rejected" && statusFilter === "Rejected") ||
+            (tab === "Pending" && multiStatusFilter.length > 0);
+
+          let activeColor = "border-blue-500 text-blue-600";
+          let inactiveColor =
+            "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
+
+          if (tab === "Approved") {
+            activeColor = "border-green-500 text-green-600";
+            inactiveColor =
+              "border-transparent text-gray-500 hover:text-green-500";
+          } else if (tab === "Rejected") {
+            activeColor = "border-red-500 text-red-600";
+            inactiveColor =
+              "border-transparent text-gray-500 hover:text-red-500";
+          } else if (tab === "Pending") {
+            activeColor = "border-yellow-500 text-yellow-600";
+            inactiveColor =
+              "border-transparent text-gray-500 hover:text-yellow-500";
+          }
+
+          return (
+            <button
+              key={tab}
+              onClick={() => {
+                switch (tab) {
+                  case "All":
+                    setStatusFilter("All");
+                    setMultiStatusFilter([]);
+                    break;
+                  case "Approved":
+                    setStatusFilter("Approved");
+                    setMultiStatusFilter([]);
+                    break;
+                  case "Rejected":
+                    setStatusFilter("Rejected");
+                    setMultiStatusFilter([]);
+                    break;
+                  case "Pending":
+                    setStatusFilter("");
+                    setMultiStatusFilter(expectedStatuses);
+                    break;
+                }
+              }}
+              className={`px-4 py-2 -mb-px border-b-2 font-medium cursor-pointer transition-colors ${
+                isActive ? activeColor : inactiveColor
+              }`}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
       <div className="overflow-x-auto bg-white shadow rounded border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
@@ -194,9 +232,12 @@ const Dashboard = () => {
                     </td>
                   ))}
                   <td className="border-b border-gray-300 px-4 py-2 text-sm text-gray-700 text-center">
-                    <button className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                      View
-                    </button>
+                    <Link
+                      className="px-2 py-1 bg-blue-500 text-white rounded inline-flex justify-center items-center gap-2 hover:bg-blue-600 cursor-pointer"
+                      to={`/receipts/${row.original.formData.equipMrNoValue}`}
+                    >
+                      View <FaArrowAltCircleRight />
+                    </Link>
                   </td>
                 </tr>
               ))

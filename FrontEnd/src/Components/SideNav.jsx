@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { FaLock, FaHome } from "react-icons/fa";
@@ -6,8 +6,11 @@ import { IoDocumentText } from "react-icons/io5";
 import { HiDocumentText } from "react-icons/hi2";
 import { FaSignOutAlt } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
+import { AppContext } from "./Context";
 
 const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
+  const { setStatusFilter, setMultiStatusFilter } = useContext(AppContext);
+
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
@@ -47,7 +50,14 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
           className={`flex items-center gap-2 p-2 rounded text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 `}
         >
           <MdSpaceDashboard />
-          <span>Dashboard</span>
+          <span
+            onClick={() => {
+              setStatusFilter("All");
+              setMultiStatusFilter([]);
+            }}
+          >
+            Dashboard
+          </span>
         </Link>
         <Link
           to="/particulars"

@@ -10,6 +10,15 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
     const response = await axios.get(`${REACT_SERVER_URL}/receipts`, config);
     const receipts = response.data.receipts;
 
+    let filterreceipts = receipts;
+    if (userInfo?.isAdmin == false) {
+      filterreceipts = receipts.filter(
+        (r) =>
+          r.formData?.status &&
+          r.formData.status.trim() !== "" &&
+          expectedStatuses.includes(r.formData.status)
+      );
+    }
     const categorizedReceipts =
       receipts.length > 0
         ? receipts.filter((receipt) =>
@@ -55,7 +64,12 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
       .map((receipt) => receipt.formData?.equipMrNoValue)
       .filter(Boolean);
 
-    return { reqMrValues, categorizedReceipts, mrValues };
+    return {
+      reqMrValues,
+      categorizedReceipts,
+      mrValues,
+      filterreceipts,
+    };
   } catch (error) {
     throw error;
   }

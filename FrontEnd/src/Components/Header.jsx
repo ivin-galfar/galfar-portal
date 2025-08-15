@@ -3,12 +3,13 @@ import useUserInfo from "../CustomHooks/useUserInfo";
 import galfarlogo from "../assets/Images/logo-new.png";
 import { FiMenu } from "react-icons/fi";
 import SideNav from "./SideNav";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import UserDropdown from "./UserDropdown";
+import { AppContext } from "./Context";
 
 const Header = () => {
   const userInfo = useUserInfo();
-
+  const { setStatusFilter, setMultiStatusFilter } = useContext(AppContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const canvasRef = useRef(null);
 
@@ -49,8 +50,18 @@ const Header = () => {
                 <Link to="/" className="text-gray-700 hover:text-blue-600">
                   Home
                 </Link>
-                <Link to="/about" className="text-gray-700 hover:text-blue-600">
-                  About
+                <Link
+                  to="/dashboard"
+                  className="text-gray-700 hover:text-blue-600"
+                >
+                  <span
+                    onClick={() => {
+                      setStatusFilter("All");
+                      setMultiStatusFilter([]);
+                    }}
+                  >
+                    Dashboard
+                  </span>
                 </Link>
                 <Link
                   to="/services"
