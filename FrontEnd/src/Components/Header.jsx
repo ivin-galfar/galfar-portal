@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import galfarlogo from "../assets/Images/logo-new.png";
 import { FiMenu } from "react-icons/fi";
@@ -22,7 +22,8 @@ const Header = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  const navLinkClasses = ({ isActive }) =>
+    `text-gray-700 hover:text-blue-600 ${isActive ? "border-b-2 border-blue-500 text-blue-600" : ""}`;
   return (
     <div>
       <header className="bg-white shadow-md">
@@ -36,45 +37,36 @@ const Header = () => {
                 <FiMenu className="h-6 w-6" />
               </button>
               <div className="flex justify-center items-center p-6">
-                <Link to="/">
+                <NavLink to="/">
                   <img
                     src={galfarlogo}
                     alt="Galfar Logo"
                     className="h-10 w-auto"
                   />
-                </Link>
+                </NavLink>
               </div>
             </div>
             <div className="ml-auto mr-45">
               <nav className="flex space-x-8 ">
-                <Link to="/" className="text-gray-700 hover:text-blue-600">
+                <NavLink to="/" className={navLinkClasses}>
                   Home
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/dashboard"
-                  className="text-gray-700 hover:text-blue-600"
+                  className={navLinkClasses}
+                  onClick={() => {
+                    setStatusFilter("All");
+                    setMultiStatusFilter([]);
+                  }}
                 >
-                  <span
-                    onClick={() => {
-                      setStatusFilter("All");
-                      setMultiStatusFilter([]);
-                    }}
-                  >
-                    Dashboard
-                  </span>
-                </Link>
-                <Link
-                  to="/services"
-                  className="text-gray-700 hover:text-blue-600"
-                >
-                  Services
-                </Link>
-                <Link
-                  to="/contact"
-                  className="text-gray-700 hover:text-blue-600"
-                >
+                  Dashboard
+                </NavLink>
+                <NavLink to="/receipts" className={navLinkClasses}>
+                  Statements
+                </NavLink>
+                <NavLink to="/contact" className={navLinkClasses}>
                   Contact
-                </Link>
+                </NavLink>
                 {userInfo?.email && <UserDropdown />}
               </nav>
             </div>

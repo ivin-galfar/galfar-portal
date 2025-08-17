@@ -10,52 +10,76 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
     const response = await axios.get(`${REACT_SERVER_URL}/receipts`, config);
     const receipts = response.data.receipts;
 
-    let filterreceipts = receipts;
-    if (userInfo?.isAdmin == false) {
-      filterreceipts = receipts.filter(
-        (r) =>
-          r.formData?.status &&
-          r.formData.status.trim() !== "" &&
-          expectedStatuses.includes(r.formData.status)
-      );
-    }
-    const categorizedReceipts =
-      receipts.length > 0
-        ? receipts.filter((receipt) =>
-            expectedStatuses
-              .map((s) => s.toLowerCase())
-              .includes(receipt.formData?.status?.toLowerCase())
-          )
-        : receipts;
+    let categorizedReceipts = receipts;
+    if (userInfo?.isAdmin) {
+      categorizedReceipts = receipts;
+    } else {
+      categorizedReceipts = receipts.filter((receipt) => {
+        const status = receipt.formData?.status?.toLowerCase();
+        if (status === "rejected") {
+          const rejectedApprover = receipt.formData?.approverdetails?.find(
+            (rej) => rej.rejectedby && rej.rejectedby.trim() !== ""
+          );
+          const rejectedRole = rejectedApprover
+            ? rejectedApprover.rejectedby
+            : null;
 
-    const mrValues = receipts
+          switch (rejectedRole) {
+            case "Manager":
+              return ["Manager", "Initiator"].includes(userInfo?.role);
+            case "GM":
+              return ["GM", "Manager", "Initiator"].includes(userInfo?.role);
+            case "CEO":
+              return userInfo?.role === "CEO";
+            default:
+              return false;
+          }
+        }
+
+        return expectedStatuses.map((s) => s.toLowerCase()).includes(status);
+      });
+    }
+
+    const mrValues = categorizedReceipts
       .map((receipt) => receipt.formData?.equipMrNoValue)
       .filter(Boolean);
 
-    const filteredReceipts = receipts.filter((receipt) => {
+    const filteredReceipts = categorizedReceipts.filter((receipt) => {
+      const status = receipt.formData?.status?.toLowerCase();
+      const sentForApproval =
+        receipt.formData?.sentForApproval?.toLowerCase() === "yes";
+
+      // Find the first rejected entry, if any
       const rejectedApprover = receipt.formData?.approverdetails?.find(
         (rej) => rej.rejectedby && rej.rejectedby.trim() !== ""
       );
-
       const rejectedRole = rejectedApprover
         ? rejectedApprover.rejectedby
         : null;
 
-      const canSeeRejected =
-        receipt.formData?.status?.toLowerCase() === "rejected" &&
-        rejectedRole &&
-        ((rejectedRole === "GM" &&
-          ["GM", "Initiator", "Manager"].includes(userInfo?.role)) ||
-          (rejectedRole === "Manager" &&
-            ["Manager", "Initiator"].includes(userInfo?.role)) ||
-          (rejectedRole === "CEO" &&
-            ["CEO", "GM", "Manager", "Initiator"].includes(userInfo?.role)));
+      let canSeeRejected = false;
+
+      if (status === "rejected" && rejectedRole) {
+        switch (rejectedRole) {
+          case "Manager":
+            canSeeRejected = ["Manager", "Initiator"].includes(userInfo?.role);
+            break;
+          case "GM":
+            canSeeRejected = ["GM", "Manager", "Initiator"].includes(
+              userInfo?.role
+            );
+            break;
+          case "CEO":
+            canSeeRejected = userInfo?.role === "CEO";
+            break;
+          default:
+            canSeeRejected = false;
+        }
+      }
 
       const isIncluded =
-        (receipt.formData?.sentForApproval === "yes" &&
-          expectedStatuses
-            ?.map((s) => s.toLowerCase())
-            .includes(receipt.formData?.status?.toLowerCase())) ||
+        (sentForApproval &&
+          expectedStatuses.map((s) => s.toLowerCase()).includes(status)) ||
         canSeeRejected;
       return isIncluded;
     });
@@ -68,7 +92,7 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
       reqMrValues,
       categorizedReceipts,
       mrValues,
-      filterreceipts,
+      filteredReceipts,
     };
   } catch (error) {
     throw error;

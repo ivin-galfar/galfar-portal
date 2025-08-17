@@ -26,28 +26,35 @@ const Home = () => {
       "Pending for GM",
       "Pending for CEO",
       "Approved",
+      "Rejected",
       "",
     ],
     Manager: [
       "Pending for HOM",
       "Pending for GM",
       "Pending for CEO",
+      "Rejected",
       "Approved",
     ],
-    GM: ["Pending for GM", "Pending for CEO", "Approved"],
-    CEO: ["Pending for CEO", "Approved"],
+    GM: ["Pending for GM", "Pending for CEO", "Approved", "Rejected"],
+    CEO: ["Pending for CEO", "Approved", "Rejected"],
   };
-  const expectedStatuses = statusMapping[userInfo?.role] || [];
+  const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
+    s.toLowerCase()
+  );
+  const pendingStatuses = expectedStatuses.filter((s) =>
+    s.startsWith("pending")
+  );
   useEffect(() => {
     const fetchStatementsdetails = async () => {
       try {
-        const { filterreceipts, categorizedReceipts, mrValues } =
+        const { filteredReceipts, categorizedReceipts, mrValues } =
           await fetchStatments({
             expectedStatuses,
             userInfo,
           });
 
-        setAllReceipts(filterreceipts);
+        setAllReceipts(filteredReceipts);
         setReceipts(categorizedReceipts);
         setMrno(mrValues);
       } catch (error) {
@@ -58,13 +65,13 @@ const Home = () => {
     fetchStatementsdetails();
   }, []);
 
-  const approvedReceipts = allreceipts.filter(
+  const approvedReceipts = allreceipts?.filter(
     (r) => r.formData.status == "Approved"
   );
-  const rejectedReceipts = allreceipts.filter(
+  const rejectedReceipts = allreceipts?.filter(
     (r) => r.formData.status == "Rejected"
   );
-  const pendingReceipts = allreceipts.filter((r) =>
+  const pendingReceipts = allreceipts?.filter((r) =>
     r.formData?.status?.toLowerCase().startsWith("pending")
   );
 
@@ -84,14 +91,14 @@ const Home = () => {
                 className="w-full flex text-left px-3 py-2 justify-between bg-blue-200 hover:bg-blue-300 rounded font-medium cursor-pointer"
                 onClick={() => {
                   setStatusFilter("");
-                  setMultiStatusFilter(expectedStatuses);
+                  setMultiStatusFilter(pendingStatuses);
                 }}
               >
                 <div className="flex items-center gap-4">
                   <MdOutlinePendingActions />
                   <span>Pending Statements</span>
                 </div>
-                <p>{pendingReceipts.length}</p>
+                <p>{pendingReceipts?.length}</p>
               </button>
             </Link>
           </li>
@@ -108,7 +115,7 @@ const Home = () => {
                   <TiTick />
                   Approved Statements
                 </div>
-                <p>{approvedReceipts.length}</p>
+                <p>{approvedReceipts?.length}</p>
               </button>
             </Link>
           </li>
@@ -125,7 +132,7 @@ const Home = () => {
                   <ImCross />
                   Rejected Statements
                 </div>
-                <p>{rejectedReceipts.length}</p>
+                <p>{rejectedReceipts?.length}</p>
               </button>
             </Link>
           </li>
@@ -142,7 +149,7 @@ const Home = () => {
                   <GrDocumentStore />
                   All Statements
                 </div>
-                <p>{allreceipts.length}</p>
+                <p>{receipts?.length}</p>
               </button>
             </Link>
           </li>

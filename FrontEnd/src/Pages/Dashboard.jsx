@@ -27,37 +27,49 @@ const Dashboard = () => {
   } = useContext(AppContext);
 
   const userInfo = useUserInfo();
+  const statusProgress = {
+    "Pending For HOM": 20,
+    "Pending For GM": 40,
+    "Pending For CEO": 60,
+    Approved: 100,
+    Rejected: 100,
+    "": 0,
+  };
 
   const statusMapping = {
     Initiator: [
-      "Pending for HOM",
-      "Pending for GM",
-      "Pending for CEO",
+      "Pending For HOM",
+      "Pending For GM",
+      "Pending For CEO",
       "Approved",
       "Rejected",
       "",
     ],
     Manager: [
-      "Pending for HOM",
-      "Pending for GM",
-      "Pending for CEO",
+      "Pending For HOM",
+      "Pending For GM",
+      "Pending For CEO",
       "Rejected",
       "Approved",
     ],
-    GM: ["Pending for GM", "Rejected", "Pending for CEO", "Approved"],
-    CEO: ["Pending for CEO", "Rejected", "Approved"],
+    GM: ["Pending for GM", "Pending for CEO", "Approved", "Rejected"],
+    CEO: ["Pending for CEO", "Approved", "Rejected"],
   };
-  const expectedStatuses = statusMapping[userInfo?.role] || [];
-
+  const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
+    s.toLowerCase()
+  );
+  const pendingStatuses = expectedStatuses.filter((s) =>
+    s.startsWith("pending")
+  );
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
-        const { filterreceipts, reqMrValues, categorizedReceipts, mrValues } =
+        const { filteredReceipts, reqMrValues, categorizedReceipts, mrValues } =
           await fetchStatments({
             expectedStatuses,
             userInfo,
           });
-        setAllReceipts(filterreceipts);
+        setAllReceipts(filteredReceipts);
         setReqMrno(reqMrValues);
         setReceipts(categorizedReceipts);
         setMrno(mrValues);
@@ -70,12 +82,12 @@ const Dashboard = () => {
     fetchReceipts();
   }, []);
 
-  const filteredReceipts = useMemo(() => {
-    if (!Array.isArray(receipts)) return [];
-    if (statusFilter === "All") return allreceipts;
+  const filteredReceiptsOnstatus = useMemo(() => {
+    if (!Array.isArray(allreceipts)) return [];
+    if (statusFilter === "All") return receipts;
 
     if (multiStatusFilter && multiStatusFilter.length > 0) {
-      return receipts.filter((r) =>
+      return allreceipts.filter((r) =>
         multiStatusFilter
           .filter((status) => status !== "Approved" && status !== "Rejected")
           .map((status) => status?.toLowerCase())
@@ -83,10 +95,10 @@ const Dashboard = () => {
           .includes(r.formData?.status.toLowerCase())
       );
     }
-    return receipts.filter(
+    return allreceipts.filter(
       (r) => (r.formData?.status).toLowerCase() === statusFilter.toLowerCase()
     );
-  }, [receipts, statusFilter, multiStatusFilter]);
+  }, [allreceipts, statusFilter, multiStatusFilter]);
 
   const columnHelper = createColumnHelper();
   const columns = [
@@ -94,6 +106,22 @@ const Dashboard = () => {
       header: "Sl. No.",
       cell: ({ row }) => row.index + 1,
     }),
+    columnHelper.accessor((row) => row?.formData.dateValue, {
+      id: "date",
+      header: "Created Date",
+      cell: (info) => {
+        const value = info.getValue();
+        if (!value) return "-";
+
+        const d = new Date(value);
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+
+        return `${day}-${month}-${year}`;
+      },
+    }),
+
     columnHelper.accessor((row) => row?.formData.hiringName, {
       id: "hiring.name",
       header: "Hiring Name",
@@ -112,12 +140,61 @@ const Dashboard = () => {
     columnHelper.accessor((row) => row?.formData.status, {
       id: "status",
       header: "Status",
-      cell: (info) => info.getValue() || "-",
+      cell: (info) => {
+        const status = info.getValue() || "";
+        const progress = statusProgress[status] || 0;
+
+        const progressColor =
+          status === "Rejected"
+            ? "bg-red-500"
+            : status === "Approved"
+              ? "bg-green-500"
+              : status === "Pending For HOM"
+                ? "bg-yellow-400"
+                : status === "Pending For GM"
+                  ? "bg-yellow-500"
+                  : status === "Pending For CEO"
+                    ? "bg-yellow-600"
+                    : "bg-gray-300";
+
+        return (
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-gray-700">
+              {status || "Not Sent For Approval"}
+            </span>
+
+            <div className="relative max-w-2/3 h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+              <div
+                className={`h-2 ${progressColor} rounded-full transition-all duration-500`}
+                style={{
+                  width: `${progress}%`,
+                }}
+              />
+            </div>
+          </div>
+        );
+      },
     }),
+    columnHelper.accessor(
+      (row) => {
+        const commentsArray = row?.formData?.approverdetails
+          ?.filter((item) => item.comments && item.comments.trim() !== "")
+          .map((item) => `${item.role}: ${item.comments}`);
+
+        return commentsArray?.length ? commentsArray.join("\n") : "-";
+      },
+      {
+        id: "comments",
+        header: "Comments",
+        cell: (info) => (
+          <span className="whitespace-pre-wrap">{info.getValue() || "-"}</span>
+        ),
+      }
+    ),
   ];
 
   const table = useReactTable({
-    data: filteredReceipts || [],
+    data: filteredReceiptsOnstatus || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -170,7 +247,7 @@ const Dashboard = () => {
                     break;
                   case "Pending":
                     setStatusFilter("");
-                    setMultiStatusFilter(expectedStatuses);
+                    setMultiStatusFilter(pendingStatuses);
                     break;
                 }
               }}

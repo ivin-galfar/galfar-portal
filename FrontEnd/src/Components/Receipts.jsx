@@ -102,14 +102,9 @@ const Receipts = () => {
   };
   const statusMapping = {
     Initiator: [],
-    Manager: [
-      "Pending for HOM",
-      "Pending for GM",
-      "Pending for CEO",
-      "Approved",
-    ],
-    GM: ["Pending for GM", "Pending for CEO", "Approved"],
-    CEO: ["Pending for CEO", "Approved"],
+    Manager: ["Pending For HOM", "Approved", "Rejected"],
+    GM: ["Pending for GM", "Approved", "Rejected"],
+    CEO: ["Pending for CEO", "Approved", "Rejected"],
   };
 
   const expectedStatuses =
