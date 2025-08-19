@@ -21,6 +21,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       enum: ["Initiator", "Manager", "GM", "CEO"],
+      default: "Manager",
     },
   },
   {

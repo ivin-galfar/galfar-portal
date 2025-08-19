@@ -29,8 +29,8 @@ const Dashboard = () => {
   const userInfo = useUserInfo();
   const statusProgress = {
     "Pending For HOM": 20,
-    "Pending For GM": 40,
-    "Pending For CEO": 60,
+    "Pending for GM": 40,
+    "Pending for CEO": 60,
     Approved: 100,
     Rejected: 100,
     "": 0,
@@ -151,9 +151,9 @@ const Dashboard = () => {
               ? "bg-green-500"
               : status === "Pending For HOM"
                 ? "bg-yellow-400"
-                : status === "Pending For GM"
+                : status === "Pending for GM"
                   ? "bg-yellow-500"
-                  : status === "Pending For CEO"
+                  : status === "Pending for CEO"
                     ? "bg-yellow-600"
                     : "bg-gray-300";
 
