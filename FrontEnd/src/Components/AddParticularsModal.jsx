@@ -105,7 +105,7 @@ const AddParticularsModal = ({ setShowmodal }) => {
                 onChange={(e) => setTemplateName(e.target.value)}
               />
             </div>
-            {fields.map((val, index) => (
+            {fields?.map((val, index) => (
               <div key={index} className="flex items-end gap-2">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">

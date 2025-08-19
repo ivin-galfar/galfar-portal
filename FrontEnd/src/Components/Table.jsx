@@ -67,6 +67,7 @@ export default function VerticalTable({ showcalc }) {
     { id: 1, company: "" },
     { id: 2, company: "" },
     { id: 3, company: "" },
+    { id: 4, company: "" },
   ];
   const createData = () =>
     particular.map((descRow, idx) => {
@@ -138,8 +139,14 @@ export default function VerticalTable({ showcalc }) {
       index: vIdx,
     }));
 
-    if (sortVendors || !userInfo?.isAdmin || sharedTableData.formData?.status) {
-      return vendors.slice().sort((a, b) => a.total - b.total);
+    if (sortVendors || sharedTableData.formData?.status) {
+      const positiveVendors = vendors.filter((v) => v.total > 0);
+
+      const sortedPositive = positiveVendors
+        .slice()
+        .sort((a, b) => a.total - b.total);
+
+      return [...sortedPositive];
     } else {
       return vendors;
     }

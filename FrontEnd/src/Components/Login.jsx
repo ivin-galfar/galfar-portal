@@ -35,7 +35,7 @@ const Login = () => {
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
-          navigate("/receipts");
+          navigate("/");
         }, 1500);
       } catch (error) {
         let message = error?.response?.data?.message;
@@ -100,7 +100,6 @@ const Login = () => {
           </h2>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Email */}
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
