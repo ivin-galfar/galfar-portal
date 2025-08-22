@@ -10,7 +10,10 @@ import { AppContext } from "../Components/Context";
 import fetchStatments from "../APIs/StatementsApi";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { Link } from "react-router-dom";
-import { FaArrowAltCircleRight } from "react-icons/fa";
+import { FaArrowAltCircleRight, FaTrash } from "react-icons/fa";
+import Alerts from "../Components/Alerts";
+import { REACT_SERVER_URL } from "../../config/ENV";
+import axios from "axios";
 
 const Dashboard = () => {
   const {
@@ -24,6 +27,9 @@ const Dashboard = () => {
     setStatusFilter,
     multiStatusFilter,
     setMultiStatusFilter,
+    selectedmr,
+    deleted,
+    setDeleted,
   } = useContext(AppContext);
 
   const userInfo = useUserInfo();
@@ -55,6 +61,11 @@ const Dashboard = () => {
     GM: ["Pending for GM", "Pending for CEO", "Approved", "Rejected"],
     CEO: ["Pending for CEO", "Approved", "Rejected"],
   };
+
+  const [triggerdelete, setTriggerdelete] = useState(false);
+  const [errormessage, setErrormessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [deleteMr, setdeleteMr] = useState("");
   const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
     s.toLowerCase()
   );
@@ -80,8 +91,31 @@ const Dashboard = () => {
     };
 
     fetchReceipts();
-  }, []);
-
+  }, [deleted]);
+  const handleDelete = async (mr) => {
+    try {
+      const config = {
+        "Content-type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      };
+      const response = await axios.delete(
+        `${REACT_SERVER_URL}/receipts/${mr}`,
+        config
+      );
+      setShowToast(true);
+      setErrormessage("");
+      setDeleted(true);
+      setTriggerdelete(false);
+      setTimeout(() => {
+        setShowToast(false);
+        setDeleted(false);
+      }, 1500);
+    } catch (error) {
+      setDeleted(false);
+      let message = error?.response?.data?.message;
+      setErrormessage(message ? message : error.message);
+    }
+  };
   const filteredReceiptsOnstatus = useMemo(() => {
     if (!Array.isArray(allreceipts)) return [];
     if (statusFilter === "All") return receipts;
@@ -308,13 +342,23 @@ const Dashboard = () => {
                       )}
                     </td>
                   ))}
-                  <td className="border-b border-gray-300 px-4 py-2 text-sm text-gray-700 text-center">
-                    <Link
-                      className="px-2 py-1 bg-blue-500 text-white rounded inline-flex justify-center items-center gap-2 hover:bg-blue-600 cursor-pointer"
-                      to={`/receipts/${row.original.formData.equipMrNoValue}`}
-                    >
-                      View <FaArrowAltCircleRight />
-                    </Link>
+                  <td className=" border-gray-300 px-4 py-2 text-sm text-gray-700 text-center flex items-center justify-center gap-4">
+                    <div className="flex items-center justify-center gap-4">
+                      <Link
+                        className="px-2 py-1  bg-blue-500 text-white rounded inline-flex justify-center items-center gap-2 hover:bg-blue-600 cursor-pointer"
+                        to={`/receipts/${row.original.formData.equipMrNoValue}`}
+                      >
+                        View <FaArrowAltCircleRight />
+                      </Link>
+                      <FaTrash
+                        className="mr-1 text-red-500"
+                        size={14}
+                        onClick={() => {
+                          setdeleteMr(row.original.formData.equipMrNoValue);
+                          setTriggerdelete(true);
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))
@@ -322,6 +366,18 @@ const Dashboard = () => {
           </tbody>
         </table>
       </div>
+      {triggerdelete && (
+        <Alerts
+          message="Are you sure you want to Delete the Selected statement?"
+          onCancel={() => setTriggerdelete(false)}
+          onConfirm={() => handleDelete(deleteMr)}
+        />
+      )}
+      {showToast && !errormessage && deleted && (
+        <div className="z-[9999] fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          ✅ Statement successfully Deleted!!
+        </div>
+      )}
     </div>
   );
 };
