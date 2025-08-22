@@ -86,7 +86,6 @@ const Home = () => {
     const created = new Date(r.createdAt);
     return created >= sevenDaysAgo;
   });
-  console.log(recentReceipts);
 
   return (
     <div className="w-full h-[50vh]">

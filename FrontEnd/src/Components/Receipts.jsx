@@ -34,6 +34,7 @@ const Receipts = () => {
     setParticularName,
     setfreezeQuantity,
     setReceipts,
+    selectedVendorReason,
   } = useContext(AppContext);
 
   const handleSubmit = async () => {
@@ -164,12 +165,23 @@ const Receipts = () => {
         <TableHeader isAdmin={userInfo?.isAdmin} />
       </h1>
       <MyTable showcalc={showcalc} />
-      <span className="invisible h-20"></span>
       <div
         className={` z-50 flex justify-between items-center gap-3.5 pt-3 flex-wrap`}
       >
         {userInfo?.isAdmin ? (
           <div className="flex gap-3.5 min-w-[280px]">
+            {sharedTableData.formData.selectedVendorReason ? (
+              <>
+                <div className="w-100 p-2 inline-block bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm ">
+                  <h1 className="text-black">Recommendation points:</h1>
+                  {sharedTableData.formData.selectedVendorReason
+                    ? sharedTableData.formData.selectedVendorReason
+                    : ""}
+                </div>
+              </>
+            ) : (
+              <div className="w-100 inline-block px-3 py-1 bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm invisible"></div>
+            )}
             {hasInputActivity || isMRSelected ? (
               <>
                 {selectedmr != "default" ? (
@@ -178,7 +190,7 @@ const Receipts = () => {
                       setShowmodal(true);
                     }}
                     disabled={statusclass != ""}
-                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-198" : "ml-185"} text-white font-semibold rounded shadow ${
+                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-98" : "ml-80"} max-h-10 text-white font-semibold rounded shadow ${
                       buttonClass
                     } ${buttonText == "Already Requested" ? "cursor-not-allowed" : ""} focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
                   `}
@@ -200,29 +212,43 @@ const Receipts = () => {
           </div>
         ) : (
           <>
-            {" "}
-            {sharedTableData.formData.status != "" ? (
-              <div className="justify-end flex ml-68 ">
-                <button
-                  disabled={statusclass != ""}
-                  className={`px-10 py-2  text-white font-semibold rounded ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-120" : "ml-106"}  ${buttonClass}`}
-                  onClick={() => setShowmodal(true)}
-                >
-                  {sharedTableData.formData.status}
-                </button>
-              </div>
-            ) : (
-              sharedTableData.formData.equipMrNoValue && (
-                <div className="justify-end flex ml-68 ">
+            <div className="flex gap-3.5 min-w-[280px]">
+              {sharedTableData.formData.selectedVendorReason ? (
+                <>
+                  <div className="w-100 p-2 inline-block bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm ">
+                    <h1 className="text-black">Recommendation points:</h1>
+                    {sharedTableData.formData.selectedVendorReason
+                      ? sharedTableData.formData.selectedVendorReason
+                      : ""}
+                  </div>
+                </>
+              ) : (
+                <div className="w-100 inline-block px-3 py-1 bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm invisible"></div>
+              )}
+
+              {sharedTableData.formData.status != "" ? (
+                <div className="justify-end flex ">
                   <button
-                    className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
+                    disabled={statusclass != ""}
+                    className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-85" : "ml-70"}  ${buttonClass}`}
                     onClick={() => setShowmodal(true)}
                   >
-                    Approve/Reject
+                    {sharedTableData.formData.status}
                   </button>
                 </div>
-              )
-            )}
+              ) : (
+                sharedTableData.formData.equipMrNoValue && (
+                  <div className="justify-end flex ml-68 ">
+                    <button
+                      className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
+                      onClick={() => setShowmodal(true)}
+                    >
+                      Approve/Reject
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
           </>
         )}
         {userInfo?.isAdmin ? (

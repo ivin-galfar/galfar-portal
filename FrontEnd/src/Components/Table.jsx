@@ -247,7 +247,7 @@ export default function VerticalTable({ showcalc }) {
                         ? "--Remarks--"
                         : ""
                   }
-                  disabled={freezequantity}
+                  disabled={freezequantity && freezequantity == true}
                   onChange={(e) =>
                     handleInputChange(row.index, vendorKey, e.target.value)
                   }
@@ -326,17 +326,6 @@ export default function VerticalTable({ showcalc }) {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleCurrencyChange = (e) => {
-    const value = e.target.value;
-    setSharedTableData((prev) => ({
-      ...prev,
-      formData: {
-        ...prev.formData,
-        currency: value,
-      },
-    }));
-  };
-
   return (
     <div className="overflow-x-auto w-full">
       <table className="table border-collapse border border-gray-300 w-4xl text-sm">
@@ -362,12 +351,14 @@ export default function VerticalTable({ showcalc }) {
             {vendorInfoWithTotal.map((vendor) => (
               <th
                 key={vendor.id}
-                className="border px-4 py-2 text-xs text-gray-600 whitespace-nowrap w-40"
+                className="border px-4 py-2 text-xs text-gray-600 w-40"
               >
-                UNIT PRICE{" "}
-                <span className="ml-1 text-xs font-medium text-gray-500">
-                  {currencysymbol}
-                </span>
+                <div className="flex items-center justify-start gap-1">
+                  <span>UNIT PRICE</span>
+                  <span className="text-xs font-medium w-4 text-gray-500">
+                    {currencysymbol}
+                  </span>
+                </div>
               </th>
             ))}
           </tr>
@@ -422,29 +413,11 @@ export default function VerticalTable({ showcalc }) {
               className="border px-4 py-2 font-semibold bg-yellow-50  text-center gap-2"
             >
               Total Price (Excl. VAT)
-              <label className="font-medium text-sm inline-flex items-center space-x-2 gap-2 pl-3">
-                {freezequantity ? (
-                  <span className="text-sm font-normal text-gray-600">
-                    {sharedTableData.formData?.currency || ""}
-                  </span>
-                ) : (
-                  <>
-                    <span>Currency:</span>
-                    <select
-                      value={sharedTableData.formData?.currency || ""}
-                      onChange={handleCurrencyChange}
-                      className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm 
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">Select</option>
-                      <option value="AED">د.إ AED</option>
-                      <option value="USD">$ USD</option>
-                      <option value="EUR">€ EUR</option>
-                      <option value="GBP">£ GBP</option>
-                    </select>
-                  </>
-                )}
-              </label>
+              {sharedTableData.formData?.currency && (
+                <span className="ml-2  text-xs tracking-wide font-medium text-gray-500 align-middle">
+                  ({sharedTableData.formData.currency})
+                </span>
+              )}
             </td>
             {vendorTotals.map((val, idx) => (
               <td
@@ -571,8 +544,7 @@ export default function VerticalTable({ showcalc }) {
                                   <VendorSelectionTooltip
                                     setShowTooltip={setShowTooltip}
                                     message={
-                                      sharedTableData.formData
-                                        .selectedVendorReason
+                                      "The reason for choosing this vendor will be displayed below!!"
                                     }
                                   />
                                 )}

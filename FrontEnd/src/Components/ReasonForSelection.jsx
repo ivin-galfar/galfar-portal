@@ -46,6 +46,7 @@ const ReasonForSelection = ({
           ...prev.formData,
           sentForApproval: "yes",
           status: response.data.formData.status,
+          selectedVendorReason: selectedVendorReason,
         },
       }));
     } catch (error) {

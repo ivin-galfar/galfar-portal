@@ -15,6 +15,7 @@ const AppContextProvider = ({ children }) => {
       emRegNoValue: "",
       requiredDateValue: new Date().toISOString().split("T")[0],
       requirementDurationValue: "",
+      selectedVendorReason: "",
     },
     tableData: initialTableData,
   });
@@ -33,7 +34,7 @@ const AppContextProvider = ({ children }) => {
   const [showupdated, setShowUpdated] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [selectedVendorIndex, setSelectedVendorIndex] = useState(0);
-  const [selectedVendorReason, setSelectedVendorReason] = useState("--");
+  const [selectedVendorReason, setSelectedVendorReason] = useState();
   const [quantity, setQuantity] = useState(0);
   const [freezequantity, setfreezeQuantity] = useState(false);
   const [receipts, setReceipts] = useState([]);

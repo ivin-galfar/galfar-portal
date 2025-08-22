@@ -45,6 +45,7 @@ const TableHeader = ({ isAdmin }) => {
     setQuantity,
     setfreezeQuantity,
     freezequantity,
+    selectedVendorReason,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -93,7 +94,16 @@ const TableHeader = ({ isAdmin }) => {
       },
     }));
   };
-
+  const handleCurrencyChange = (e) => {
+    const value = e.target.value;
+    setSharedTableData((prev) => ({
+      ...prev,
+      formData: {
+        ...prev.formData,
+        currency: value,
+      },
+    }));
+  };
   const fetchReceipt = async (id) => {
     const receiptid = id || mrnumber;
 
@@ -128,7 +138,6 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
-  console.log(freezequantity);
 
   useLayoutEffect(() => {
     if (!userInfo?.isAdmin) {
@@ -446,43 +455,59 @@ const TableHeader = ({ isAdmin }) => {
         </div>
       </div>
       <div className="flex items-center w-full p-0.5">
-        <div className="flex items-start gap-2 text-sm font-medium w-full max-w-md">
-          <div
-            className={`flex flex-col flex-grow ${particularname != "" ? "hidden" : ""}`}
-          >
-            <label htmlFor="mrNo" className=" text-left text-gray-700 mb-1">
-              Choose MR No.
-            </label>
-            <select
-              id="mrNo"
-              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-              value={formData?.equipMrNoValue || mrnumber || "default"}
-              onChange={(e) => {
-                handleChange("equipMrNoValue")(e);
-                if (e.target.value !== "default") {
-                  fetchReceipt(e.target.value);
-                  setIsMRSelected(true);
-                  setSelectedMr(e.target.value);
-                  setfreezeQuantity(true);
-                } else {
-                  // setfreezeQuantity(false);
-                  setSortVendors(false);
-                  setCleartable(true);
-                  setIsMRSelected(false);
-                  setSelectedMr(e.target.value);
-                  setSharedTableData({ formData: {}, tableData: [] });
-                  navigate("/receipts", { replace: true });
-                }
-              }}
-            >
-              <option value="default">Select an option</option>
-              {(isAdmin ? mrno : reqmrno)?.map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="space-y-1 px-4 flex items-start gap-2 text-sm font-medium w-full max-w-md">
+          {particularname == "" ? (
+            <div className="flex flex-col flex-grow ">
+              <label htmlFor="mrNo" className=" text-left text-gray-700 mb-1">
+                Choose MR No.
+              </label>
+              <select
+                id="mrNo"
+                className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                value={formData?.equipMrNoValue || mrnumber || "default"}
+                onChange={(e) => {
+                  handleChange("equipMrNoValue")(e);
+                  if (e.target.value !== "default") {
+                    fetchReceipt(e.target.value);
+                    setIsMRSelected(true);
+                    setSelectedMr(e.target.value);
+                    setfreezeQuantity(true);
+                  } else {
+                    setSortVendors(false);
+                    setCleartable(true);
+                    setIsMRSelected(false);
+                    setSelectedMr(e.target.value);
+                    setSharedTableData({ formData: {}, tableData: [] });
+                    navigate("/receipts", { replace: true });
+                  }
+                }}
+              >
+                <option value="default">Select an option</option>
+                {(isAdmin ? mrno : reqmrno)?.map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <>
+              {" "}
+              <span>Currency:</span>
+              <select
+                value={sharedTableData.formData?.currency || ""}
+                onChange={handleCurrencyChange}
+                className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm 
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select</option>
+                <option value="AED">د.إ AED</option>
+                <option value="USD">$ USD</option>
+                <option value="EUR">€ EUR</option>
+                <option value="GBP">£ GBP</option>
+              </select>
+            </>
+          )}
 
           <div className="relative group mt-6">
             {statusLogo}
