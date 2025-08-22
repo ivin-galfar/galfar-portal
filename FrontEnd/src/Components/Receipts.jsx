@@ -190,7 +190,7 @@ const Receipts = () => {
                       setShowmodal(true);
                     }}
                     disabled={statusclass != ""}
-                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-98" : "ml-80"} max-h-10 text-white font-semibold rounded shadow ${
+                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-96" : "ml-80"} max-h-10 text-white font-semibold rounded shadow ${
                       buttonClass
                     } ${buttonText == "Already Requested" ? "cursor-not-allowed" : ""} focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
                   `}
@@ -230,7 +230,7 @@ const Receipts = () => {
                 <div className="justify-end flex ">
                   <button
                     disabled={statusclass != ""}
-                    className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-85" : "ml-70"}  ${buttonClass}`}
+                    className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-96" : "ml-70"}  ${buttonClass}`}
                     onClick={() => setShowmodal(true)}
                   >
                     {sharedTableData.formData.status}

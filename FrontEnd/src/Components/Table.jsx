@@ -353,7 +353,7 @@ export default function VerticalTable({ showcalc }) {
                 key={vendor.id}
                 className="border px-4 py-2 text-xs text-gray-600 w-40"
               >
-                <div className="flex items-center justify-start gap-1">
+                <div className="flex justify-center gap-1">
                   <span>UNIT PRICE</span>
                   <span className="text-xs font-medium w-4 text-gray-500">
                     {currencysymbol}

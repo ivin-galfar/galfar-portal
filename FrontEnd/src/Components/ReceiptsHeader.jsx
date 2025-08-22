@@ -141,8 +141,14 @@ const TableHeader = ({ isAdmin }) => {
 
   useLayoutEffect(() => {
     if (!userInfo?.isAdmin) {
-      var defaultMr = mrno[mrno.length - 1];
-      fetchReceipt(defaultMr);
+      if (mrnumber && mrnumber !== "default") {
+        fetchReceipt(mrnumber);
+        setIsMRSelected(true);
+        setSelectedMr(mrnumber);
+      } else {
+        const defaultMr = mrno[mrno.length - 1];
+        if (defaultMr) fetchReceipt(defaultMr);
+      }
     }
   }, []);
   useEffect(() => {

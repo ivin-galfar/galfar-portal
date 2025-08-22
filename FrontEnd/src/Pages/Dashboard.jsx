@@ -352,6 +352,7 @@ const Dashboard = () => {
                       </Link>
                       <FaTrash
                         className="mr-1 text-red-500"
+                        hidden={!userInfo.isAdmin}
                         size={14}
                         onClick={() => {
                           setdeleteMr(row.original.formData.equipMrNoValue);
