@@ -18,6 +18,7 @@ const formDataSchema = mongoose.Schema({
   selectedVendorIndex: { type: Number },
   selectedVendorReason: { type: String },
   status: { type: String },
+  currency: { type: String },
   approverdetails: [
     {
       role: {

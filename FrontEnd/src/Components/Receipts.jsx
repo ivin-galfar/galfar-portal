@@ -8,7 +8,7 @@ import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import ApproveModal from "./ApproveModal";
 import ReasonForSelection from "./ReasonForSelection";
-import fetchStatments from "../../APIs/StatementsApi";
+import fetchStatments from "../APIs/StatementsApi";
 
 const Receipts = () => {
   const userInfo = useUserInfo();

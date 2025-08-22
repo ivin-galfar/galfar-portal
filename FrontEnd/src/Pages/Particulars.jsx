@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import fetchParticulars from "../../APIs/ParticularsApi";
+import fetchParticulars from "../APIs/ParticularsApi";
 import { useContext } from "react";
 import { AppContext } from "../Components/Context";
 import ParticularsAccordion from "../Components/ParticularsAccordion";

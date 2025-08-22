@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import galfarlogo from "../assets/Images/banner_2.jpg";
 import { AppContext } from "./Context";
-import fetchStatments from "../../APIs/StatementsApi";
+import fetchStatments from "../APIs/StatementsApi";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { Link } from "react-router-dom";
 import { MdOutlinePendingActions } from "react-icons/md";

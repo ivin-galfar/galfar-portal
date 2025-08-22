@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../Components/Context";
-import fetchStatments from "../../APIs/StatementsApi";
+import fetchStatments from "../APIs/StatementsApi";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { Link } from "react-router-dom";
 import { FaArrowAltCircleRight } from "react-icons/fa";

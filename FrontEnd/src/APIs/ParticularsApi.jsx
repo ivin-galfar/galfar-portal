@@ -1,5 +1,5 @@
 import axios from "axios";
-import { REACT_SERVER_URL } from "../config/ENV";
+import { REACT_SERVER_URL } from "../../config/ENV";
 
 const fetchParticulars = async () => {
   try {

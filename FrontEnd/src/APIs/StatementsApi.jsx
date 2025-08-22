@@ -1,5 +1,5 @@
-import { REACT_SERVER_URL } from "../config/ENV";
 import axios from "axios";
+import { REACT_SERVER_URL } from "../../config/ENV";
 
 const fetchStatments = async ({ expectedStatuses, userInfo }) => {
   try {

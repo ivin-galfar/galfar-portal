@@ -1,4 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { AppContext } from "./Context";
 import axios from "axios";
@@ -7,7 +13,7 @@ import { TiTick } from "react-icons/ti";
 import { RxCrossCircled } from "react-icons/rx";
 import { FaFileUpload } from "react-icons/fa";
 import { FaFileDownload } from "react-icons/fa";
-import fetchParticulars from "../../APIs/ParticularsApi";
+import fetchParticulars from "../APIs/ParticularsApi";
 import { FaTrash } from "react-icons/fa";
 import Alerts from "../Components/Alerts";
 import { useNavigate, useParams } from "react-router-dom";
@@ -122,7 +128,14 @@ const TableHeader = ({ isAdmin }) => {
       });
     }
   };
+  console.log(freezequantity);
 
+  useLayoutEffect(() => {
+    if (!userInfo?.isAdmin) {
+      var defaultMr = mrno[mrno.length - 1];
+      fetchReceipt(defaultMr);
+    }
+  }, []);
   useEffect(() => {
     if (mrnumber) {
       fetchReceipt(mrnumber);
@@ -255,6 +268,7 @@ const TableHeader = ({ isAdmin }) => {
                   requirementDurationValue: "",
                   file: "",
                   qty: "",
+                  currency: "",
                   requiredDateValue: new Date(),
                   dateValue: new Date(),
                 },
@@ -449,9 +463,9 @@ const TableHeader = ({ isAdmin }) => {
                   fetchReceipt(e.target.value);
                   setIsMRSelected(true);
                   setSelectedMr(e.target.value);
-                  setNewMr(false);
+                  setfreezeQuantity(true);
                 } else {
-                  setfreezeQuantity(false);
+                  // setfreezeQuantity(false);
                   setSortVendors(false);
                   setCleartable(true);
                   setIsMRSelected(false);

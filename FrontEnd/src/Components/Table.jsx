@@ -11,6 +11,7 @@ import { REACT_SERVER_URL } from "../../config/ENV";
 import axios from "axios";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import VendorSelectionTooltip from "./VendorSelectionTooltip";
+import Currency from "../Helpers/Currency";
 
 export default function VerticalTable({ showcalc }) {
   const {
@@ -27,12 +28,14 @@ export default function VerticalTable({ showcalc }) {
     setSelectedVendorIndex,
     selectedmr,
     freezequantity,
+    currency,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
 
   useEffect(() => {
     setSelectedVendorIndex(sharedTableData.formData.selectedVendorIndex ?? 0);
   }, [sharedTableData.formData.selectedVendorIndex, selectedmr]);
+  const currencysymbol = Currency(sharedTableData.formData.currency || "");
 
   const fetchParticular = async (particularname) => {
     try {
@@ -323,6 +326,17 @@ export default function VerticalTable({ showcalc }) {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const handleCurrencyChange = (e) => {
+    const value = e.target.value;
+    setSharedTableData((prev) => ({
+      ...prev,
+      formData: {
+        ...prev.formData,
+        currency: value,
+      },
+    }));
+  };
+
   return (
     <div className="overflow-x-auto w-full">
       <table className="table border-collapse border border-gray-300 w-4xl text-sm">
@@ -350,7 +364,10 @@ export default function VerticalTable({ showcalc }) {
                 key={vendor.id}
                 className="border px-4 py-2 text-xs text-gray-600 whitespace-nowrap w-40"
               >
-                UNIT PRICE
+                UNIT PRICE{" "}
+                <span className="ml-1 text-xs font-medium text-gray-500">
+                  {currencysymbol}
+                </span>
               </th>
             ))}
           </tr>
@@ -402,9 +419,32 @@ export default function VerticalTable({ showcalc }) {
           <tr>
             <td
               colSpan={2}
-              className="border px-4 py-2 font-semibold bg-yellow-50 text-yellow-800 text-center"
+              className="border px-4 py-2 font-semibold bg-yellow-50  text-center gap-2"
             >
               Total Price (Excl. VAT)
+              <label className="font-medium text-sm inline-flex items-center space-x-2 gap-2 pl-3">
+                {freezequantity ? (
+                  <span className="text-sm font-normal text-gray-600">
+                    {sharedTableData.formData?.currency || ""}
+                  </span>
+                ) : (
+                  <>
+                    <span>Currency:</span>
+                    <select
+                      value={sharedTableData.formData?.currency || ""}
+                      onChange={handleCurrencyChange}
+                      className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm 
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select</option>
+                      <option value="AED">د.إ AED</option>
+                      <option value="USD">$ USD</option>
+                      <option value="EUR">€ EUR</option>
+                      <option value="GBP">£ GBP</option>
+                    </select>
+                  </>
+                )}
+              </label>
             </td>
             {vendorTotals.map((val, idx) => (
               <td
@@ -441,9 +481,14 @@ export default function VerticalTable({ showcalc }) {
           <tr>
             <td
               colSpan={2}
-              className="border px-4 py-2 font-semibold  text-center"
+              className="border px-4 py-2 font-semibold text-center"
             >
               Net Price (Incl. VAT)
+              {sharedTableData.formData?.currency && (
+                <span className="ml-2  text-xs tracking-wide font-medium text-gray-500 align-middle">
+                  ({sharedTableData.formData.currency})
+                </span>
+              )}
             </td>
             {vendorNetPrices.map((val, idx) => (
               <td
