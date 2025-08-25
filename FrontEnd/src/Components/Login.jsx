@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import galfarlogo from "../assets/Images/logo-new.png";
 import { AppContext } from "./Context";
-import axios from "axios";
-import { REACT_SERVER_URL } from "../../config/ENV";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser, registerUser } from "../APIs/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,56 +14,42 @@ const Login = () => {
 
   const { newuser, setNewuser } = useContext(AppContext);
 
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setErrormessage("");
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        navigate("/");
+      }, 1500);
+    },
+    onError: (error) => {
+      const message = error?.response?.data?.message || error.message;
+      setErrormessage(message);
+    },
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: () => {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 1500);
+      setErrormessage("");
+    },
+    onError: (error) => {
+      const message = error?.response?.data?.message || error.message;
+      setErrormessage(message);
+    },
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newuser) {
-      try {
-        const config = {
-          "Content-type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        };
-        const { data } = await axios.post(
-          `${REACT_SERVER_URL}/users/login`,
-          {
-            email,
-            password,
-          },
-          config
-        );
-        localStorage.setItem("userInfo", JSON.stringify(data));
-        setErrormessage("");
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-          navigate("/");
-        }, 1500);
-      } catch (error) {
-        let message = error?.response?.data?.message;
-        setErrormessage(message ? message : error.message);
-      }
+      loginMutation.mutate({ email, password });
     } else {
-      try {
-        const config = {
-          "Content-type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        };
-        const { data } = await axios.post(
-          `${REACT_SERVER_URL}/users/register`,
-          {
-            email,
-            password,
-          },
-          config
-        );
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 1500);
-        setErrormessage("");
-      } catch (error) {
-        let message = error?.response?.data?.message;
-        setErrormessage(message ? message : error.message);
-      }
+      registerMutation.mutate({ email, password });
     }
   };
 
