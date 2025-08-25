@@ -234,10 +234,8 @@ const Dashboard = () => {
         ) {
           data.cell.styles.textColor = [0, 0, 0];
           data.cell.styles.fontStyle = "bold";
-          data.cell.styles.halign = "center";
         }
         if (text.includes("VAT @5%")) {
-          data.cell.styles.halign = "center";
           data.cell.styles.fontStyle = "bold";
         }
       },
@@ -509,7 +507,7 @@ const Dashboard = () => {
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="even:bg-white odd:bg-gray-50 hover:bg-blue-100 cursor-pointer"
+                  className="even:bg-white odd:bg-gray-50 hover:bg-blue-100 "
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td
@@ -530,16 +528,14 @@ const Dashboard = () => {
                       >
                         View <FaArrowAltCircleRight />
                       </Link>
-                      <FaTrash
-                        className={`mr-1 text-red-500 ${!userInfo.isAdmin ? "hidden" : "cursor-pointer"}`}
-                        size={14}
-                        onClick={() => {
-                          setdeleteMr(row.original.formData.equipMrNoValue);
-                          setTriggerdelete(true);
-                        }}
-                      />
+
                       <IoPrint
-                        className={`cursor-pointer ${!userInfo.isAdmin || row.original.formData.status !== "Approved" ? "invisible" : ""}`}
+                        className={` ${
+                          !userInfo.isAdmin ||
+                          row.original.formData.status !== "Approved"
+                            ? "text-gray-400 pointer-events-none cursor-not-allowed"
+                            : "text-black cursor-pointer"
+                        }`}
                         size={25}
                         onClick={() => {
                           const { totals, vats, netPrices } = calculateTotals(
@@ -553,6 +549,14 @@ const Dashboard = () => {
                             netPrices,
                             row.original.formData.currency
                           );
+                        }}
+                      />
+                      <FaTrash
+                        className={`mr-1 text-red-500 ${!userInfo.isAdmin ? "hidden" : "cursor-pointer"}`}
+                        size={14}
+                        onClick={() => {
+                          setdeleteMr(row.original.formData.equipMrNoValue);
+                          setTriggerdelete(true);
                         }}
                       />
                     </div>
