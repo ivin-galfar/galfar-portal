@@ -14,6 +14,9 @@ import { FaArrowAltCircleRight, FaTrash } from "react-icons/fa";
 import Alerts from "../Components/Alerts";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import axios from "axios";
+import { IoPrint } from "react-icons/io5";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
 
 const Dashboard = () => {
   const {
@@ -30,6 +33,7 @@ const Dashboard = () => {
     selectedmr,
     deleted,
     setDeleted,
+    sharedTableData,
   } = useContext(AppContext);
 
   const userInfo = useUserInfo();
@@ -116,6 +120,182 @@ const Dashboard = () => {
       setErrormessage(message ? message : error.message);
     }
   };
+  const calculateTotals = (tableData, qty) => {
+    if (!tableData || tableData.length === 0)
+      return { totals: [], vats: [], netPrices: [] };
+
+    const vendorCount = Object.keys(tableData[0].vendors || {}).length;
+    const totals = new Array(vendorCount).fill(0);
+
+    tableData.forEach((row, index) => {
+      if (index === 0) return;
+      if (row.particulars?.trim().toUpperCase() === "RATING") return;
+
+      Object.entries(row.vendors).forEach(([_, val], vIdx) => {
+        const value = parseFloat(val) || 0;
+        totals[vIdx] += qty > 0 ? value * qty : value;
+      });
+    });
+
+    const vatRate = sharedTableData.formData.vatRate ?? 0.05;
+    const vats = totals.map((t) => parseFloat((t * vatRate).toFixed(2)));
+    const netPrices = totals.map((t, idx) =>
+      parseFloat((t + vats[idx]).toFixed(2))
+    );
+
+    return { totals, vats, netPrices };
+  };
+
+  const handlePrint = (printcontents, totals, vats, netPrices, currency) => {
+    const doc = new jsPDF();
+    const { formData, tableData } = printcontents;
+
+    doc.setFontSize(14);
+    doc.text("GALFAR ENGINEERING & CONTRACTING WLL EMIRATES", 105, 15, {
+      align: "center",
+    });
+
+    doc.setFontSize(12);
+    doc.text(
+      `COMPARATIVE STATEMENT - ${formData.hiringName} (Hiring)`,
+      105,
+      25,
+      {
+        align: "center",
+      }
+    );
+
+    doc.setFontSize(10);
+    doc.text(`Project: ${formData.projectValue}`, 14, 40);
+    doc.text(`Location: ${formData.locationValue}`, 14, 46);
+    doc.text(`Quantity: ${formData.qty}`, 14, 52);
+
+    doc.text(`EQUIP MR NO: ${formData.equipMrNoValue}`, 105, 40, {
+      align: "center",
+    });
+    doc.text(`EM REG NO: ${formData.emRegNoValue}`, 105, 46, {
+      align: "center",
+    });
+
+    doc.text(
+      `REQUIRED DATE: ${new Date(formData.requiredDateValue).toLocaleDateString()}`,
+      200,
+      40,
+      { align: "right" }
+    );
+    doc.text(
+      `REQUIRED DURATION: ${formData.requirementDurationValue}`,
+      200,
+      46,
+      { align: "right" }
+    );
+
+    const activeVendorIndexes = totals
+      .map((t, idx) => (t > 0 ? idx : -1))
+      .filter((idx) => idx !== -1);
+    const vendorNames = Object.values(tableData[0].vendors);
+    const vendorHeaders = activeVendorIndexes.map((i) => vendorNames[i]);
+
+    const tableHead = [["Particulars", ...vendorHeaders]];
+
+    const tableBody = tableData
+      .filter((row, idx) => idx !== 0)
+      .map((row) => {
+        const vendors = Object.values(row.vendors || {});
+        const rowValues = activeVendorIndexes.map((i) => vendors[i] || 0);
+        return [row.particulars, ...rowValues];
+      });
+
+    tableBody.push(
+      [
+        `Total (Excl. VAT) ${currency}`,
+        ...activeVendorIndexes.map((i) => totals[i].toFixed(2)),
+      ],
+      [
+        `VAT @5% ${currency}`,
+        ...activeVendorIndexes.map((i) => vats[i].toFixed(2)),
+      ],
+      [
+        `Net Price (Incl. VAT) ${currency}`,
+        ...activeVendorIndexes.map((i) => netPrices[i].toFixed(2)),
+      ]
+    );
+    autoTable(doc, {
+      startY: 65,
+      head: tableHead,
+      body: tableBody,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [0, 0, 0], textColor: 255 },
+      didParseCell: (data) => {
+        const text = data.cell.text[0];
+        if (
+          text.includes("Total (Excl. VAT)") ||
+          text.includes("Net Price (Incl. VAT)")
+        ) {
+          data.cell.styles.textColor = [0, 0, 0];
+          data.cell.styles.fontStyle = "bold";
+          data.cell.styles.halign = "center";
+        }
+        if (text.includes("VAT @5%")) {
+          data.cell.styles.halign = "center";
+          data.cell.styles.fontStyle = "bold";
+        }
+      },
+    });
+
+    if (formData.status === "Approved") {
+      const approvedText = "APPROVED";
+      const lastTableFinalY =
+        doc.previousAutoTable?.finalY || doc.lastAutoTable?.finalY || 65;
+
+      const centerX = doc.internal.pageSize.width / 2;
+      const centerY = lastTableFinalY + 25;
+
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 128, 0);
+
+      const textWidth = doc.getTextWidth(approvedText);
+      const paddingX = 4;
+      const paddingY = 2;
+      const rectWidth = textWidth + paddingX * 2;
+      const rectHeight = 14 + paddingY * 2;
+
+      doc.setFillColor(220, 255, 220);
+      doc.rect(
+        centerX - rectWidth / 2,
+        centerY - rectHeight / 2,
+        rectWidth,
+        rectHeight,
+        "F"
+      );
+
+      doc.text(approvedText, centerX, centerY, {
+        align: "center",
+        baseline: "middle",
+      });
+    }
+    doc.setTextColor(0, 0, 0);
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.text(
+        `Generated on: ${new Date().toLocaleString()}`,
+        14,
+        doc.internal.pageSize.height - 10
+      );
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        doc.internal.pageSize.width - 20,
+        doc.internal.pageSize.height - 10,
+        { align: "right" }
+      );
+    }
+
+    doc.save("Comparative_Statement.pdf");
+  };
+
   const filteredReceiptsOnstatus = useMemo(() => {
     if (!Array.isArray(allreceipts)) return [];
     if (statusFilter === "All") return receipts;
@@ -342,21 +522,37 @@ const Dashboard = () => {
                       )}
                     </td>
                   ))}
-                  <td className=" border-gray-300 px-4 py-2 text-sm text-gray-700 text-center flex items-center justify-center gap-4">
+                  <td className="border-gray-300 px-4 py-2 text-sm text-gray-700 text-center">
                     <div className="flex items-center justify-center gap-4">
                       <Link
-                        className="px-2 py-1  bg-blue-500 text-white rounded inline-flex justify-center items-center gap-2 hover:bg-blue-600 cursor-pointer"
+                        className="px-2 py-1 bg-blue-500 text-white rounded inline-flex justify-center items-center gap-2 hover:bg-blue-600 cursor-pointer"
                         to={`/receipts/${row.original.formData.equipMrNoValue}`}
                       >
                         View <FaArrowAltCircleRight />
                       </Link>
                       <FaTrash
-                        className="mr-1 text-red-500"
-                        hidden={!userInfo.isAdmin}
+                        className={`mr-1 text-red-500 ${!userInfo.isAdmin ? "hidden" : "cursor-pointer"}`}
                         size={14}
                         onClick={() => {
                           setdeleteMr(row.original.formData.equipMrNoValue);
                           setTriggerdelete(true);
+                        }}
+                      />
+                      <IoPrint
+                        className={`cursor-pointer ${!userInfo.isAdmin || row.original.formData.status !== "Approved" ? "invisible" : ""}`}
+                        size={25}
+                        onClick={() => {
+                          const { totals, vats, netPrices } = calculateTotals(
+                            row.original.tableData,
+                            row.original.formData.qty
+                          );
+                          handlePrint(
+                            row.original,
+                            totals,
+                            vats,
+                            netPrices,
+                            row.original.formData.currency
+                          );
                         }}
                       />
                     </div>

@@ -255,7 +255,7 @@ const Receipts = () => {
           <div className="justify-end  flex gap-3.5">
             <button
               onClick={handleSubmit}
-              className={` ${isMRSelected || !hasInputActivity ? "hidden" : ""} px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer ${sharedTableData.tableData.sentForApproval == "yes" ? "hidden" : ""}`}
+              className={` ${isMRSelected || !hasInputActivity ? "hidden" : ""} px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer ${sharedTableData.tableData?.sentForApproval == "yes" ? "hidden" : ""}`}
             >
               Create
             </button>
