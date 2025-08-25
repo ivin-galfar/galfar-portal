@@ -173,6 +173,11 @@ const TableHeader = ({ isAdmin }) => {
         sharedTableData.formData.approverdetails.length - 1
       ].comments
     : "";
+  let RejectedBy = sharedTableData.formData.approverdetails?.length
+    ? sharedTableData.formData.approverdetails[
+        sharedTableData.formData.approverdetails.length - 1
+      ].rejectedby
+    : "";
 
   if (status === "Approved") {
     statusLogo = (
@@ -521,7 +526,7 @@ const TableHeader = ({ isAdmin }) => {
             {statusLogo}
             {latestapproverComment && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-gray-800 text-white text-xs px-3 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                CEO: {latestapproverComment}
+                {RejectedBy}: {latestapproverComment}
               </div>
             )}
           </div>
