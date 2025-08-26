@@ -39,7 +39,6 @@ const Receipts = () => {
     mutationFn: feedReceipt,
     onMutate: () => {
       setErrormessage("");
-      setParticularName([]);
       setfreezeQuantity(false);
     },
     onSuccess: (data) => {
@@ -47,6 +46,7 @@ const Receipts = () => {
       setSortVendors(true);
       setIsMRSelected(true);
       setNewMr(false);
+      setParticularName([]);
       setTimeout(() => {
         setShowToast(false);
       }, 1500);
@@ -70,6 +70,7 @@ const Receipts = () => {
       projectValue,
       requiredDateValue,
       requirementDurationValue,
+      currency,
     } = sharedTableData.formData;
 
     if (
@@ -79,7 +80,8 @@ const Receipts = () => {
       !locationValue ||
       !projectValue ||
       !requiredDateValue ||
-      !requirementDurationValue
+      !requirementDurationValue ||
+      !currency
     ) {
       setShowToast(true);
       setErrormessage("Please fill all required fields!!");

@@ -8,7 +8,9 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
       "Access-Control-Allow-Origin": "*",
     };
     const response = await axios.get(`${REACT_SERVER_URL}/receipts`, config);
-    const receipts = response.data.receipts;
+    const receipts = response.data.receipts.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
     let categorizedReceipts = receipts;
     if (userInfo?.isAdmin) {

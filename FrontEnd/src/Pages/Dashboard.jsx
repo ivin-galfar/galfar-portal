@@ -368,7 +368,7 @@ const Dashboard = () => {
       header: "Sl. No.",
       cell: ({ row }) => row.index + 1,
     }),
-    columnHelper.accessor((row) => row?.formData.dateValue, {
+    columnHelper.accessor((row) => row?.createdAt, {
       id: "date",
       header: "Created Date",
       cell: (info) => {
@@ -603,7 +603,7 @@ const Dashboard = () => {
                       />
                       <FaTrash
                         className={`mr-1 text-red-500 ${!userInfo.isAdmin ? "hidden" : "cursor-pointer"}`}
-                        size={14}
+                        size={16}
                         onClick={() => {
                           setdeleteMr(row.original.formData.equipMrNoValue);
                           setTriggerdelete(true);
