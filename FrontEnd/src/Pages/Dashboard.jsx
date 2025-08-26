@@ -213,15 +213,15 @@ const Dashboard = () => {
 
     tableBody.push(
       [
-        `Total (Excl. VAT) ${currency}`,
+        `Total (Excl. VAT) ${currency ?? ""}`,
         ...activeVendorIndexes.map((i) => totals[i].toFixed(2)),
       ],
       [
-        `VAT @5% ${currency}`,
+        `VAT @5% ${currency ?? ""}`,
         ...activeVendorIndexes.map((i) => vats[i].toFixed(2)),
       ],
       [
-        `Net Price (Incl. VAT) ${currency}`,
+        `Net Price (Incl. VAT) ${currency ?? ""}`,
         ...activeVendorIndexes.map((i) => netPrices[i].toFixed(2)),
       ]
     );
