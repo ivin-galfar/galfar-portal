@@ -383,7 +383,7 @@ const TableHeader = ({ isAdmin }) => {
             <div className="flex items-center gap-2">
               <label
                 htmlFor="receiptfile"
-                className={`flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg ${sharedTableData.formData?.file.length > 0 ? "cursor-auto" : "cursor-pointer"} hover:bg-blue-200 transition-all`}
+                className={`flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg ${sharedTableData.formData?.file?.length > 0 ? "cursor-auto" : "cursor-pointer"} hover:bg-blue-200 transition-all`}
               >
                 Upload File
                 <FaFileUpload size={20} />
