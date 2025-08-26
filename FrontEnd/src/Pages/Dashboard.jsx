@@ -339,8 +339,9 @@ const Dashboard = () => {
         pageHeight - footerPadding - 3
       );
     }
-
-    doc.save("Comparative_Statement.pdf");
+    const pdfBlob = doc.output("blob");
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    window.open(blobUrl);
   };
 
   const filteredReceiptsOnstatus = useMemo(() => {

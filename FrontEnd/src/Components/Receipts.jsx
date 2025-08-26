@@ -4,11 +4,11 @@ import TableHeader from "./ReceiptsHeader";
 import MyTable from "./Table";
 import { AppContext } from "./Context";
 import { useState } from "react";
-import axios from "axios";
-import { REACT_SERVER_URL } from "../../config/ENV";
 import ApproveModal from "./ApproveModal";
 import ReasonForSelection from "./ReasonForSelection";
 import fetchStatments from "../APIs/StatementsApi";
+import { useMutation } from "@tanstack/react-query";
+import { feedReceipt } from "../APIs/api";
 
 const Receipts = () => {
   const userInfo = useUserInfo();
@@ -33,9 +33,33 @@ const Receipts = () => {
     selectedVendorIndex,
     setParticularName,
     setfreezeQuantity,
-    setReceipts,
-    selectedVendorReason,
   } = useContext(AppContext);
+
+  const ReceiptMutation = useMutation({
+    mutationFn: feedReceipt,
+    onMutate: () => {
+      setErrormessage("");
+      setParticularName([]);
+      setfreezeQuantity(false);
+    },
+    onSuccess: (data) => {
+      setShowToast(true);
+      setSortVendors(true);
+      setIsMRSelected(true);
+      setNewMr(false);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      setShowToast(true);
+      let message = error?.response?.data?.message;
+      setErrormessage(message ? message : error.message);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 1500);
+    },
+  });
 
   const handleSubmit = async () => {
     const {
@@ -64,38 +88,7 @@ const Receipts = () => {
       }, 1500);
       return;
     }
-
-    try {
-      const config = {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      };
-      const { data } = await axios.post(
-        `${REACT_SERVER_URL}/receipts`,
-        {
-          formData: sharedTableData.formData,
-          tableData: sharedTableData["tableData"],
-        },
-        config
-      );
-      setShowToast(true);
-      setSortVendors(true);
-      setIsMRSelected(true);
-      setParticularName([]);
-      setfreezeQuantity(false);
-      setNewMr(false);
-      setErrormessage("");
-      setTimeout(() => {
-        setShowToast(false);
-      }, 1500);
-    } catch (error) {
-      setShowToast(true);
-      let message = error?.response?.data?.message;
-      setErrormessage(message ? message : error.message);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 1500);
-    }
+    ReceiptMutation.mutate({ sharedTableData });
   };
 
   const handleReset = () => {

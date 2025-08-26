@@ -32,3 +32,19 @@ export const registerUser = async ({ email, password }) => {
   );
   return data;
 };
+
+export const feedReceipt = async ({ sharedTableData }) => {
+  const config = {
+    "Content-type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+  const { data } = await axios.post(
+    `${REACT_SERVER_URL}/receipts`,
+    {
+      formData: sharedTableData.formData,
+      tableData: sharedTableData["tableData"],
+    },
+    config
+  );
+  return data;
+};
