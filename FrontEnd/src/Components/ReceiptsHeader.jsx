@@ -383,7 +383,7 @@ const TableHeader = ({ isAdmin }) => {
             <div className="flex items-center gap-2">
               <label
                 htmlFor="receiptfile"
-                className={`flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg ${sharedTableData.formData.file.length > 0 ? "cursor-auto" : "cursor-pointer"} hover:bg-blue-200 transition-all`}
+                className={`flex items-center gap-2 text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg ${sharedTableData.formData?.file.length > 0 ? "cursor-auto" : "cursor-pointer"} hover:bg-blue-200 transition-all`}
               >
                 Upload File
                 <FaFileUpload size={20} />
@@ -391,7 +391,7 @@ const TableHeader = ({ isAdmin }) => {
                   sharedTableData.formData?.file?.filter((f) => f.trim() !== "")
                     .length > 0 && (
                     <span className="relative -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                      {sharedTableData.formData.file.length}
+                      {sharedTableData.formData?.file.length}
                     </span>
                   )}
                 <input
@@ -425,7 +425,7 @@ const TableHeader = ({ isAdmin }) => {
                       </a>
                     ))}
                     <span className="absolute -top-6 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce z-10">
-                      {sharedTableData.formData.file.length}
+                      {sharedTableData.formData?.file.length}
                     </span>
                   </div>
                 ) : (
