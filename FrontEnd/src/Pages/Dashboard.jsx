@@ -17,6 +17,7 @@ import axios from "axios";
 import { IoPrint } from "react-icons/io5";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
+import galfarlogo from "../assets/Images/logo-new.png";
 
 const Dashboard = () => {
   const {
@@ -149,20 +150,21 @@ const Dashboard = () => {
   const handlePrint = (printcontents, totals, vats, netPrices, currency) => {
     const doc = new jsPDF();
     const { formData, tableData } = printcontents;
-
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const logoWidth = 60;
+    const logoHeight = 10;
     doc.setFontSize(14);
-    doc.text("GALFAR ENGINEERING & CONTRACTING WLL EMIRATES", 105, 15, {
-      align: "center",
-    });
+    const logoX = (pageWidth - logoWidth) / 2;
+    const logoY = 2;
+
+    doc.addImage(galfarlogo, "PNG", logoX, logoY, logoWidth, logoHeight);
 
     doc.setFontSize(12);
     doc.text(
       `COMPARATIVE STATEMENT - ${formData.hiringName} (Hiring)`,
       105,
       25,
-      {
-        align: "center",
-      }
+      { align: "center" }
     );
 
     doc.setFontSize(10);
@@ -187,13 +189,16 @@ const Dashboard = () => {
       `REQUIRED DURATION: ${formData.requirementDurationValue}`,
       200,
       46,
-      { align: "right" }
+      {
+        align: "right",
+      }
     );
 
     const activeVendorIndexes = totals
       .map((t, idx) => (t > 0 ? idx : -1))
       .filter((idx) => idx !== -1);
-    const vendorNames = Object.values(tableData[0].vendors);
+
+    const vendorNames = Object.values(tableData[0].vendors || {});
     const vendorHeaders = activeVendorIndexes.map((i) => vendorNames[i]);
 
     const tableHead = [["Particulars", ...vendorHeaders]];
@@ -241,53 +246,97 @@ const Dashboard = () => {
       },
     });
 
-    if (formData.status === "Approved") {
-      const approvedText = "APPROVED";
-      const lastTableFinalY =
-        doc.previousAutoTable?.finalY || doc.lastAutoTable?.finalY || 65;
+    const startYLabel =
+      doc.previousAutoTable?.finalY || doc.lastAutoTable?.finalY || 65;
+    const labelWidth = 60;
+    const spacing = 10;
 
-      const centerX = doc.internal.pageSize.width / 2;
-      const centerY = lastTableFinalY + 25;
+    const roleDisplayMap = {
+      Manager: "Head of the Department",
+      GM: "General Manager",
+      CEO: "Chief Executive Officer",
+    };
 
-      doc.setFontSize(14);
+    const approvalsStatus =
+      formData.approverdetails?.reduce((acc, d) => {
+        acc[d.role] = d.action;
+        return acc;
+      }, {}) || {};
+
+    const rolesToShow = ["Manager", "GM", "CEO"];
+    rolesToShow.forEach((dbRole, index) => {
+      const rawStatus = approvalsStatus[dbRole] || "Pending";
+      const status =
+        rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
+      const displayRole = roleDisplayMap[dbRole] || dbRole;
+
+      const labelX = 20 + index * (labelWidth + spacing);
+      const labelY = startYLabel + 25;
+
+      let textColor = [0, 0, 0];
+      if (status === "Approved") {
+        textColor = [0, 128, 0];
+      } else if (status === "Rejected") {
+        textColor = [200, 0, 0];
+      }
+      const offsetY = 10;
+      const statusWidth = doc.getTextWidth(status);
+      const roleWidth = doc.getTextWidth(displayRole);
+
+      const lineWidth = Math.max(statusWidth, roleWidth);
+
+      const statusX = labelX + (lineWidth - statusWidth) / 2;
+
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(0, 128, 0);
+      doc.setFontSize(9);
+      doc.setTextColor(...textColor);
+      doc.text(status, statusX, labelY + offsetY);
 
-      const textWidth = doc.getTextWidth(approvedText);
-      const paddingX = 4;
-      const paddingY = 2;
-      const rectWidth = textWidth + paddingX * 2;
-      const rectHeight = 14 + paddingY * 2;
-
-      doc.setFillColor(220, 255, 220);
-      doc.rect(
-        centerX - rectWidth / 2,
-        centerY - rectHeight / 2,
-        rectWidth,
-        rectHeight,
-        "F"
+      doc.line(
+        labelX,
+        labelY + offsetY + 1.5,
+        labelX + lineWidth,
+        labelY + offsetY + 1.5
       );
+      const roleX = labelX + (lineWidth - roleWidth) / 2;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+      doc.text(displayRole, roleX, labelY + offsetY + 6);
+    });
 
-      doc.text(approvedText, centerX, centerY, {
-        align: "center",
-        baseline: "middle",
-      });
-    }
-    doc.setTextColor(0, 0, 0);
+    const footerPadding = 6;
     const pageCount = doc.internal.getNumberOfPages();
+    const pageHeight = doc.internal.pageSize.height;
+
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100);
+
       doc.text(
         `Generated on: ${new Date().toLocaleString()}`,
         14,
-        doc.internal.pageSize.height - 10
+        pageHeight - footerPadding
       );
+
       doc.text(
         `Page ${i} of ${pageCount}`,
-        doc.internal.pageSize.width - 20,
-        doc.internal.pageSize.height - 10,
-        { align: "right" }
+        pageWidth - 14,
+        pageHeight - footerPadding,
+        {
+          align: "right",
+        }
+      );
+
+      doc.setDrawColor(200);
+      doc.setLineWidth(0.2);
+      doc.line(
+        14,
+        pageHeight - footerPadding - 3,
+        pageWidth - 14,
+        pageHeight - footerPadding - 3
       );
     }
 
