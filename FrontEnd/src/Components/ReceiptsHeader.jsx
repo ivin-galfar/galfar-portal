@@ -146,7 +146,7 @@ const TableHeader = ({ isAdmin }) => {
         setIsMRSelected(true);
         setSelectedMr(mrnumber);
       } else {
-        const defaultMr = mrno[mrno.length - 1];
+        const defaultMr = mrno[mrno.length - mrno.length];
         if (defaultMr) fetchReceipt(defaultMr);
       }
     }

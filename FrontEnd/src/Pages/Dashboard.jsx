@@ -332,12 +332,6 @@ const Dashboard = () => {
 
       doc.setDrawColor(200);
       doc.setLineWidth(0.2);
-      doc.line(
-        14,
-        pageHeight - footerPadding - 3,
-        pageWidth - 14,
-        pageHeight - footerPadding - 3
-      );
     }
     const pdfBlob = doc.output("blob");
     const blobUrl = URL.createObjectURL(pdfBlob);
