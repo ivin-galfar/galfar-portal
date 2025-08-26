@@ -6,14 +6,20 @@ import Receipts from "./Components/Receipts";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import useUserInfo from "./CustomHooks/useUserInfo";
 import Particulars from "./Pages/Particulars";
+import FloatingNotification from "./Components/FloatingNotification";
 import Dashboard from "./Pages/Dashboard";
 
 const App = () => {
   const location = useLocation();
-
+  const userInfo = useUserInfo();
   return (
     <div>
-      {" "}
+      {!userInfo && (
+        <FloatingNotification
+          message={"Login to view statements"}
+          duration={4000}
+        />
+      )}{" "}
       {location.pathname !== "/login" && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
