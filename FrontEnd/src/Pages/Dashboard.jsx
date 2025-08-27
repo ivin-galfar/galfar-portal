@@ -18,6 +18,7 @@ import { IoPrint } from "react-icons/io5";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import galfarlogo from "../assets/Images/logo-new.png";
+import { SiTicktick } from "react-icons/si";
 
 const Dashboard = () => {
   const {
@@ -196,12 +197,18 @@ const Dashboard = () => {
 
     const activeVendorIndexes = totals
       .map((t, idx) => (t > 0 ? idx : -1))
-      .filter((idx) => idx !== -1);
+      .filter((idx) => idx !== -1)
+      .sort((a, b) => totals[a] - totals[b]);
 
     const vendorNames = Object.values(tableData[0].vendors || {});
     const vendorHeaders = activeVendorIndexes.map((i) => vendorNames[i]);
 
-    const tableHead = [["Particulars", ...vendorHeaders]];
+    const headerRow1 = [
+      { content: "Particulars", rowSpan: 2 },
+      ...vendorHeaders.map((_, idx) => ({ content: `Vendor ${idx + 1}` })),
+    ];
+    const headerRow2 = vendorHeaders;
+    const tableHead = [headerRow1, headerRow2];
 
     const tableBody = tableData
       .filter((row, idx) => idx !== 0)
@@ -223,6 +230,21 @@ const Dashboard = () => {
       [
         `Net Price (Incl. VAT) ${currency ?? ""}`,
         ...activeVendorIndexes.map((i) => netPrices[i].toFixed(2)),
+      ],
+      ["Rating", ...activeVendorIndexes.map((_, idx) => `L${idx + 1}`)],
+      [
+        "Selected",
+        ...activeVendorIndexes.map((_, idx) =>
+          idx == formData.selectedVendorIndex ? "Yes" : "--"
+        ),
+      ],
+      [
+        "Recommendation",
+        ...activeVendorIndexes.map((_, idx) =>
+          idx == formData.selectedVendorIndex
+            ? formData.selectedVendorReason
+            : "--"
+        ),
       ]
     );
     autoTable(doc, {
@@ -230,19 +252,9 @@ const Dashboard = () => {
       head: tableHead,
       body: tableBody,
       styles: { fontSize: 9 },
-      headStyles: { fillColor: [0, 0, 0], textColor: 255 },
+      headStyles: { fillColor: [200, 200, 200], textColor: 0 },
       didParseCell: (data) => {
         const text = data.cell.text[0];
-        if (
-          text.includes("Total (Excl. VAT)") ||
-          text.includes("Net Price (Incl. VAT)")
-        ) {
-          data.cell.styles.textColor = [0, 0, 0];
-          data.cell.styles.fontStyle = "bold";
-        }
-        if (text.includes("VAT @5%")) {
-          data.cell.styles.fontStyle = "bold";
-        }
       },
     });
 

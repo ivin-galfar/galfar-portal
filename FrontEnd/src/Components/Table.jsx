@@ -29,6 +29,7 @@ export default function VerticalTable({ showcalc }) {
     selectedmr,
     freezequantity,
     currency,
+    isMRSelected,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
 
@@ -475,6 +476,22 @@ export default function VerticalTable({ showcalc }) {
               </td>
             ))}
           </tr>
+          <tr>
+            <td
+              colSpan={2}
+              className="border px-4 py-2 font-semibold text-center"
+            >
+              Rating
+            </td>
+            {vendorNetPrices.map((val, idx) => (
+              <td
+                key={`rating_${idx}`}
+                className="border px-4 py-2 font-semibold text-center"
+              >
+                {isMRSelected ? `L${idx + 1}` : "-"}
+              </td>
+            ))}
+          </tr>
 
           {(sharedTableData.formData.sentForApproval == "yes" ||
             !userInfo?.isAdmin ||
@@ -564,6 +581,24 @@ export default function VerticalTable({ showcalc }) {
                 ))}
               </tr>
             )}
+          <tr>
+            <td
+              colSpan={2}
+              className="border px-4 py-2 font-semibold text-center"
+            >
+              Recommendation (if any)
+            </td>
+            {vendorNetPrices.map((_, idx) => (
+              <td
+                key={`net_${idx}`}
+                className="border px-4 py-2 font-semibold text-center"
+              >
+                {isMRSelected && idx === selectedVendorIndex
+                  ? sharedTableData.formData.selectedVendorReason
+                  : "--"}
+              </td>
+            ))}
+          </tr>
         </tbody>
       </table>
     </div>

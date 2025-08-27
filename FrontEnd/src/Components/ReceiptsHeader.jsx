@@ -374,7 +374,7 @@ const TableHeader = ({ isAdmin }) => {
       <div className="flex justify-between items-center w-full relative">
         <div className="w-1/3" />
 
-        <h3 className="text-md font-medium text-center absolute left-1/2 ml-10 transform -translate-x-1/2 italic">
+        <h3 className="text-md font-medium text-center absolute left-1/2 transform -translate-x-1/2 italic">
           COMPARATIVE STATEMENT
         </h3>
 

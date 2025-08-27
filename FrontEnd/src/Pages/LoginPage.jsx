@@ -1,4 +1,4 @@
-import loginimage from "../assets/Images/login-cover.jpg";
+import loginimage from "../assets/Images/logo-galfar.jpg";
 import Login from "../Components/Login";
 import { useContext } from "react";
 import { AppContext } from "../Components/Context";
@@ -12,7 +12,7 @@ const LoginPage = () => {
         <img
           src={loginimage}
           alt="Login"
-          className="hidden md:block object-none w-full h-full"
+          className="hidden md:block object-contain"
         />
       </div>
       <div className="w-2/5 flex items-center justify-center">

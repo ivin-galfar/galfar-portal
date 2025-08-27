@@ -167,7 +167,7 @@ const Receipts = () => {
           <div className="flex gap-3.5 min-w-[280px]">
             {sharedTableData.formData.selectedVendorReason ? (
               <>
-                <div className="w-100 p-2 inline-block bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm ">
+                <div className="w-100 p-2 inline-block bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm invisible">
                   <h1 className="text-black">Recommendation points:</h1>
                   {sharedTableData.formData.selectedVendorReason
                     ? sharedTableData.formData.selectedVendorReason
@@ -210,7 +210,7 @@ const Receipts = () => {
             <div className="flex gap-3.5 min-w-[280px]">
               {sharedTableData.formData.selectedVendorReason ? (
                 <>
-                  <div className="w-100 p-2 inline-block bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm ">
+                  <div className="w-100 p-2 inline-block bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm invisible">
                     <h1 className="text-black">Recommendation points:</h1>
                     {sharedTableData.formData.selectedVendorReason
                       ? sharedTableData.formData.selectedVendorReason
@@ -225,7 +225,7 @@ const Receipts = () => {
                 <div className="justify-end flex ">
                   <button
                     disabled={statusclass != ""}
-                    className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-96" : "ml-70"}  ${buttonClass}`}
+                    className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-86" : "ml-70"}  ${buttonClass}`}
                     onClick={() => setShowmodal(true)}
                   >
                     {sharedTableData.formData.status}
