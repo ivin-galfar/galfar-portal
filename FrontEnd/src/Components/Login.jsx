@@ -73,7 +73,11 @@ const Login = () => {
       )}
       <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 h-auto">
         <div className="mb-10">
-          <img src={galfarlogo} alt="Galfar Logo" className="h-20 w-auto" />
+          <img
+            src={galfarlogo}
+            alt="Galfar Logo"
+            className="h-20 w-auto object-fill"
+          />
         </div>
 
         <div className="w-[400px] max-w-2xl bg-white p-10 rounded-2xl shadow-lg transition-all duration-300 ease-in-out">
