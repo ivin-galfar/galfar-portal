@@ -587,8 +587,7 @@ const Dashboard = () => {
 
                       <IoPrint
                         className={` ${
-                          !userInfo.isAdmin ||
-                          row.original.formData.status !== "Approved"
+                          !userInfo.isAdmin
                             ? "text-gray-400 pointer-events-none cursor-not-allowed"
                             : "text-black cursor-pointer"
                         }`}
