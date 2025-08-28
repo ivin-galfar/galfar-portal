@@ -233,10 +233,19 @@ const Dashboard = () => {
       ],
       ["Rating", ...activeVendorIndexes.map((_, idx) => `L${idx + 1}`)],
       [
-        "Selected",
-        ...activeVendorIndexes.map((_, idx) =>
-          idx == formData.selectedVendorIndex ? "Yes" : "--"
-        ),
+        {
+          content: "Selected",
+          styles: { fontStyle: "bold" },
+        },
+        ...activeVendorIndexes.map((_, idx) => ({
+          content: idx === formData.selectedVendorIndex ? "Yes" : "--",
+          styles: {
+            fontStyle: idx === formData.selectedVendorIndex ? "bold" : "normal",
+            textColor:
+              idx === formData.selectedVendorIndex ? [0, 128, 0] : [0, 0, 0],
+            fontSize: idx === formData.selectedVendorIndex ? 9 : 8,
+          },
+        })),
       ],
       [
         "Recommendation",
@@ -251,7 +260,7 @@ const Dashboard = () => {
       startY: 65,
       head: tableHead,
       body: tableBody,
-      styles: { fontSize: 9 },
+      styles: { fontSize: 9, overflow: "linebreak", cellWidth: 45 },
       headStyles: { fillColor: [200, 200, 200], textColor: 0 },
       didParseCell: (data) => {
         const text = data.cell.text[0];
@@ -290,7 +299,10 @@ const Dashboard = () => {
         textColor = [0, 128, 0];
       } else if (status === "Rejected") {
         textColor = [200, 0, 0];
+      } else {
+        textColor = [255, 165, 0];
       }
+
       const offsetY = 10;
       const statusWidth = doc.getTextWidth(status);
       const roleWidth = doc.getTextWidth(displayRole);
