@@ -3,14 +3,23 @@ import axios from "axios";
 import { REACT_SERVER_URL } from "../../config/ENV";
 import { AppContext } from "./Context";
 import useUserInfo from "../CustomHooks/useUserInfo";
+import { useNavigate } from "react-router-dom";
 
 const ApproveModal = ({ setShowmodal, mrno }) => {
   const [comments, setComments] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [errormessage, setErrormessage] = useState("");
-  const { setSharedTableData, sharedTableData } = useContext(AppContext);
-  const userInfo = useUserInfo();
 
+  const {
+    setSharedTableData,
+    sharedTableData,
+    setSortVendors,
+    setCleartable,
+    setIsMRSelected,
+    setSelectedMr,
+  } = useContext(AppContext);
+  const userInfo = useUserInfo();
+  const navigate = useNavigate();
   const submitApproval = async (mrno, status) => {
     let finalStatus = "";
     let rejectedBy = "";
@@ -23,6 +32,8 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
       finalStatus = "Pending for CEO";
     } else if (userInfo.role === "CEO" && status === "approved") {
       finalStatus = "Approved";
+    } else if (status === "review") {
+      finalStatus = "review";
     }
 
     try {
@@ -43,17 +54,44 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
         },
         config
       );
-      setSharedTableData((prev) => ({
-        ...prev,
-        formData: {
-          ...prev.formData,
-          status: finalStatus,
-          approverstatus: finalStatus,
-          rejectedby: rejectedBy,
-          approverComments: comments,
-          rejectedby: rejectedBy,
-        },
-      }));
+      if (finalStatus === "review") {
+        setSortVendors(false);
+        setCleartable(true);
+        setIsMRSelected(false);
+        setSelectedMr("default");
+        setSharedTableData({
+          formData: {
+            hiringName: "",
+            dateValue: "",
+            projectValue: "",
+            locationValue: "",
+            equipMrNoValue: "",
+            emRegNoValue: "",
+            requiredDateValue: "",
+            requirementDurationValue: "",
+            selectedVendorReason: "",
+            currency: "",
+            qty: "",
+            file: [],
+          },
+          tableData: [],
+        });
+        navigate("/receipts", { replace: true });
+        setComments("");
+        setErrormessage("");
+      } else {
+        setSharedTableData((prev) => ({
+          ...prev,
+          formData: {
+            ...prev.formData,
+            status: finalStatus,
+            approverstatus: finalStatus,
+            rejectedby: rejectedBy,
+            approverComments: comments,
+          },
+        }));
+      }
+
       setErrormessage("");
       setShowToast(true);
       setTimeout(() => {
@@ -105,6 +143,12 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
               onClick={() => submitApproval(mrno, "approved")}
             >
               Approve
+            </button>
+            <button
+              className="px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition cursor-pointer"
+              onClick={() => submitApproval(mrno, "review")}
+            >
+              Request For Review
             </button>
           </div>
           {showToast &&

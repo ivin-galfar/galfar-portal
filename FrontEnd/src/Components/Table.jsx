@@ -248,7 +248,7 @@ export default function VerticalTable({ showcalc }) {
                         ? "--Remarks--"
                         : ""
                   }
-                  disabled={freezequantity && freezequantity == true}
+                  disabled={freezequantity}
                   onChange={(e) =>
                     handleInputChange(row.index, vendorKey, e.target.value)
                   }

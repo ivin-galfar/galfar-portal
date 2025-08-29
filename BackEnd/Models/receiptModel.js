@@ -30,6 +30,7 @@ const formDataSchema = mongoose.Schema({
         type: String,
         required: true,
       },
+      approverstatus: { type: String },
       action: { type: String },
       comments: { type: String },
       rejectedby: { type: String },

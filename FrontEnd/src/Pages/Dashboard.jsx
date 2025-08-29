@@ -18,7 +18,7 @@ import { IoPrint } from "react-icons/io5";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import galfarlogo from "../assets/Images/logo-new.png";
-import { SiTicktick } from "react-icons/si";
+import { IoWarningOutline } from "react-icons/io5";
 
 const Dashboard = () => {
   const {
@@ -429,18 +429,27 @@ const Dashboard = () => {
             ? "bg-red-500"
             : status === "Approved"
               ? "bg-green-500"
-              : status === "Pending For HOM"
-                ? "bg-yellow-400"
-                : status === "Pending for GM"
-                  ? "bg-yellow-500"
-                  : status === "Pending for CEO"
-                    ? "bg-yellow-600"
-                    : "bg-gray-300";
+              : status === "review"
+                ? "bg-amber-500"
+                : status === "Pending For HOM"
+                  ? "bg-yellow-400"
+                  : status === "Pending for GM"
+                    ? "bg-yellow-500"
+                    : status === "Pending for CEO"
+                      ? "bg-yellow-600"
+                      : "bg-gray-300";
 
         return (
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-gray-700">
-              {status || "Not Sent For Approval"}
+            <span className="text-sm font-medium text-gray-700 flex gap-2 items-center">
+              {status === "review" ? (
+                <>
+                  <IoWarningOutline className="text-yellow-500" size={18} />
+                  <span>To be Reviewed</span>
+                </>
+              ) : (
+                status || "Not Sent For Approval"
+              )}
             </span>
 
             <div className="relative max-w-2/3 h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">

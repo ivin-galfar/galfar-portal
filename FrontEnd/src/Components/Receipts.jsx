@@ -124,7 +124,9 @@ const Receipts = () => {
     fetchMR();
   }, [sharedTableData, isMRSelected]);
 
-  const isSentForApproval = sharedTableData.formData.sentForApproval === "yes";
+  const isSentForApproval =
+    sharedTableData.formData.sentForApproval === "yes" &&
+    sharedTableData.formData.status !== "review";
 
   const isStatusSet = sharedTableData.formData.status;
 
@@ -221,8 +223,9 @@ const Receipts = () => {
                 <div className="w-100 inline-block px-3 py-1 bg-gray-100 text-gray-800 font-medium rounded-md shadow-sm invisible"></div>
               )}
 
-              {sharedTableData.formData.status != "" ? (
-                <div className="justify-end flex ">
+              {sharedTableData.formData.status !== "" &&
+              sharedTableData.formData.status !== "review" ? (
+                <div className="justify-end flex">
                   <button
                     disabled={statusclass != ""}
                     className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-86" : "ml-70"}  ${buttonClass}`}
@@ -232,7 +235,8 @@ const Receipts = () => {
                   </button>
                 </div>
               ) : (
-                sharedTableData.formData.equipMrNoValue && (
+                sharedTableData.formData.equipMrNoValue &&
+                sharedTableData.formData.status !== "review" && (
                   <div className="justify-end flex ml-68 ">
                     <button
                       className="px-10 py-2 bg-blue-600 text-white font-semibold rounded ml-110 shadow cursor-pointer"
