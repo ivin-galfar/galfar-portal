@@ -8,7 +8,8 @@ import ApproveModal from "./ApproveModal";
 import ReasonForSelection from "./ReasonForSelection";
 import fetchStatments from "../APIs/StatementsApi";
 import { useMutation } from "@tanstack/react-query";
-import { feedReceipt } from "../APIs/api";
+import { feedReceipt, updateReceipt } from "../APIs/api";
+import { LuRotateCcwSquare } from "react-icons/lu";
 
 const Receipts = () => {
   const userInfo = useUserInfo();
@@ -33,10 +34,39 @@ const Receipts = () => {
     selectedVendorIndex,
     setParticularName,
     setfreezeQuantity,
+    selectedVendorReason,
+    setUpdateTriggered,
   } = useContext(AppContext);
 
   const ReceiptMutation = useMutation({
     mutationFn: feedReceipt,
+    onMutate: () => {
+      setErrormessage("");
+      setfreezeQuantity(false);
+    },
+    onSuccess: (data) => {
+      setShowToast(true);
+      setSortVendors(true);
+      setIsMRSelected(true);
+      setNewMr(false);
+      setParticularName([]);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 1500);
+      setSharedTableData({ formData: {}, tableData: [] });
+    },
+    onError: (error) => {
+      setShowToast(true);
+      let message = error?.response?.data?.message;
+      setErrormessage(message ? message : error.message);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 1500);
+    },
+  });
+
+  const updateReceiptMutation = useMutation({
+    mutationFn: updateReceipt,
     onMutate: () => {
       setErrormessage("");
       setfreezeQuantity(false);
@@ -73,15 +103,17 @@ const Receipts = () => {
       currency,
     } = sharedTableData.formData;
 
+    const isReview = sharedTableData.formData.status === "review";
     if (
-      !equipMrNoValue ||
-      !emRegNoValue ||
-      !hiringName ||
-      !locationValue ||
-      !projectValue ||
-      !requiredDateValue ||
-      !requirementDurationValue ||
-      !currency
+      !isReview &&
+      (!equipMrNoValue ||
+        !emRegNoValue ||
+        !hiringName ||
+        !locationValue ||
+        !projectValue ||
+        !requiredDateValue ||
+        !requirementDurationValue ||
+        !currency)
     ) {
       setShowToast(true);
       setErrormessage("Please fill all required fields!!");
@@ -90,7 +122,15 @@ const Receipts = () => {
       }, 1500);
       return;
     }
-    ReceiptMutation.mutate({ sharedTableData });
+    if (!isReview) {
+      ReceiptMutation.mutate({ sharedTableData });
+    } else {
+      updateReceiptMutation.mutate({
+        sharedTableData,
+        selectedVendorIndex,
+        selectedVendorReason,
+      });
+    }
   };
 
   const handleReset = () => {
@@ -155,6 +195,7 @@ const Receipts = () => {
         : sharedTableData.formData.status
       : "Already Requested"
     : "Request Approval";
+  const isReview = sharedTableData.formData.status === "review";
 
   return (
     <div className="pt-1 pl-10 pr-5 pb-28 relative">
@@ -254,9 +295,11 @@ const Receipts = () => {
           <div className="justify-end  flex gap-3.5">
             <button
               onClick={handleSubmit}
-              className={` ${isMRSelected || !hasInputActivity ? "hidden" : ""} px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer ${sharedTableData.tableData?.sentForApproval == "yes" ? "hidden" : ""}`}
+              className={` ${(isMRSelected || !hasInputActivity) && sharedTableData.formData.status !== "review" ? "hidden" : ""} px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer ${sharedTableData.tableData?.sentForApproval == "yes" ? sharedTableData.formData.status !== "review" : "hidden" ? "Update" : ""}`}
             >
-              Create
+              {sharedTableData.formData.status !== "review"
+                ? "Create"
+                : "Update"}
             </button>
             <button
               onClick={handleReset}
@@ -279,7 +322,12 @@ const Receipts = () => {
           ✅ Receipt details added successfully!
         </div>
       )}{" "}
-      {showToast && reqApprovalstatus && !errormessage && (
+      {showToast && isMRSelected && !errormessage && isReview && (
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          ✅ Receipt details has been updated successfully!
+        </div>
+      )}
+      {!isReview && showToast && reqApprovalstatus && !errormessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
           ✅ You have succesfully requested for Approval!
         </div>

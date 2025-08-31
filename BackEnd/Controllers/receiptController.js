@@ -5,7 +5,7 @@ const feedReceipt = async (req, res) => {
     const { formData, tableData } = req.body;
 
     for (const [key, value] of Object.entries(formData)) {
-      if (key === "file") continue;
+      if (key === "file" || key === "receiptupdated") continue;
       if (
         value === "" ||
         value === null ||
@@ -154,6 +154,73 @@ const updateApprovalstatus = async (req, res) => {
   }
 };
 
+const updateReceipt = async (req, res) => {
+  try {
+    const { mrno } = req.params;
+    const { formData, tableData, selectedIndex, selectedReason } = req.body;
+
+    for (const [key, value] of Object.entries(formData)) {
+      if (key === "file" || key == "receiptupdated") continue;
+      if (
+        value === "" ||
+        value === null ||
+        value === undefined ||
+        (typeof value === "string" && value.trim() === "")
+      ) {
+        return res.status(400).json({
+          message: `Validation Error: "${key}" cannot be empty.`,
+        });
+      }
+    }
+
+    const transformedTableData = tableData?.map(
+      ({ id, sl, particulars, qty, vendors }) => {
+        const cleanVendors = {};
+        if (vendors) {
+          Object.entries(vendors).forEach(([key, value]) => {
+            cleanVendors[key] = value ?? "";
+          });
+        }
+        return {
+          id,
+          sl,
+          particulars,
+          qty,
+          vendors: cleanVendors,
+        };
+      }
+    );
+
+    const existingReceipt = await Receipt.findOne({
+      "formData.equipMrNoValue": mrno,
+    });
+
+    if (!existingReceipt) {
+      return res.status(404).json({ message: "Receipt not found" });
+    }
+
+    await existingReceipt.save();
+
+    existingReceipt.formData = formData;
+    if (transformedTableData) existingReceipt.tableData = transformedTableData;
+    existingReceipt.formData.selectedVendorIndex = selectedIndex;
+    existingReceipt.formData.selectedVendorReason = selectedReason;
+    existingReceipt.formData.receiptupdated = new Date();
+
+    await existingReceipt.save();
+
+    return res.status(200).json({
+      message: "Receipt updated successfully",
+      receipt: existingReceipt,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
 const removeReceipt = async (req, res) => {
   try {
     const { mrno } = req.params;
@@ -179,4 +246,5 @@ module.exports = {
   updatestatus,
   updateApprovalstatus,
   removeReceipt,
+  updateReceipt,
 };

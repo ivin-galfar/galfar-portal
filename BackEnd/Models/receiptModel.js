@@ -19,6 +19,7 @@ const formDataSchema = mongoose.Schema({
   selectedVendorReason: { type: String },
   status: { type: String },
   currency: { type: String },
+  receiptupdated: { type: Date },
   approverdetails: [
     {
       role: {

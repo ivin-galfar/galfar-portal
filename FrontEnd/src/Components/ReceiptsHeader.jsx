@@ -110,7 +110,6 @@ const TableHeader = ({ isAdmin }) => {
     if (id && id !== mrnumber) {
       navigate(`/receipts/${id}`, { replace: true });
     }
-    setfreezeQuantity(true);
     setSortVendors(true);
     if (id && id != "default") {
       try {
@@ -127,6 +126,7 @@ const TableHeader = ({ isAdmin }) => {
           formData: receipt.formData || {},
           tableData: receipt.tableData || [],
         });
+        setfreezeQuantity(receipt.formData?.status !== "review");
       } catch (error) {
         console.log(error);
       }

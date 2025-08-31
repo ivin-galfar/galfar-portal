@@ -41,6 +41,7 @@ const AppContextProvider = ({ children }) => {
   const [allreceipts, setAllReceipts] = useState([]);
   const [statusFilter, setStatusFilter] = useState("All");
   const [multiStatusFilter, setMultiStatusFilter] = useState([]);
+  const [updatetriggered, setUpdateTriggered] = useState(false);
   return (
     <AppContext.Provider
       value={{
@@ -92,6 +93,8 @@ const AppContextProvider = ({ children }) => {
         setMultiStatusFilter,
         statusFilter,
         setStatusFilter,
+        updatetriggered,
+        setUpdateTriggered,
       }}
     >
       {children}

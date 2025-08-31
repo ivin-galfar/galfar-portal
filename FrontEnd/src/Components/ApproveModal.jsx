@@ -4,11 +4,13 @@ import { REACT_SERVER_URL } from "../../config/ENV";
 import { AppContext } from "./Context";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import { useNavigate } from "react-router-dom";
+import { LuRotateCcwSquare } from "react-icons/lu";
 
 const ApproveModal = ({ setShowmodal, mrno }) => {
   const [comments, setComments] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [errormessage, setErrormessage] = useState("");
+  const [lastAction, setLastAction] = useState("");
 
   const {
     setSharedTableData,
@@ -54,9 +56,10 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
         },
         config
       );
+      setLastAction(finalStatus);
       if (finalStatus === "review") {
         setSortVendors(false);
-        setCleartable(true);
+        // setCleartable(true);
         setIsMRSelected(false);
         setSelectedMr("default");
         setSharedTableData({
@@ -77,8 +80,15 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
           tableData: [],
         });
         navigate("/receipts", { replace: true });
+        setShowToast(true);
         setComments("");
         setErrormessage("");
+        setTimeout(() => {
+          setShowmodal(false);
+        }, 500);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 1500);
       } else {
         setSharedTableData((prev) => ({
           ...prev,
@@ -133,22 +143,22 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
           </div>
           <div className="mt-6 flex justify-end space-x-2">
             <button
-              className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-300 transition cursor-pointer"
-              onClick={() => submitApproval(mrno, "rejected")}
-            >
-              Reject
-            </button>
-            <button
               className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer"
               onClick={() => submitApproval(mrno, "approved")}
             >
               Approve
             </button>
             <button
-              className="px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition cursor-pointer"
+              onClick={() => submitApproval(mrno, "rejected")}
+            >
+              Reject
+            </button>
+            <button
+              className="px-4 py-2 flex items-center gap-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition cursor-pointer"
               onClick={() => submitApproval(mrno, "review")}
             >
-              Request For Review
+              <LuRotateCcwSquare /> Send For Review
             </button>
           </div>
           {showToast &&
@@ -161,12 +171,18 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
               </div>
             )}{" "}
           {showToast &&
-            sharedTableData.formData.status == "rejected" &&
+            sharedTableData.formData.status == "Rejected" &&
             !errormessage && (
-              <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+              <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
                 ❌ You have Rejected this MR!
               </div>
             )}
+          {showToast && lastAction == "review" && !errormessage && (
+            <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+              You have successfully sent back the statement to Initiator for
+              Review!!
+            </div>
+          )}
         </div>
       </div>
     </div>

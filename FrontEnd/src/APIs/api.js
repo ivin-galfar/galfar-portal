@@ -48,3 +48,26 @@ export const feedReceipt = async ({ sharedTableData }) => {
   );
   return data;
 };
+
+export const updateReceipt = async ({
+  sharedTableData,
+  selectedVendorIndex,
+  selectedVendorReason,
+}) => {
+  const config = {
+    "Content-type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
+  const { data } = await axios.put(
+    `${REACT_SERVER_URL}/receipts/updatereceipt/${sharedTableData.formData.equipMrNoValue}`,
+    {
+      formData: sharedTableData.formData,
+      tableData: sharedTableData["tableData"],
+      selectedIndex: selectedVendorIndex,
+      selectedReason: selectedVendorReason,
+    },
+    config
+  );
+  return data;
+};
