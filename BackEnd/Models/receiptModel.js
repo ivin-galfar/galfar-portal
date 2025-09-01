@@ -25,7 +25,7 @@ const formDataSchema = mongoose.Schema({
       role: {
         type: String,
         required: true,
-        enum: ["Initiator", "Manager", "GM", "CEO"],
+        enum: ["Initiator", "HOD", "GM", "CEO"],
       },
       userId: {
         type: String,

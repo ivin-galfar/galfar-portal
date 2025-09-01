@@ -21,8 +21,8 @@ const ReasonForSelection = ({
   const userInfo = useUserInfo();
 
   const statusMap = {
-    Initiator: "Pending For HOM",
-    Manager: "Pending for GM",
+    Initiator: "Pending For HOD",
+    HOD: "Pending for GM",
     GM: "Pending for CEO",
     CEO: "Approved",
   };

@@ -40,7 +40,7 @@ const Dashboard = () => {
 
   const userInfo = useUserInfo();
   const statusProgress = {
-    "Pending For HOM": 20,
+    "Pending For HOD": 20,
     "Pending for GM": 40,
     "Pending for CEO": 60,
     Approved: 100,
@@ -50,22 +50,34 @@ const Dashboard = () => {
 
   const statusMapping = {
     Initiator: [
-      "Pending For HOM",
+      "Pending For HOD",
       "Pending For GM",
       "Pending For CEO",
       "Approved",
       "Rejected",
       "",
     ],
-    Manager: [
-      "Pending For HOM",
+    HOD: [
+      "Pending For HOD",
       "Pending For GM",
       "Pending For CEO",
       "Rejected",
       "Approved",
     ],
-    GM: ["Pending for GM", "Pending for CEO", "Approved", "Rejected"],
-    CEO: ["Pending for CEO", "Approved", "Rejected"],
+    GM: [
+      "Pending For HOD",
+      "Pending for GM",
+      "Pending for CEO",
+      "Approved",
+      "Rejected",
+    ],
+    CEO: [
+      "Pending For HOD",
+      "Pending for GM",
+      "Pending for CEO",
+      "Approved",
+      "Rejected",
+    ],
   };
 
   const [triggerdelete, setTriggerdelete] = useState(false);
@@ -75,8 +87,9 @@ const Dashboard = () => {
   const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
     s.toLowerCase()
   );
-  const pendingStatuses = expectedStatuses.filter((s) =>
-    s.startsWith("pending")
+
+  const pendingStatuses = expectedStatuses.filter(
+    (s) => s.startsWith("pending") && s.includes(userInfo?.role.toLowerCase())
   );
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -86,6 +99,8 @@ const Dashboard = () => {
             expectedStatuses,
             userInfo,
           });
+        console.log(filteredReceipts);
+
         setAllReceipts(filteredReceipts);
         setReqMrno(reqMrValues);
         setReceipts(categorizedReceipts);
@@ -272,7 +287,7 @@ const Dashboard = () => {
     const spacing = 10;
 
     const roleDisplayMap = {
-      Manager: "Head of the Department",
+      HOD: "Head of the Department",
       GM: "General Manager",
       CEO: "Chief Executive Officer",
     };
@@ -283,9 +298,12 @@ const Dashboard = () => {
         return acc;
       }, {}) || {};
 
-    const rolesToShow = ["Manager", "GM", "CEO"];
+    const rolesToShow = ["HOD", "GM", "CEO"];
     rolesToShow.forEach((dbRole, index) => {
-      const rawStatus = approvalsStatus[dbRole] || "Pending";
+      const rawStatus =
+        approvalsStatus[dbRole] == "review"
+          ? "--"
+          : approvalsStatus[dbRole] || "--";
       const status =
         rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
       const displayRole = roleDisplayMap[dbRole] || dbRole;
@@ -430,7 +448,7 @@ const Dashboard = () => {
               ? "bg-green-500"
               : status === "review"
                 ? "bg-amber-500"
-                : status === "Pending For HOM"
+                : status === "Pending For HOD"
                   ? "bg-yellow-400"
                   : status === "Pending for GM"
                     ? "bg-yellow-500"

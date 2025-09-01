@@ -24,15 +24,15 @@ const Home = () => {
   const userInfo = useUserInfo();
   const statusMapping = {
     Initiator: [
-      "Pending for HOM",
+      "Pending for HOD",
       "Pending for GM",
       "Pending for CEO",
       "Approved",
       "Rejected",
       "",
     ],
-    Manager: [
-      "Pending for HOM",
+    HOD: [
+      "Pending for HOD",
       "Pending for GM",
       "Pending for CEO",
       "Rejected",

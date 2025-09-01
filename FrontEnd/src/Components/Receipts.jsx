@@ -138,7 +138,7 @@ const Receipts = () => {
   };
   const statusMapping = {
     Initiator: [],
-    Manager: ["Pending For HOM", "Approved", "Rejected"],
+    HOD: ["Pending For HOD", "Approved", "Rejected"],
     GM: ["Pending for GM", "Approved", "Rejected"],
     CEO: ["Pending for CEO", "Approved", "Rejected"],
   };
@@ -174,8 +174,8 @@ const Receipts = () => {
   if (
     (isStatusSet == "Pending for CEO" && userInfo.role != "CEO") ||
     (isStatusSet == "Pending for GM" && userInfo.role != "GM") ||
-    (isStatusSet == "Pending For HOM" && userInfo.role != "Manager") ||
-    (isStatusSet == "Pending For HOM" && userInfo.role == "Initiator") ||
+    (isStatusSet == "Pending For HOD" && userInfo.role != "HOD") ||
+    (isStatusSet == "Pending For HOD" && userInfo.role == "Initiator") ||
     isStatusSet == "Approved" ||
     isStatusSet == "Rejected"
   ) {

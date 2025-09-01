@@ -25,14 +25,14 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
           const rejectedRole = rejectedApprover
             ? rejectedApprover.rejectedby
             : null;
-
+          //can be used for hirerachial view, not enabled all statements for all
           switch (rejectedRole) {
-            case "Manager":
-              return ["Manager", "Initiator"].includes(userInfo?.role);
+            case "HOD":
+              return ["HOD", "GM", "CEO", "Initiator"].includes(userInfo?.role);
             case "GM":
-              return ["GM", "Manager", "Initiator"].includes(userInfo?.role);
+              return ["HOD", "GM", "CEO", "Initiator"].includes(userInfo?.role);
             case "CEO":
-              return userInfo?.role === "CEO";
+              return ["HOD", "GM", "CEO", "Initiator"].includes(userInfo?.role);
             default:
               return false;
           }
@@ -60,19 +60,24 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
         : null;
 
       let canSeeRejected = false;
+      //can be used for hirerachial view, not enabled all statements for all
 
       if (status === "rejected" && rejectedRole) {
         switch (rejectedRole) {
-          case "Manager":
-            canSeeRejected = ["Manager", "Initiator"].includes(userInfo?.role);
+          case "HOD":
+            canSeeRejected = ["HOD", "Initiator", "GM", "CEO"].includes(
+              userInfo?.role
+            );
             break;
           case "GM":
-            canSeeRejected = ["GM", "Manager", "Initiator"].includes(
+            canSeeRejected = ["HOD", "Initiator", "GM", "CEO"].includes(
               userInfo?.role
             );
             break;
           case "CEO":
-            canSeeRejected = userInfo?.role === "CEO";
+            canSeeRejected = ["HOD", "Initiator", "GM", "CEO"].includes(
+              userInfo?.role
+            );
             break;
           default:
             canSeeRejected = false;

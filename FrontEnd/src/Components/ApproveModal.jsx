@@ -28,7 +28,7 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
     if (status === "rejected") {
       finalStatus = "Rejected";
       rejectedBy = userInfo.role;
-    } else if (userInfo.role === "Manager" && status === "approved") {
+    } else if (userInfo.role === "HOD" && status === "approved") {
       finalStatus = "Pending for GM";
     } else if (userInfo.role === "GM" && status === "approved") {
       finalStatus = "Pending for CEO";
