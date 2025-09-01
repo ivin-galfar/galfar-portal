@@ -197,8 +197,7 @@ const Dashboard = () => {
 
     const activeVendorIndexes = totals
       .map((t, idx) => (t > 0 ? idx : -1))
-      .filter((idx) => idx !== -1)
-      .sort((a, b) => totals[a] - totals[b]);
+      .filter((idx) => idx !== -1);
 
     const vendorNames = Object.values(tableData[0].vendors || {});
     const vendorHeaders = activeVendorIndexes.map((i) => vendorNames[i]);

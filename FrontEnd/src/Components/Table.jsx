@@ -30,6 +30,7 @@ export default function VerticalTable({ showcalc }) {
     freezequantity,
     currency,
     isMRSelected,
+    selectedVendorReason,
   } = useContext(AppContext);
   const [particular, setParticular] = useState([]);
 
@@ -63,7 +64,11 @@ export default function VerticalTable({ showcalc }) {
       setSharedTableData((prev) => ({ ...prev, tableData: newTableData }));
     } else {
       setTableData([]);
-      setSharedTableData((prev) => ({ ...prev, formData: {}, tableData: [] }));
+      setSharedTableData((prev) =>
+        prev.tableData.length > 0
+          ? { ...prev, formData: {}, tableData: [] }
+          : prev
+      );
     }
   }, [particular]);
 
@@ -119,8 +124,9 @@ export default function VerticalTable({ showcalc }) {
     }
   }, [sharedTableData.tableData]);
 
+  //may create infinite renders, monitor this
   useEffect(() => {
-    if (cleartable) {
+    if (cleartable && !isMRSelected) {
       const clearedTableData = tableData.map((row) => ({
         ...row,
         vendors: Object.fromEntries(
@@ -143,7 +149,11 @@ export default function VerticalTable({ showcalc }) {
       index: vIdx,
     }));
 
-    if (sortVendors || sharedTableData.formData?.status) {
+    if (
+      sortVendors &&
+      sharedTableData.formData?.status !== "review" &&
+      sharedTableData.formData.receiptupdated == null
+    ) {
       const positiveVendors = vendors.filter((v) => v.total > 0);
 
       const sortedPositive = positiveVendors
@@ -278,7 +288,10 @@ export default function VerticalTable({ showcalc }) {
   }, [
     userInfo?.isAdmin,
     sortVendors,
-    selectedmr == "default" || selectedmr == "" || selectedmr === null
+    selectedmr == "default" ||
+    selectedmr == "" ||
+    selectedmr === null ||
+    sharedTableData.formData?.status == "review"
       ? ""
       : vendorInfoWithTotal,
   ]);
@@ -515,7 +528,8 @@ export default function VerticalTable({ showcalc }) {
                   >
                     <label
                       className={`relative group inline-block select-none ${
-                        sharedTableData.formData.sentForApproval === "yes"
+                        sharedTableData.formData.sentForApproval === "yes" &&
+                        sharedTableData.formData?.status !== "review"
                           ? "cursor-auto"
                           : "cursor-pointer"
                       }`}
@@ -527,8 +541,8 @@ export default function VerticalTable({ showcalc }) {
                         onChange={() => {
                           if (
                             sharedTableData.formData.sentForApproval !==
-                              "yes" &&
-                            selectedVendorIndex !== index
+                              "yes" ||
+                            sharedTableData.formData?.status === "review"
                           ) {
                             setSelectedVendorIndex(index);
                           }
@@ -536,6 +550,7 @@ export default function VerticalTable({ showcalc }) {
                         disabled={
                           sharedTableData.formData.sentForApproval === "yes" &&
                           selectedVendorIndex !== null &&
+                          sharedTableData.formData?.status !== "review" &&
                           selectedVendorIndex !== index
                         }
                         className="sr-only "
@@ -545,7 +560,7 @@ export default function VerticalTable({ showcalc }) {
                           selectedVendorIndex === index
                             ? "bg-green-500 text-white"
                             : "bg-gray-200 text-gray-700  hover:bg-gray-300"
-                        } ${sharedTableData.formData.sentForApproval === "yes" ? "cursor-auto" : ""}`}
+                        } ${sharedTableData.formData.sentForApproval === "yes" && sharedTableData.formData?.status !== "review" ? "cursor-auto" : ""}`}
                       >
                         {selectedVendorIndex === index ? (
                           <span className="flex  items-center ">
@@ -570,7 +585,7 @@ export default function VerticalTable({ showcalc }) {
                           </span>
                         ) : (
                           <span
-                            className={`${sharedTableData.formData.sentForApproval === "yes" ? "cursor-not-allowed" : ""}`}
+                            className={`${sharedTableData.formData.sentForApproval === "yes" && sharedTableData.formData?.status !== "review" ? "cursor-not-allowed" : ""}`}
                           >
                             Select
                           </span>

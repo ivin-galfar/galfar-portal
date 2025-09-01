@@ -59,7 +59,7 @@ const ApproveModal = ({ setShowmodal, mrno }) => {
       setLastAction(finalStatus);
       if (finalStatus === "review") {
         setSortVendors(false);
-        // setCleartable(true);
+        setCleartable(true);
         setIsMRSelected(false);
         setSelectedMr("default");
         setSharedTableData({

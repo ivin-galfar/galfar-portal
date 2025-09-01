@@ -35,7 +35,7 @@ const Receipts = () => {
     setParticularName,
     setfreezeQuantity,
     selectedVendorReason,
-    setUpdateTriggered,
+    setSelectedVendorReason,
   } = useContext(AppContext);
 
   const ReceiptMutation = useMutation({
@@ -50,10 +50,10 @@ const Receipts = () => {
       setIsMRSelected(true);
       setNewMr(false);
       setParticularName([]);
+      setSelectedVendorReason("");
       setTimeout(() => {
         setShowToast(false);
       }, 1500);
-      setSharedTableData({ formData: {}, tableData: [] });
     },
     onError: (error) => {
       setShowToast(true);
@@ -73,7 +73,7 @@ const Receipts = () => {
     },
     onSuccess: (data) => {
       setShowToast(true);
-      setSortVendors(true);
+      setSortVendors(false);
       setIsMRSelected(true);
       setNewMr(false);
       setParticularName([]);
