@@ -20,6 +20,8 @@ const Home = () => {
     allreceipts,
     setStatusFilter,
     setMultiStatusFilter,
+    particulars,
+    setParticularName,
   } = useContext(AppContext);
   const userInfo = useUserInfo();
   const statusMapping = {
@@ -38,14 +40,26 @@ const Home = () => {
       "Rejected",
       "Approved",
     ],
-    GM: ["Pending for GM", "Pending for CEO", "Approved", "Rejected"],
-    CEO: ["Pending for CEO", "Approved", "Rejected"],
+    GM: [
+      "Pending for GM",
+      "Pending for HOD",
+      "Pending for CEO",
+      "Approved",
+      "Rejected",
+    ],
+    CEO: [
+      "Pending for GM",
+      "Pending for HOD",
+      "Pending for CEO",
+      "Approved",
+      "Rejected",
+    ],
   };
   const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
     s.toLowerCase()
   );
-  const pendingStatuses = expectedStatuses.filter((s) =>
-    s.startsWith("pending")
+  const pendingStatuses = expectedStatuses.filter(
+    (s) => s.startsWith("pending") && s.includes(userInfo?.role.toLowerCase())
   );
   useEffect(() => {
     const fetchStatementsdetails = async () => {
@@ -73,8 +87,10 @@ const Home = () => {
   const rejectedReceipts = allreceipts?.filter(
     (r) => r.formData.status == "Rejected"
   );
-  const pendingReceipts = allreceipts?.filter((r) =>
-    r.formData?.status?.toLowerCase().startsWith("pending")
+  const pendingReceipts = allreceipts?.filter(
+    (r) =>
+      r.formData?.status?.toLowerCase().startsWith("pending") &&
+      r.formData?.status?.toLowerCase().includes(userInfo?.role.toLowerCase())
   );
 
   const today = new Date();
@@ -172,10 +188,26 @@ const Home = () => {
           </ul>
         </div>
         <div className="w-1/3 p-4 bg-white rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-lg font-semibold mb-4 flex gap-2 items-center">
+          <h2 className="text-lg  font-semibold mb-4 flex gap-2 items-center">
             {" "}
             <IoDocumentText />
-            Recent Statements
+            <div className="flex justify-between items-center w-full">
+              <h2 className="text-base font-medium text-gray-700">
+                Recent Statements
+              </h2>
+              {userInfo?.isAdmin ? (
+                <Link to="/receipts">
+                  <button
+                    className="border border-blue-500 text-blue-500 hover:bg-blue-50 text-sm px-3 py-1.5 rounded cursor-pointer"
+                    onClick={() => setParticularName(particulars[0]?.template)}
+                  >
+                    Create New Statement
+                  </button>
+                </Link>
+              ) : (
+                ""
+              )}
+            </div>
           </h2>
           <ul className="space-y-3 max-h-64 overflow-y-auto text-gray-700">
             {recentReceipts.length > 0 ? (

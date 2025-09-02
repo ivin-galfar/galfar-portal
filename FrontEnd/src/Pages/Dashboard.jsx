@@ -88,9 +88,13 @@ const Dashboard = () => {
     s.toLowerCase()
   );
 
-  const pendingStatuses = expectedStatuses.filter(
-    (s) => s.startsWith("pending") && s.includes(userInfo?.role.toLowerCase())
-  );
+  const pendingStatuses = !userInfo?.isAdmin
+    ? expectedStatuses.filter(
+        (s) =>
+          s.startsWith("pending") && s.includes(userInfo?.role.toLowerCase())
+      )
+    : expectedStatuses.filter((s) => s.startsWith("pending"));
+
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
@@ -99,7 +103,6 @@ const Dashboard = () => {
             expectedStatuses,
             userInfo,
           });
-        console.log(filteredReceipts);
 
         setAllReceipts(filteredReceipts);
         setReqMrno(reqMrValues);
