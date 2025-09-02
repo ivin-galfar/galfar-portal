@@ -10,6 +10,7 @@ import { ImCross } from "react-icons/im";
 import { GrDocumentStore } from "react-icons/gr";
 import { SiQuicktime } from "react-icons/si";
 import { IoDocumentText } from "react-icons/io5";
+import fetchParticulars from "../APIs/ParticularsApi";
 
 const Home = () => {
   const {
@@ -21,6 +22,8 @@ const Home = () => {
     setStatusFilter,
     setMultiStatusFilter,
     particulars,
+    setNewMr,
+    setParticulars,
     setParticularName,
   } = useContext(AppContext);
   const userInfo = useUserInfo();
@@ -55,6 +58,18 @@ const Home = () => {
       "Rejected",
     ],
   };
+
+  useEffect(() => {
+    const loadParticulars = async () => {
+      try {
+        const particulars = await fetchParticulars();
+        setParticulars(particulars.Particulars);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadParticulars();
+  }, []);
   const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
     s.toLowerCase()
   );
@@ -199,7 +214,11 @@ const Home = () => {
                 <Link to="/receipts">
                   <button
                     className="border border-blue-500 text-blue-500 hover:bg-blue-50 text-sm px-3 py-1.5 rounded cursor-pointer"
-                    onClick={() => setParticularName(particulars[0]?.template)}
+                    onClick={() => {
+                      (setNewMr(true),
+                        setParticularName(particulars[0]?.template),
+                        setNewMr(true));
+                    }}
                   >
                     Create New Statement
                   </button>
