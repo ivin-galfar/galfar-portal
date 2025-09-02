@@ -73,9 +73,12 @@ const Home = () => {
   const expectedStatuses = (statusMapping[userInfo?.role] || []).map((s) =>
     s.toLowerCase()
   );
-  const pendingStatuses = expectedStatuses.filter(
-    (s) => s.startsWith("pending") && s.includes(userInfo?.role.toLowerCase())
-  );
+  const pendingStatuses = !userInfo?.isAdmin
+    ? expectedStatuses.filter(
+        (s) =>
+          s.startsWith("pending") && s.includes(userInfo?.role.toLowerCase())
+      )
+    : expectedStatuses.filter((s) => s.startsWith("pending"));
   useEffect(() => {
     const fetchStatementsdetails = async () => {
       try {
@@ -102,11 +105,17 @@ const Home = () => {
   const rejectedReceipts = allreceipts?.filter(
     (r) => r.formData.status == "Rejected"
   );
-  const pendingReceipts = allreceipts?.filter(
-    (r) =>
-      r.formData?.status?.toLowerCase().startsWith("pending") &&
-      r.formData?.status?.toLowerCase().includes(userInfo?.role.toLowerCase())
-  );
+  const pendingReceipts = !userInfo?.isAdmin
+    ? allreceipts?.filter(
+        (r) =>
+          r.formData?.status?.toLowerCase().startsWith("pending") &&
+          r.formData?.status
+            ?.toLowerCase()
+            .includes(userInfo?.role.toLowerCase())
+      )
+    : allreceipts?.filter((r) =>
+        r.formData?.status?.toLowerCase().startsWith("pending")
+      );
 
   const today = new Date();
 
