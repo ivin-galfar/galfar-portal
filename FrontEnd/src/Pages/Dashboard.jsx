@@ -524,6 +524,11 @@ const Dashboard = () => {
         );
       },
     }),
+    columnHelper.accessor((row) => row?.formData.selectedVendorReason, {
+      id: "Recommendation",
+      header: "Recommended Reason",
+      cell: (info) => info.getValue() || "-",
+    }),
     columnHelper.accessor(
       (row) => {
         const commentsArray = row?.formData?.approverdetails
