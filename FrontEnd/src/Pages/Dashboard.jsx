@@ -234,6 +234,46 @@ const Dashboard = () => {
         const rowValues = activeVendorIndexes.map((i) => vendors[i] || 0);
         return [row.particulars, ...rowValues];
       });
+    const vendorRanks = activeVendorIndexes
+      .map((i) => ({ index: i, value: totals[i] }))
+      .filter((v) => v.value > 0)
+      .sort((a, b) => a.value - b.value)
+      .map((vendor, rank) => ({ ...vendor, rank: rank + 1 }));
+    const getRankLabel = (i) => {
+      const vendor = vendorRanks.find((v) => v.index === i);
+      return vendor ? `L${vendor.rank}` : "--";
+    };
+
+    const leftMargin = 8;
+    const rightMargin = 8;
+    const availableWidth = pageWidth - leftMargin - rightMargin;
+
+    const vendorCount = activeVendorIndexes.length;
+
+    const minParticulars = 55;
+    const desiredParticulars = 80;
+
+    let particularsWidth = Math.min(
+      desiredParticulars,
+      Math.max(minParticulars, availableWidth - vendorCount * 22)
+    );
+
+    let vendorWidth = Math.floor(
+      (availableWidth - particularsWidth) / Math.max(1, vendorCount)
+    );
+
+    const minVendorWidth = 22;
+    if (vendorWidth < minVendorWidth) {
+      vendorWidth = minVendorWidth;
+      particularsWidth = Math.max(
+        minParticulars,
+        availableWidth - vendorCount * minVendorWidth
+      );
+    }
+
+    const columnStyles = { 0: { cellWidth: particularsWidth } };
+    for (let c = 0; c < vendorCount; c++)
+      columnStyles[c + 1] = { cellWidth: vendorWidth };
 
     tableBody.push(
       [
@@ -248,7 +288,7 @@ const Dashboard = () => {
         `Net Price (Incl. VAT) ${currency ?? ""}`,
         ...activeVendorIndexes.map((i) => netPrices[i].toFixed(2)),
       ],
-      ["Rating", ...activeVendorIndexes.map((_, idx) => `L${idx + 1}`)],
+      ["Rating", ...activeVendorIndexes.map((i) => getRankLabel(i))],
       [
         {
           content: "Selected",
@@ -277,11 +317,11 @@ const Dashboard = () => {
       startY: 65,
       head: tableHead,
       body: tableBody,
-      styles: { fontSize: 9, overflow: "linebreak", cellWidth: 45 },
+      margin: { left: leftMargin, right: rightMargin },
+      tableWidth: availableWidth,
+      styles: { fontSize: 10, overflow: "linebreak", cellPadding: 2 },
       headStyles: { fillColor: [200, 200, 200], textColor: 0 },
-      didParseCell: (data) => {
-        const text = data.cell.text[0];
-      },
+      columnStyles,
     });
 
     const startYLabel =

@@ -339,6 +339,11 @@ export default function VerticalTable({ showcalc }) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+  const ranks = [...vendorNetPrices]
+    .map((v, i) => ({ value: v, index: i }))
+    .filter((item) => item.value > 0)
+    .sort((a, b) => a.value - b.value)
+    .map((item, rank) => ({ ...item, rank: rank + 1 }));
 
   return (
     <div className="overflow-x-auto w-full">
@@ -496,14 +501,17 @@ export default function VerticalTable({ showcalc }) {
             >
               Rating
             </td>
-            {vendorNetPrices.map((val, idx) => (
-              <td
-                key={`rating_${idx}`}
-                className="border px-4 py-2 font-semibold text-center"
-              >
-                {isMRSelected ? `L${idx + 1}` : "-"}
-              </td>
-            ))}
+            {vendorNetPrices.map((val, idx) => {
+              const rank = ranks.find((r) => r.index === idx)?.rank;
+              return (
+                <td
+                  key={`rating_${idx}`}
+                  className="border px-4 py-2 font-semibold text-center"
+                >
+                  {isMRSelected && rank ? `L${rank}` : "-"}
+                </td>
+              );
+            })}
           </tr>
 
           {(sharedTableData.formData.sentForApproval == "yes" ||
