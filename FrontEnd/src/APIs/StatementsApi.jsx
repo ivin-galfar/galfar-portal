@@ -50,7 +50,7 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
       const status = receipt.formData?.status?.toLowerCase();
       const sentForApproval =
         receipt.formData?.sentForApproval?.toLowerCase() === "yes";
-
+      const isReview = status === "review";
       // Find the first rejected entry, if any
       const rejectedApprover = receipt.formData?.approverdetails?.find(
         (rej) => rej.rejectedby && rej.rejectedby.trim() !== ""
@@ -87,7 +87,8 @@ const fetchStatments = async ({ expectedStatuses, userInfo }) => {
       const isIncluded =
         (sentForApproval &&
           expectedStatuses.map((s) => s.toLowerCase()).includes(status)) ||
-        canSeeRejected;
+        canSeeRejected ||
+        isReview;
       return isIncluded;
     });
 

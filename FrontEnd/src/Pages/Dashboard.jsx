@@ -194,7 +194,7 @@ const Dashboard = () => {
     doc.text(`EQUIP MR NO: ${formData.equipMrNoValue}`, 105, 40, {
       align: "center",
     });
-    doc.text(`EM REG NO: ${formData.emRegNoValue}`, 105, 46, {
+    doc.text(`EM REF NO: ${formData.emRegNoValue}`, 105, 46, {
       align: "center",
     });
 
@@ -425,7 +425,9 @@ const Dashboard = () => {
   const filteredReceiptsOnstatus = useMemo(() => {
     if (!Array.isArray(allreceipts)) return [];
     if (statusFilter === "All") return receipts;
-
+    if (statusFilter === "review") {
+      return receipts.filter((r) => r.formData.status == "review");
+    }
     if (multiStatusFilter && multiStatusFilter.length > 0) {
       return allreceipts.filter((r) =>
         multiStatusFilter
@@ -557,62 +559,74 @@ const Dashboard = () => {
   return (
     <div className="w-full p-5">
       <div className="flex border-b border-gray-300 mb-4">
-        {["All", "Approved", "Rejected", "Pending"].map((tab) => {
-          const isActive =
-            (tab === "All" && statusFilter === "All") ||
-            (tab === "Approved" && statusFilter === "Approved") ||
-            (tab === "Rejected" && statusFilter === "Rejected") ||
-            (tab === "Pending" && multiStatusFilter.length > 0);
+        {["All", "Approved", "Rejected", "Pending", "Under Review"].map(
+          (tab) => {
+            if (tab == "Under Review" && !userInfo?.isAdmin) return null;
+            const isActive =
+              (tab === "All" && statusFilter === "All") ||
+              (tab === "Approved" && statusFilter === "Approved") ||
+              (tab === "Rejected" && statusFilter === "Rejected") ||
+              (tab === "Under Review" && statusFilter === "review") ||
+              (tab === "Pending" && multiStatusFilter.length > 0);
 
-          let activeColor = "border-blue-500 text-blue-600";
-          let inactiveColor =
-            "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
+            let activeColor = "border-blue-500 text-blue-600";
+            let inactiveColor =
+              "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
 
-          if (tab === "Approved") {
-            activeColor = "border-green-500 text-green-600";
-            inactiveColor =
-              "border-transparent text-gray-500 hover:text-green-500";
-          } else if (tab === "Rejected") {
-            activeColor = "border-red-500 text-red-600";
-            inactiveColor =
-              "border-transparent text-gray-500 hover:text-red-500";
-          } else if (tab === "Pending") {
-            activeColor = "border-yellow-500 text-yellow-600";
-            inactiveColor =
-              "border-transparent text-gray-500 hover:text-yellow-500";
+            if (tab === "Approved") {
+              activeColor = "border-green-500 text-green-600";
+              inactiveColor =
+                "border-transparent text-gray-500 hover:text-green-500";
+            } else if (tab === "Rejected") {
+              activeColor = "border-red-500 text-red-600";
+              inactiveColor =
+                "border-transparent text-gray-500 hover:text-red-500";
+            } else if (tab === "Pending") {
+              activeColor = "border-yellow-500 text-yellow-600";
+              inactiveColor =
+                "border-transparent text-gray-500 hover:text-yellow-500";
+            } else if (tab === "Under Review") {
+              activeColor = "border-cyan-500 text-cyan-600";
+              inactiveColor =
+                "border-transparent text-gray-500 hover:text-cyan-500";
+            }
+
+            return (
+              <button
+                key={tab}
+                onClick={() => {
+                  switch (tab) {
+                    case "All":
+                      setStatusFilter("All");
+                      setMultiStatusFilter([]);
+                      break;
+                    case "Approved":
+                      setStatusFilter("Approved");
+                      setMultiStatusFilter([]);
+                      break;
+                    case "Rejected":
+                      setStatusFilter("Rejected");
+                      setMultiStatusFilter([]);
+                      break;
+                    case "Pending":
+                      setStatusFilter("");
+                      setMultiStatusFilter(pendingStatuses);
+                      break;
+                    case "Under Review":
+                      setStatusFilter("review");
+                      setMultiStatusFilter([]);
+                      break;
+                  }
+                }}
+                className={`px-4 py-2 -mb-px border-b-2 font-medium cursor-pointer transition-colors ${
+                  isActive ? activeColor : inactiveColor
+                }`}
+              >
+                {tab}
+              </button>
+            );
           }
-
-          return (
-            <button
-              key={tab}
-              onClick={() => {
-                switch (tab) {
-                  case "All":
-                    setStatusFilter("All");
-                    setMultiStatusFilter([]);
-                    break;
-                  case "Approved":
-                    setStatusFilter("Approved");
-                    setMultiStatusFilter([]);
-                    break;
-                  case "Rejected":
-                    setStatusFilter("Rejected");
-                    setMultiStatusFilter([]);
-                    break;
-                  case "Pending":
-                    setStatusFilter("");
-                    setMultiStatusFilter(pendingStatuses);
-                    break;
-                }
-              }}
-              className={`px-4 py-2 -mb-px border-b-2 font-medium cursor-pointer transition-colors ${
-                isActive ? activeColor : inactiveColor
-              }`}
-            >
-              {tab}
-            </button>
-          );
-        })}
+        )}
       </div>
       <div className="overflow-x-auto bg-white shadow rounded border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">

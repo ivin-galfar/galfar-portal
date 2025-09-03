@@ -14,11 +14,12 @@ const feedParticulars = async (req, res) => {
         .json({ message: "The template Name already exists!!" });
     }
     const companyName = "Vendor Name";
+    const recommendation = "Recommendation (If Any)";
     const newParticulars = await Particulars.create({
       template: template.name,
       owner: created.owner,
       createdDate: new Date(),
-      particulars: [companyName, ...template.particulars],
+      particulars: [companyName, ...template.particulars, recommendation],
     });
     return res.status(201).json({
       message: "Template created successfully",

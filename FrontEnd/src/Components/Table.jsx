@@ -212,6 +212,13 @@ export default function VerticalTable({ showcalc }) {
             row.original.particulars.trim().toUpperCase() === "VENDOR NAME";
           const isRemarks =
             row.original.particulars.trim().toUpperCase() === "REMARKS";
+          const isRecommendation =
+            row.original.particulars.trim() === "Recommendation (If Any)";
+          const getPlaceholder = () => {
+            if (isCompanyname) return "Vendor name";
+            if (isRemarks) return "--Remarks--";
+            if (isRecommendation) return "-Add Reason-";
+          };
           const isReadOnly = !userInfo?.isAdmin;
           if (isAvailability) {
             if (!userInfo?.isAdmin) {
@@ -251,13 +258,7 @@ export default function VerticalTable({ showcalc }) {
                   key={`${row.id}_${vendorKey}`}
                   type="text"
                   value={value}
-                  placeholder={
-                    isCompanyname
-                      ? "Vendor name"
-                      : isRemarks
-                        ? "--Remarks--"
-                        : ""
-                  }
+                  placeholder={getPlaceholder()}
                   disabled={freezequantity}
                   onChange={(e) =>
                     handleInputChange(row.index, vendorKey, e.target.value)
@@ -604,7 +605,7 @@ export default function VerticalTable({ showcalc }) {
                 ))}
               </tr>
             )}
-          <tr>
+          {/* <tr>
             <td
               colSpan={2}
               className="border px-4 py-2 font-semibold text-center"
@@ -621,7 +622,7 @@ export default function VerticalTable({ showcalc }) {
                   : "--"}
               </td>
             ))}
-          </tr>
+          </tr> */}
         </tbody>
       </table>
     </div>

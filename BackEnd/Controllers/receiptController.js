@@ -160,7 +160,12 @@ const updateReceipt = async (req, res) => {
     const { formData, tableData, selectedIndex, selectedReason } = req.body;
 
     for (const [key, value] of Object.entries(formData)) {
-      if (key === "file" || key == "receiptupdated") continue;
+      if (
+        key === "file" ||
+        key == "receiptupdated" ||
+        key == "selectedVendorReason"
+      )
+        continue;
       if (
         value === "" ||
         value === null ||

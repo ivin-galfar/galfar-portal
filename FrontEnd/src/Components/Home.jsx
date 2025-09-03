@@ -9,7 +9,7 @@ import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
 import { GrDocumentStore } from "react-icons/gr";
 import { SiQuicktime } from "react-icons/si";
-import { IoDocumentText } from "react-icons/io5";
+import { IoDocumentText, IoWarningOutline } from "react-icons/io5";
 import fetchParticulars from "../APIs/ParticularsApi";
 
 const Home = () => {
@@ -25,6 +25,7 @@ const Home = () => {
     setNewMr,
     setParticulars,
     setParticularName,
+    setfreezeQuantity,
   } = useContext(AppContext);
   const userInfo = useUserInfo();
   const statusMapping = {
@@ -64,6 +65,7 @@ const Home = () => {
       try {
         const particulars = await fetchParticulars();
         setParticulars(particulars.Particulars);
+        setfreezeQuantity(false);
       } catch (error) {
         console.log(error);
       }
@@ -117,6 +119,10 @@ const Home = () => {
         r.formData?.status?.toLowerCase().startsWith("pending")
       );
 
+  const reviewReceipts = allreceipts?.filter(
+    (r) => r.formData?.status == "review"
+  );
+
   const today = new Date();
 
   const sevenDaysAgo = new Date();
@@ -141,6 +147,27 @@ const Home = () => {
             Quick Links
           </h2>
           <ul className="p-2 space-y-3 ">
+            {userInfo?.isAdmin ? (
+              <li>
+                <Link to="/dashboard">
+                  <button
+                    className="w-full flex text-left px-3 py-2 justify-between bg-cyan-300 hover:bg-cyan-400 rounded font-medium cursor-pointer"
+                    onClick={() => {
+                      setStatusFilter("review");
+                      setMultiStatusFilter([]);
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <IoWarningOutline size={18} />
+                      <span>Under Review</span>
+                    </div>
+                    <p>{reviewReceipts?.length}</p>
+                  </button>
+                </Link>
+              </li>
+            ) : (
+              ""
+            )}
             <li>
               <Link to="/dashboard">
                 <button

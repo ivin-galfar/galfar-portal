@@ -61,6 +61,7 @@ const TableHeader = ({ isAdmin }) => {
       try {
         const particulars = await fetchParticulars();
         setParticulars(particulars.Particulars);
+        setfreezeQuantity(false);
       } catch (error) {
         console.log(error);
       }
@@ -635,7 +636,7 @@ const TableHeader = ({ isAdmin }) => {
             )}
           </p>
           <p>
-            <span className="font-medium">EM REG NO:</span>{" "}
+            <span className="font-medium">EM REF NO:</span>{" "}
             {isAdmin ? (
               <input
                 type="text"

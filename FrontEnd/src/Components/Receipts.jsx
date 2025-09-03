@@ -190,9 +190,11 @@ const Receipts = () => {
 
   const buttonText = isSentForApproval
     ? isStatusSet
-      ? sharedTableData.formData.status === "approved"
-        ? "Approved"
-        : sharedTableData.formData.status
+      ? isStatusSet.toLowerCase().includes(userInfo.role.toLowerCase())
+        ? "Approve / Reject"
+        : sharedTableData.formData.status === "approved"
+          ? "Approved"
+          : sharedTableData.formData.status
       : "Already Requested"
     : "Request Approval";
   const isReview = sharedTableData.formData.status === "review";
