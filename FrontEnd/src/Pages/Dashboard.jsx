@@ -228,7 +228,9 @@ const Dashboard = () => {
     const tableHead = [headerRow1, headerRow2];
 
     const tableBody = tableData
-      .filter((row, idx) => idx !== 0)
+      .filter(
+        (row, idx) => idx !== 0 && row.particulars != "Recommendation (If Any)"
+      )
       .map((row) => {
         const vendors = Object.values(row.vendors || {});
         const rowValues = activeVendorIndexes.map((i) => vendors[i] || 0);

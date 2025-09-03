@@ -365,7 +365,7 @@ const TableHeader = ({ isAdmin }) => {
           </div>
         </div>
         <div className="flex-1 flex justify-center mr-35">
-          <h2 className="text-2xl font-medium uppercase text-center p-2">
+          <h2 className="text-xl font-medium uppercase text-center p-2">
             GALFAR ENGINEERING & CONTRACTING WLL EMIRATES
           </h2>
         </div>
