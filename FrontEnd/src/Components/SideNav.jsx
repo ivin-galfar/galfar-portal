@@ -25,7 +25,7 @@ const SideNav = ({ isOpen, setIsMenuOpen, ref }) => {
       className={`fixed top-0 left-0 z-50 h-full bg-white dark:bg-gray-800 shadow transition-all duration-300 
     ${isOpen ? "w-64" : "w-15"}`}
     >
-      <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-700">
         <button
           className="flex items-center gap-2 text-gray-700 cursor-pointer"
           onClick={() => setIsMenuOpen(true)}
