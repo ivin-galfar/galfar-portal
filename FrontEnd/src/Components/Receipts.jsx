@@ -274,7 +274,7 @@ const Receipts = () => {
                     className={`px-10 py-2  text-white font-semibold rounded max-h-10 ${buttonText === "Approved" || buttonText === "Rejected" ? "ml-86" : "ml-70"}  ${buttonClass}`}
                     onClick={() => setShowmodal(true)}
                   >
-                    {sharedTableData.formData.status}
+                    {buttonText}
                   </button>
                 </div>
               ) : (
