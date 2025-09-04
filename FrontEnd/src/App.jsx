@@ -13,7 +13,7 @@ const App = () => {
   const location = useLocation();
   const userInfo = useUserInfo();
   return (
-    <div>
+    <div className="pl-10">
       {!userInfo && (
         <FloatingNotification
           message={"Login to view statements"}

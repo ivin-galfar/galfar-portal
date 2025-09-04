@@ -30,12 +30,12 @@ const Header = () => {
         <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex  items-center h-16">
             <div className="flex space-x-6">
-              <button
+              {/* <button
                 className="text-gray-700 cursor-pointer"
                 onClick={() => setIsMenuOpen(true)}
               >
                 <FiMenu className="h-6 w-6" />
-              </button>
+              </button> */}
               <div className="flex justify-center items-center p-6">
                 <NavLink to="/">
                   <img
