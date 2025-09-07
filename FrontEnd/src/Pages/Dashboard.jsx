@@ -197,17 +197,22 @@ const Dashboard = () => {
     doc.text(`EM REF NO: ${formData.emRegNoValue}`, 105, 46, {
       align: "center",
     });
-
     doc.text(
-      `REQUIRED DATE: ${new Date(formData.requiredDateValue).toLocaleDateString()}`,
+      `Date: ${new Date(formData.dateValue).toLocaleDateString()}`,
       200,
       40,
       { align: "right" }
     );
     doc.text(
-      `REQUIRED DURATION: ${formData.requirementDurationValue}`,
+      `Required date: ${new Date(formData.requiredDateValue).toLocaleDateString()}`,
       200,
       46,
+      { align: "right" }
+    );
+    doc.text(
+      `Required Duration: ${formData.requirementDurationValue}`,
+      200,
+      52,
       {
         align: "right",
       }

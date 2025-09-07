@@ -80,6 +80,13 @@ const Receipts = () => {
       setTimeout(() => {
         setShowToast(false);
       }, 1500);
+      setSharedTableData((prev) => ({
+        ...prev,
+        formData: {
+          ...prev.formData,
+          receiptupdated: new Date().toISOString(),
+        },
+      }));
     },
     onError: (error) => {
       setShowToast(true);
@@ -184,9 +191,12 @@ const Receipts = () => {
 
   const buttonClass = isSentForApproval
     ? statusclass || "bg-blue-600  cursor-pointer"
-    : sharedTableData.formData?.equipMrNoValue != undefined
+    : sharedTableData.formData?.equipMrNoValue != undefined &&
+        isStatusSet !== "review"
       ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-      : "";
+      : sharedTableData.formData.receiptupdated != null
+        ? "bg-blue-600 rounded shadow  cursor-pointer"
+        : "";
 
   const buttonText = isSentForApproval
     ? isStatusSet
@@ -198,6 +208,7 @@ const Receipts = () => {
       : "Already Requested"
     : "Request Approval";
   const isReview = sharedTableData.formData.status === "review";
+  console.log(sharedTableData);
 
   return (
     <div className="pt-1 pl-10 pr-5 pb-28 relative">
@@ -230,12 +241,16 @@ const Receipts = () => {
                       setShowmodal(true);
                     }}
                     disabled={statusclass != ""}
-                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-96" : "ml-80"} max-h-10 text-white font-semibold rounded shadow ${
+                    className={`px-4 py-2 ${buttonText == "Approved" || buttonText == "Rejected" ? "ml-96" : "ml-80"} max-h-10 text-white font-semibold  ${
                       buttonClass
                     } ${buttonText == "Already Requested" ? "cursor-not-allowed" : ""} focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75  transition duration-300 ease-in-out"
                   `}
                   >
-                    {buttonText}
+                    {buttonText === "Request Approval" && isReview
+                      ? sharedTableData.formData.receiptupdated != null
+                        ? buttonText
+                        : ""
+                      : buttonText}
                   </button>
                 ) : (
                   ""

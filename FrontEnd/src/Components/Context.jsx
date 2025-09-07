@@ -16,6 +16,8 @@ const AppContextProvider = ({ children }) => {
       requiredDateValue: new Date().toISOString().split("T")[0],
       requirementDurationValue: "",
       selectedVendorReason: "",
+      status: "",
+      receiptupdated: null,
     },
     tableData: initialTableData,
   });
