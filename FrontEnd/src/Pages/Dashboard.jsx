@@ -36,6 +36,7 @@ const Dashboard = () => {
     deleted,
     setDeleted,
     sharedTableData,
+    setIsAsset,
   } = useContext(AppContext);
 
   const userInfo = useUserInfo();
@@ -169,6 +170,7 @@ const Dashboard = () => {
   const handlePrint = (printcontents, totals, vats, netPrices, currency) => {
     const doc = new jsPDF();
     const { formData, tableData } = printcontents;
+
     const pageWidth = doc.internal.pageSize.getWidth();
     const logoWidth = 60;
     const logoHeight = 10;
@@ -180,42 +182,48 @@ const Dashboard = () => {
 
     doc.setFontSize(12);
     doc.text(
-      `COMPARATIVE STATEMENT - ${formData.hiringName} (Hiring)`,
+      `COMPARATIVE STATEMENT - ${formData.hiringName} (${formData.type.charAt(0).toUpperCase() + formData.type.slice(1)})`,
       105,
-      25,
+      formData.type == "asset" ? 35 : 25,
       { align: "center" }
     );
 
     doc.setFontSize(10);
-    doc.text(`Project: ${formData.projectValue}`, 14, 40);
-    doc.text(`Location: ${formData.locationValue}`, 14, 46);
-    doc.text(`Quantity: ${formData.qty}`, 14, 52);
-
-    doc.text(`EQUIP MR NO: ${formData.equipMrNoValue}`, 105, 40, {
-      align: "center",
-    });
-    doc.text(`EM REF NO: ${formData.emRegNoValue}`, 105, 46, {
-      align: "center",
+    if (formData.type != "asset") {
+      doc.text(`Project: ${formData.projectValue}`, 14, 52);
+      doc.text(`Location: ${formData.locationValue}`, 14, 46);
+    }
+    doc.text(`Quantity: ${formData.qty}`, 14, 40);
+    if (formData.type != "asset") {
+      doc.text(`EQUIP MR NO: ${formData.equipMrNoValue}`, 105, 40, {
+        align: "center",
+      });
+      doc.text(`EM REF NO: ${formData.emRegNoValue}`, 105, 46, {
+        align: "center",
+      });
+      doc.text(
+        `Required date: ${new Date(formData.requiredDateValue).toLocaleDateString()}`,
+        200,
+        46,
+        { align: "right" }
+      );
+      doc.text(
+        `Required Duration: ${formData.requirementDurationValue}`,
+        200,
+        52,
+        {
+          align: "right",
+        }
+      );
+    }
+    doc.text(`CS NO: ${formData.equipMrNoValue}`, 200, 32, {
+      align: "right",
     });
     doc.text(
       `Date: ${new Date(formData.dateValue).toLocaleDateString()}`,
       200,
       40,
       { align: "right" }
-    );
-    doc.text(
-      `Required date: ${new Date(formData.requiredDateValue).toLocaleDateString()}`,
-      200,
-      46,
-      { align: "right" }
-    );
-    doc.text(
-      `Required Duration: ${formData.requirementDurationValue}`,
-      200,
-      52,
-      {
-        align: "right",
-      }
     );
 
     const activeVendorIndexes = totals
@@ -688,6 +696,13 @@ const Dashboard = () => {
                       <Link
                         className="px-2 py-1 bg-blue-500 text-white rounded inline-flex justify-center items-center gap-2 hover:bg-blue-600 cursor-pointer"
                         to={`/receipts/${row.original.formData.equipMrNoValue}`}
+                        onClick={() =>
+                          setIsAsset(
+                            row.original.formData.type == "hiring"
+                              ? false
+                              : true
+                          )
+                        }
                       >
                         View <FaArrowAltCircleRight />
                       </Link>

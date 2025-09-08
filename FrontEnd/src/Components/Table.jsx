@@ -251,13 +251,21 @@ export default function VerticalTable({ showcalc }) {
                   className={`max-w-2xl px-2 py-1 text-center break-words whitespace-normal ${isCompanyname ? "font-bold" : ""}`}
                   style={{ maxWidth: "150px" }}
                 >
-                  {value}
+                  {index === sharedTableData.formData.selectedVendorIndex &&
+                  isRecommendation
+                    ? sharedTableData.formData.selectedVendorReason
+                    : value}
                 </div>
               ) : (
                 <input
                   key={`${row.id}_${vendorKey}`}
                   type="text"
-                  value={value}
+                  value={
+                    index === sharedTableData.formData.selectedVendorIndex &&
+                    isRecommendation
+                      ? sharedTableData.formData.selectedVendorReason
+                      : value
+                  }
                   placeholder={getPlaceholder()}
                   disabled={freezequantity}
                   onChange={(e) =>

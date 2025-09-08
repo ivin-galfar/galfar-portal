@@ -20,6 +20,7 @@ const formDataSchema = mongoose.Schema({
   status: { type: String },
   currency: { type: String },
   receiptupdated: { type: Date },
+  type: { type: String, enum: ["asset", "hiring"] },
   approverdetails: [
     {
       role: {

@@ -3,7 +3,7 @@ const Receipt = require("../Models/receiptModel");
 const feedReceipt = async (req, res) => {
   try {
     const { formData, tableData } = req.body;
-    if (!formData.isasset) {
+    if (formData.type !== "asset") {
       for (const [key, value] of Object.entries(formData)) {
         if (key === "file" || key === "receiptupdated") continue;
         if (
@@ -158,23 +158,24 @@ const updateReceipt = async (req, res) => {
   try {
     const { mrno } = req.params;
     const { formData, tableData, selectedIndex, selectedReason } = req.body;
-
-    for (const [key, value] of Object.entries(formData)) {
-      if (
-        key === "file" ||
-        key == "receiptupdated" ||
-        key == "selectedVendorReason"
-      )
-        continue;
-      if (
-        value === "" ||
-        value === null ||
-        value === undefined ||
-        (typeof value === "string" && value.trim() === "")
-      ) {
-        return res.status(400).json({
-          message: `Validation Error: "${key}" cannot be empty.`,
-        });
+    if (formData.type != "asset") {
+      for (const [key, value] of Object.entries(formData)) {
+        if (
+          key === "file" ||
+          key == "receiptupdated" ||
+          key == "selectedVendorReason"
+        )
+          continue;
+        if (
+          value === "" ||
+          value === null ||
+          value === undefined ||
+          (typeof value === "string" && value.trim() === "")
+        ) {
+          return res.status(400).json({
+            message: `Validation Error: "${key}" cannot be empty.`,
+          });
+        }
       }
     }
 

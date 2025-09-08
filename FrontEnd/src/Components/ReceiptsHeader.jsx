@@ -84,23 +84,18 @@ const TableHeader = ({ isAdmin }) => {
   }, [editing]);
 
   const handleChange = (field) => (e) => {
-    const value =
-      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    const value = e.target.value;
+
+    if (field === "qty") {
+      setQuantity(value);
+    }
 
     setSharedTableData((prev) => {
-      let updatedForm = {
+      const updatedForm = {
         ...prev.formData,
         [field]: value,
+        type: prev.formData.type !== "asset" ? "hiring" : prev.formData.type,
       };
-
-      if (field === "isasset" && value === true) {
-        const randomNo = `A-${Math.floor(1000 + Math.random() * 9000)}`;
-        updatedForm.equipMrNoValue = randomNo;
-      }
-
-      if (field === "qty") {
-        setQuantity(value);
-      }
 
       return {
         ...prev,
@@ -108,6 +103,7 @@ const TableHeader = ({ isAdmin }) => {
       };
     });
   };
+
   const handleCurrencyChange = (e) => {
     const value = e.target.value;
     setSharedTableData((prev) => ({
@@ -118,6 +114,28 @@ const TableHeader = ({ isAdmin }) => {
       },
     }));
   };
+  const handleTemplateType = (e) => {
+    const isChecked = e.target.checked;
+    setIsAsset(isChecked);
+    setSharedTableData((prev) => {
+      const updatedForm = { ...prev.formData };
+
+      if (isChecked) {
+        const randomNo = `A-${Math.floor(1000 + Math.random() * 9000)}`;
+        updatedForm.equipMrNoValue = randomNo;
+        updatedForm.type = "asset";
+      } else {
+        updatedForm.type = "hiring";
+        updatedForm.equipMrNoValue = "";
+      }
+
+      return {
+        ...prev,
+        formData: updatedForm,
+      };
+    });
+  };
+
   const fetchReceipt = async (id) => {
     const receiptid = id || mrnumber;
 
@@ -176,7 +194,12 @@ const TableHeader = ({ isAdmin }) => {
       setCleartable(true);
       setIsMRSelected(false);
       setSelectedMr("");
-      setSharedTableData({ formData: {}, tableData: [] });
+      setSharedTableData({
+        formData: {
+          dateValue: new Date().toISOString().split("T")[0],
+        },
+        tableData: [],
+      });
     }
   }, [mrnumber]);
 
@@ -543,7 +566,6 @@ const TableHeader = ({ isAdmin }) => {
                 </select>
               </div>
 
-              {/* Asset Template */}
               <label className="flex items-center cursor-pointer gap-2 flex-1">
                 <input
                   type="checkbox"
@@ -551,14 +573,14 @@ const TableHeader = ({ isAdmin }) => {
                   checked={isasset}
                   onChange={(e) => {
                     setIsAsset(e.target.checked);
-                    handleChange("isasset")(e);
+                    handleTemplateType(e);
                   }}
                 />
                 <span>Asset Template</span>
                 <div className="ml-2 w-14 h-6 bg-gray-200 rounded-full relative peer-checked:bg-blue-600 transition-colors">
                   <div
                     className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full transition-transform 
-        ${isasset ? "translate-x-full" : "translate-x-0"}`}
+        ${isasset || sharedTableData.formData.type == "asset" ? "translate-x-full" : "translate-x-0"}`}
                   ></div>
                 </div>
               </label>
@@ -592,7 +614,11 @@ const TableHeader = ({ isAdmin }) => {
         <div className="flex items-center justify-center text-sm font-medium w-1/2 ml-0 lg:ml-24">
           {isAdmin ? (
             <>
-              <span>{isasset ? "Asset - " : "Hiring - "}</span>
+              <span>
+                {!isasset || sharedTableData.formData.type != "asset"
+                  ? "Hiring - "
+                  : "Asset - "}
+              </span>
               <input
                 type="text"
                 value={formData?.hiringName ?? ""}
@@ -626,7 +652,7 @@ const TableHeader = ({ isAdmin }) => {
         </div>
       </div>
 
-      {!isasset && (
+      {(!isasset || sharedTableData.formData.type == "hiring") && (
         <div className="flex justify-between mt-4 px-4">
           <div className="flex flex-col space-y-1 text-left w-1/3">
             <p>
