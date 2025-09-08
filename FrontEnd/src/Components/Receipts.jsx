@@ -36,6 +36,7 @@ const Receipts = () => {
     setfreezeQuantity,
     selectedVendorReason,
     setSelectedVendorReason,
+    isasset,
   } = useContext(AppContext);
 
   const ReceiptMutation = useMutation({
@@ -113,6 +114,7 @@ const Receipts = () => {
     const isReview = sharedTableData.formData.status === "review";
     if (
       !isReview &&
+      !isasset &&
       (!equipMrNoValue ||
         !emRegNoValue ||
         !hiringName ||
@@ -208,7 +210,6 @@ const Receipts = () => {
       : "Already Requested"
     : "Request Approval";
   const isReview = sharedTableData.formData.status === "review";
-  console.log(sharedTableData);
 
   return (
     <div className="pt-1 pl-10 pr-5 pb-28 relative">

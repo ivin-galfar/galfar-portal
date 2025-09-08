@@ -13,7 +13,7 @@ const App = () => {
   const location = useLocation();
   const userInfo = useUserInfo();
   return (
-    <div className={`${location.pathname !== "/login" && "pl-10"}`}>
+    <div className={`${location.pathname !== "/login" && "pl-12"}`}>
       {!userInfo && (
         <FloatingNotification
           message={"Login to view statements"}

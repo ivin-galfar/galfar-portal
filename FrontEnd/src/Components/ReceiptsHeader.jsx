@@ -46,6 +46,8 @@ const TableHeader = ({ isAdmin }) => {
     setfreezeQuantity,
     freezequantity,
     selectedVendorReason,
+    isasset,
+    setIsAsset,
   } = useContext(AppContext);
   const formData = sharedTableData?.formData;
   const userInfo = useUserInfo();
@@ -82,18 +84,29 @@ const TableHeader = ({ isAdmin }) => {
   }, [editing]);
 
   const handleChange = (field) => (e) => {
-    const value = e.target.value;
-    if (field === "qty") {
-      setQuantity(value);
-    }
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
-    setSharedTableData((prev) => ({
-      ...prev,
-      formData: {
+    setSharedTableData((prev) => {
+      let updatedForm = {
         ...prev.formData,
         [field]: value,
-      },
-    }));
+      };
+
+      if (field === "isasset" && value === true) {
+        const randomNo = `A-${Math.floor(1000 + Math.random() * 9000)}`;
+        updatedForm.equipMrNoValue = randomNo;
+      }
+
+      if (field === "qty") {
+        setQuantity(value);
+      }
+
+      return {
+        ...prev,
+        formData: updatedForm,
+      };
+    });
   };
   const handleCurrencyChange = (e) => {
     const value = e.target.value;
@@ -513,22 +526,57 @@ const TableHeader = ({ isAdmin }) => {
               </select>
             </div>
           ) : (
-            <>
-              {" "}
-              <span>Currency:</span>
-              <select
-                value={sharedTableData.formData?.currency || ""}
-                onChange={handleCurrencyChange}
-                className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm 
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select</option>
-                <option value="AED">د.إ AED</option>
-                <option value="USD">$ USD</option>
-                <option value="EUR">€ EUR</option>
-                <option value="GBP">£ GBP</option>
-              </select>
-            </>
+            <div className="flex w-full gap-15">
+              <div className="flex items-center gap-2 flex-1">
+                <span>Currency:</span>
+                <select
+                  value={sharedTableData.formData?.currency || ""}
+                  onChange={handleCurrencyChange}
+                  className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm 
+      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select</option>
+                  <option value="AED">د.إ AED</option>
+                  <option value="USD">$ USD</option>
+                  <option value="EUR">€ EUR</option>
+                  <option value="GBP">£ GBP</option>
+                </select>
+              </div>
+
+              {/* Asset Template */}
+              <label className="flex items-center cursor-pointer gap-2 flex-1">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={isasset}
+                  onChange={(e) => {
+                    setIsAsset(e.target.checked);
+                    handleChange("isasset")(e);
+                  }}
+                />
+                <span>Asset Template</span>
+                <div className="ml-2 w-14 h-6 bg-gray-200 rounded-full relative peer-checked:bg-blue-600 transition-colors">
+                  <div
+                    className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full transition-transform 
+        ${isasset ? "translate-x-full" : "translate-x-0"}`}
+                  ></div>
+                </div>
+              </label>
+
+              <label className="font-medium text-sm flex items-center gap-2 ">
+                <span>Quantity:</span>
+                <input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={formData?.qty ?? ""}
+                  disabled={freezequantity}
+                  onChange={handleChange("qty")}
+                  className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm 
+      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </label>
+            </div>
           )}
 
           <div className="relative group mt-6">
@@ -544,7 +592,7 @@ const TableHeader = ({ isAdmin }) => {
         <div className="flex items-center justify-center text-sm font-medium w-1/2 ml-0 lg:ml-24">
           {isAdmin ? (
             <>
-              <span>HIRING -</span>
+              <span>{isasset ? "Asset - " : "Hiring - "}</span>
               <input
                 type="text"
                 value={formData?.hiringName ?? ""}
@@ -555,7 +603,7 @@ const TableHeader = ({ isAdmin }) => {
             </>
           ) : (
             <p className="text-sm font-medium">
-              HIRING -{" "}
+              {formData?.projectValue ? "HIRING -" : "Asset - "}
               <span className="font-medium">{formData?.hiringName ?? ""}</span>
             </p>
           )}
@@ -577,126 +625,116 @@ const TableHeader = ({ isAdmin }) => {
             )}
         </div>
       </div>
-      <div className="flex justify-between mt-4 px-4">
-        <div className="flex flex-col space-y-1 text-left w-1/3">
-          <p>
-            <span className="font-medium">PROJECT:</span>{" "}
-            {isAdmin ? (
-              <input
-                type="text"
-                value={formData?.projectValue ?? ""}
-                onChange={handleChange("projectValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm"
-              />
-            ) : (
-              formData?.projectValue
-            )}
-          </p>
-          <div className="inline-flex items-center space-x-20">
+
+      {!isasset && (
+        <div className="flex justify-between mt-4 px-4">
+          <div className="flex flex-col space-y-1 text-left w-1/3">
             <p>
-              <span className="font-medium">Location:</span>{" "}
+              <span className="font-medium">PROJECT:</span>{" "}
               {isAdmin ? (
                 <input
                   type="text"
-                  value={formData?.locationValue ?? ""}
-                  onChange={handleChange("locationValue")}
+                  value={formData?.projectValue ?? ""}
+                  onChange={handleChange("projectValue")}
                   className="border-b border-gray-400 outline-none px-1 text-sm"
                 />
               ) : (
-                formData?.locationValue
+                formData?.projectValue
               )}
             </p>
-
-            <label className="font-medium text-sm flex items-center space-x-2">
-              <span>Quantity:</span>
-              <input
-                type="number"
-                min={0}
-                step={1}
-                value={formData?.qty ?? ""}
-                disabled={freezequantity}
-                onChange={handleChange("qty")}
-                className="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </label>
+            <div className="inline-flex items-center space-x-20">
+              <p>
+                <span className="font-medium">Location:</span>{" "}
+                {isAdmin ? (
+                  <input
+                    type="text"
+                    value={formData?.locationValue ?? ""}
+                    onChange={handleChange("locationValue")}
+                    className="border-b border-gray-400 outline-none px-1 text-sm"
+                  />
+                ) : (
+                  formData?.locationValue
+                )}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col space-y-1 text-center w-1/3">
-          <p>
-            <span className="font-medium">EQUIP MR NO:</span>{" "}
-            {isAdmin ? (
-              <input
-                type="text"
-                value={formData?.equipMrNoValue ?? ""}
-                onChange={handleChange("equipMrNoValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm"
-              />
-            ) : (
-              formData?.equipMrNoValue
-            )}
-          </p>
-          <p>
-            <span className="font-medium">EM REF NO:</span>{" "}
-            {isAdmin ? (
-              <input
-                type="text"
-                value={formData?.emRegNoValue ?? ""}
-                onChange={handleChange("emRegNoValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm"
-              />
-            ) : (
-              formData?.emRegNoValue
-            )}
-          </p>
-        </div>
+          <div className="flex flex-col space-y-1 text-center w-1/3">
+            <p>
+              <span className="font-medium">EQUIP MR NO:</span>{" "}
+              {isAdmin ? (
+                <input
+                  type="text"
+                  value={formData?.equipMrNoValue ?? ""}
+                  onChange={handleChange("equipMrNoValue")}
+                  className="border-b border-gray-400 outline-none px-1 text-sm"
+                />
+              ) : (
+                formData?.equipMrNoValue
+              )}
+            </p>
+            <p>
+              <span className="font-medium">EM REF NO:</span>{" "}
+              {isAdmin ? (
+                <input
+                  type="text"
+                  value={formData?.emRegNoValue ?? ""}
+                  onChange={handleChange("emRegNoValue")}
+                  className="border-b border-gray-400 outline-none px-1 text-sm"
+                />
+              ) : (
+                formData?.emRegNoValue
+              )}
+            </p>
+          </div>
 
-        <div className="flex flex-col space-y-2 text-sm w-1/3">
-          <div className="flex items-center justify-between">
-            <label className="font-medium whitespace-nowrap mr-2 ml-50">
-              REQUIRED DATE:
-            </label>
-            {isAdmin ? (
-              <input
-                type="date"
-                value={
-                  formData.requiredDateValue
+          <div className="flex flex-col space-y-2 text-sm w-1/3">
+            <div className="flex items-center justify-between">
+              <label className="font-medium whitespace-nowrap mr-2 ml-50">
+                REQUIRED DATE:
+              </label>
+              {isAdmin ? (
+                <input
+                  type="date"
+                  value={
+                    formData.requiredDateValue
+                      ? new Date(formData.requiredDateValue)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={handleChange("requiredDateValue")}
+                  className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
+                />
+              ) : (
+                <span>
+                  {formData.requiredDateValue
                     ? new Date(formData.requiredDateValue)
                         .toISOString()
                         .split("T")[0]
-                    : ""
-                }
-                onChange={handleChange("requiredDateValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
-              />
-            ) : (
-              <span>
-                {formData.requiredDateValue
-                  ? new Date(formData.requiredDateValue)
-                      .toISOString()
-                      .split("T")[0]
-                  : ""}
-              </span>
-            )}
-          </div>
+                    : ""}
+                </span>
+              )}
+            </div>
 
-          <div className="flex items-center justify-between">
-            <label className="font-medium whitespace-nowrap mr-2 ml-50">
-              REQUIREMENT DURATIONS:
-            </label>
-            {isAdmin ? (
-              <input
-                type="text"
-                value={formData?.requirementDurationValue ?? ""}
-                onChange={handleChange("requirementDurationValue")}
-                className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
-              />
-            ) : (
-              <span>{formData?.requirementDurationValue ?? ""}</span>
-            )}
+            <div className="flex items-center justify-between">
+              <label className="font-medium whitespace-nowrap mr-2 ml-50">
+                REQUIREMENT DURATIONS:
+              </label>
+              {isAdmin ? (
+                <input
+                  type="text"
+                  value={formData?.requirementDurationValue ?? ""}
+                  onChange={handleChange("requirementDurationValue")}
+                  className="border-b border-gray-400 outline-none px-1 text-sm w-full max-w-[160px]"
+                />
+              ) : (
+                <span>{formData?.requirementDurationValue ?? ""}</span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {showToast && !errormessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
           ✅ Attachments uploaded!

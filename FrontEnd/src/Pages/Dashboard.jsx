@@ -473,12 +473,12 @@ const Dashboard = () => {
 
     columnHelper.accessor((row) => row?.formData.hiringName, {
       id: "hiring.name",
-      header: "Hiring Name",
+      header: "Hiring/Asset Name",
       cell: (info) => info.getValue() || "-",
     }),
     columnHelper.accessor((row) => row?.formData.equipMrNoValue, {
       id: "mrno",
-      header: "EQUIP MR NO",
+      header: "CS NO",
       cell: (info) => info.getValue() || "-",
     }),
     columnHelper.accessor((row) => row?.formData.qty, {

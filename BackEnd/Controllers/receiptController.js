@@ -3,21 +3,21 @@ const Receipt = require("../Models/receiptModel");
 const feedReceipt = async (req, res) => {
   try {
     const { formData, tableData } = req.body;
-
-    for (const [key, value] of Object.entries(formData)) {
-      if (key === "file" || key === "receiptupdated") continue;
-      if (
-        value === "" ||
-        value === null ||
-        value === undefined ||
-        (typeof value === "string" && value.trim() === "")
-      ) {
-        return res.status(400).json({
-          message: `Validation Error: "${key}" cannot be empty.`,
-        });
+    if (!formData.isasset) {
+      for (const [key, value] of Object.entries(formData)) {
+        if (key === "file" || key === "receiptupdated") continue;
+        if (
+          value === "" ||
+          value === null ||
+          value === undefined ||
+          (typeof value === "string" && value.trim() === "")
+        ) {
+          return res.status(400).json({
+            message: `Validation Error: "${key}" cannot be empty.`,
+          });
+        }
       }
     }
-
     const mrexists = await Receipt.findOne({
       "formData.equipMrNoValue": formData.equipMrNoValue,
     });

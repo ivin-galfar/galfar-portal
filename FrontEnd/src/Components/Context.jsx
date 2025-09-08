@@ -44,6 +44,7 @@ const AppContextProvider = ({ children }) => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [multiStatusFilter, setMultiStatusFilter] = useState([]);
   const [updatetriggered, setUpdateTriggered] = useState(false);
+  const [isasset, setIsAsset] = useState(false);
   return (
     <AppContext.Provider
       value={{
@@ -97,6 +98,8 @@ const AppContextProvider = ({ children }) => {
         setStatusFilter,
         updatetriggered,
         setUpdateTriggered,
+        isasset,
+        setIsAsset,
       }}
     >
       {children}
