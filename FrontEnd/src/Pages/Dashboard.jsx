@@ -181,13 +181,25 @@ const Dashboard = () => {
     doc.addImage(galfarlogo, "PNG", logoX, logoY, logoWidth, logoHeight);
 
     doc.setFontSize(12);
-    doc.text(
-      `COMPARATIVE STATEMENT - ${formData.hiringName} (${formData.type.charAt(0).toUpperCase() + formData.type.slice(1)})`,
-      105,
-      formData.type == "asset" ? 35 : 25,
-      { align: "center" }
-    );
-
+    if (formData.type != "asset") {
+      doc.text(
+        `COMPARATIVE STATEMENT - ${formData.hiringName} (${formData.type.charAt(0).toUpperCase() + formData.type.slice(1)})`,
+        105,
+        formData.type == "asset" ? 35 : 25,
+        { align: "center" }
+      );
+    }
+    if (formData.type == "asset") {
+      doc.text(
+        `COMPARATIVE STATEMENT - ${formData.hiringName}`,
+        105,
+        formData.type == "asset" ? 35 : 25,
+        { align: "center" }
+      );
+      doc.text(`Asset Purchase`, 105, formData.type == "asset" ? 45 : 25, {
+        align: "center",
+      });
+    }
     doc.setFontSize(10);
     if (formData.type != "asset") {
       doc.text(`Project: ${formData.projectValue}`, 14, 52);
