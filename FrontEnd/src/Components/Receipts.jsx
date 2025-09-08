@@ -321,7 +321,7 @@ const Receipts = () => {
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 cursor-pointer"
+              className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 ${isMRSelected ? "invisible" : ""} cursor-pointer`}
             >
               Reset
             </button>
