@@ -577,10 +577,10 @@ const TableHeader = ({ isAdmin }) => {
                   }}
                 />
                 <span>Asset Template</span>
-                <div className="ml-2 w-14 h-6 bg-gray-200 rounded-full relative peer-checked:bg-blue-600 transition-colors">
+                <div className="ml-2 w-11 h-4 bg-gray-200 rounded-full relative peer-checked:bg-blue-600 transition-colors">
                   <div
-                    className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full transition-transform 
-        ${isasset || sharedTableData.formData.type == "asset" ? "translate-x-full" : "translate-x-0"}`}
+                    className={`absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform
+    ${isasset || sharedTableData.formData.type === "asset" ? "translate-x-4" : "translate-x-0"}`}
                   ></div>
                 </div>
               </label>
