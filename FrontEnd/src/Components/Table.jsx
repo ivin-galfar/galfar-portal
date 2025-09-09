@@ -593,7 +593,7 @@ export default function VerticalTable({ showcalc }) {
                                   <VendorSelectionTooltip
                                     setShowTooltip={setShowTooltip}
                                     message={
-                                      "The reason for choosing this vendor will be displayed below!!"
+                                      "The reason for choosing this vendor will be in Recommendation row!!"
                                     }
                                   />
                                 )}
