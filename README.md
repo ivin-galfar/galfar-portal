@@ -53,7 +53,7 @@ This project features a **⚛️ React frontend** styled with **🎨 Tailwind CS
    - To start both **frontend** and **backend** simultaneously using `concurrently`:
 
      ```bash
-     npm start
+     npm start (from root)
      ```
 
    - Alternatively, you can run them manually in separate terminals:
@@ -69,3 +69,4 @@ This project features a **⚛️ React frontend** styled with **🎨 Tailwind CS
      cd frontend
      npm run dev
      ```
+
