@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { MdOutlinePendingActions } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
+import { FaBell } from "react-icons/fa";
 import { GrDocumentStore } from "react-icons/gr";
 import { SiQuicktime } from "react-icons/si";
 import { IoDocumentText, IoWarningOutline } from "react-icons/io5";
@@ -142,10 +143,37 @@ const Home = () => {
       />
       <div className="flex gap-6 ml-10 mt-10">
         <div className="w-1/3 p-4 bg-white rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-lg font-semibold mb-4 flex gap-2 items-center">
-            <SiQuicktime />
-            Quick Links
-          </h2>
+          <div className="flex justify-between">
+            <h2 className="flex text-lg font-semibold mb-4  gap-2 items-center">
+              <SiQuicktime />
+              Quick Links
+            </h2>
+            <Link
+              to="/dashboard"
+              className="relative inline-flex ml-auto cursor-pointer"
+              onClick={() => {
+                if (userInfo?.isAdmin) {
+                  setStatusFilter("review");
+                  setMultiStatusFilter([]);
+                } else {
+                  setStatusFilter("");
+                  setMultiStatusFilter(pendingStatuses);
+                }
+              }}
+            >
+              <FaBell size={22} className="text-gray-700" />
+              {pendingReceipts?.length > 0 && (
+                <span
+                  className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold 
+             rounded-full w-4 h-4 flex items-center justify-center shadow-md animate-pulse-highlight"
+                >
+                  {!userInfo.isAdmin
+                    ? pendingReceipts.length
+                    : reviewReceipts?.length}
+                </span>
+              )}
+            </Link>
+          </div>
           <ul className="p-2 space-y-3 ">
             {userInfo?.isAdmin ? (
               <li>
