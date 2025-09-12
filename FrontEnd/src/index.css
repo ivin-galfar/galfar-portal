@@ -35,24 +35,24 @@ tbody tr:hover {
     transform: scale(1);
     box-shadow:
       0 0 2px #f87171,
-      0 0 4px #f87171,
-      0 0 6px #f87171;
+      0 0 2px #f87171,
+      0 0 2px #f87171;
     opacity: 1;
   }
   50% {
     transform: scale(1.15);
     box-shadow:
       0 0 2px #f87171,
-      0 0 4px #f87171,
-      0 0 6px #f87171;
+      0 0 2px #f87171,
+      0 0 2px #f87171;
     opacity: 0.95;
   }
   100% {
     transform: scale(1);
     box-shadow:
       0 0 2px #f87171,
-      0 0 4px #f87171,
-      0 0 6px #f87171;
+      0 0 2px #f87171,
+      0 0 2px #f87171;
     opacity: 1;
   }
 }
