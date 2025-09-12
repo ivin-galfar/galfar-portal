@@ -613,24 +613,6 @@ export default function VerticalTable({ showcalc }) {
                 ))}
               </tr>
             )}
-          {/* <tr>
-            <td
-              colSpan={2}
-              className="border px-4 py-2 font-semibold text-center"
-            >
-              Recommendation (if any)
-            </td>
-            {vendorNetPrices.map((_, idx) => (
-              <td
-                key={`net_${idx}`}
-                className="border px-4 py-2 font-semibold text-center"
-              >
-                {isMRSelected && idx === selectedVendorIndex
-                  ? sharedTableData.formData.selectedVendorReason
-                  : "--"}
-              </td>
-            ))}
-          </tr> */}
         </tbody>
       </table>
     </div>

@@ -9,7 +9,6 @@ import ReasonForSelection from "./ReasonForSelection";
 import fetchStatments from "../APIs/StatementsApi";
 import { useMutation } from "@tanstack/react-query";
 import { feedReceipt, updateReceipt } from "../APIs/api";
-import { LuRotateCcwSquare } from "react-icons/lu";
 
 const Receipts = () => {
   const userInfo = useUserInfo();
