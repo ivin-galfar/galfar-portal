@@ -4,6 +4,7 @@ import { AppContext } from "./Context";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser, registerUser } from "../APIs/api";
+import { SiTicktick } from "react-icons/si";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -56,13 +57,13 @@ const Login = () => {
   return (
     <div>
       {showToast && !errormessage && !newuser && (
-        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
-          ✅ Successfully logged in!
+        <div className="flex justify-center  items-center gap-2 fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          <SiTicktick /> Successfully logged in!
         </div>
       )}
       {!errormessage && showToast && newuser && (
-        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
-          ✅ Successfully created your account!
+        <div className="flex justify-center  items-center gap-2 fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg transition-all duration-300 animate-slide-in">
+          <SiTicktick /> Successfully created your account!
         </div>
       )}
       {errormessage && (
