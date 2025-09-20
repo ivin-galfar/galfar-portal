@@ -1,7 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import useUserInfo from "../CustomHooks/useUserInfo";
 import galfarlogo from "../assets/Images/logo-new.png";
-import { FiMenu } from "react-icons/fi";
 import SideNav from "./SideNav";
 import { useContext, useEffect, useRef, useState } from "react";
 import UserDropdown from "./UserDropdown";
